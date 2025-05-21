@@ -1,0 +1,12 @@
+[project]
+name = "ingest"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "ruff>=0.11.10",
+]
+[project.scripts]
+ingest-hifld = "sources:hifld_csv.py:ingest"
