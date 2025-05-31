@@ -1,15 +1,9 @@
-# Project Name
+# Take Shelter Now
 
-A single sentence description of the project
+A website for helping people in weather emergencies find shelter fast.
 
-## About the Project
-
-A more in depth description of what this project is about and it's goals
-
-## Repository Structure
-
-- [./docs](./docs) contains project guides, documentation, and decision records
-
-## Development
-
-An overview of how to spin up the project and develop on it
+## Documentation
+ - [docs.opensgf.org](https://docs.opensgf.org/s/take-shelter-now-overview)
+   - Non technical documentation, including project overview, designs, and project management information
+ - [./docs](./docs)
+   - Technical documentation, including architecture decisions
