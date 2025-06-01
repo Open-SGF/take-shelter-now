@@ -31,7 +31,11 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run lint
-      - run: npm run test:unit
+      - run: npm run test:unit:coverage
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
   ci-e2e:
     needs: pre_job
     if: needs.pre_job.outputs.should_skip != 'true'
