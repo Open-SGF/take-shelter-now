@@ -14,7 +14,7 @@ test('Page loads without errors', async ({ page }) => {
 	});
 
 	const response = await page.goto('/', {
-		waitUntil: 'networkidle'
+		waitUntil: 'networkidle',
 	});
 
 	expect(response?.status()).toBe(200);

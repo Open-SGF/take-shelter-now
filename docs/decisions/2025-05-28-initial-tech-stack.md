@@ -16,44 +16,54 @@ Of course, it would be great for this to scale up beyond that, but we won't spen
 - We do want to avoid a backend for the time being as it makes the hosting/deployment more complicated
 - The tools we pick should have ample documentation to allow for an easy onboarding path for new contributors
 
-
 ## Options Considered
 
 ### Core Framework
-  - [Svelte](https://svelte.dev/docs/svelte/overview) with [SvelteKit](https://svelte.dev/docs/kit/introduction) generating a static site
-  - [React](https://react.dev/) with [Next.js](https://nextjs.org/) generating a static site
+
+- [Svelte](https://svelte.dev/docs/svelte/overview) with [SvelteKit](https://svelte.dev/docs/kit/introduction) generating a static site
+- [React](https://react.dev/) with [Next.js](https://nextjs.org/) generating a static site
+
 ### Styling
-  - [Tailwind](https://tailwindcss.com/) + shadcn ([Svelte](https://www.shadcn-svelte.com/), [React](https://ui.shadcn.com/))
-  - Material UI ([Svelte](https://sveltematerialui.com/), [React](https://mui.com/material-ui/))
+
+- [Tailwind](https://tailwindcss.com/) + shadcn ([Svelte](https://www.shadcn-svelte.com/), [React](https://ui.shadcn.com/))
+- Material UI ([Svelte](https://sveltematerialui.com/), [React](https://mui.com/material-ui/))
+
 ### Mapping libraries
-  - [Leaflet.js](https://leafletjs.com/) with [OpenStreetMap](https://www.openstreetmap.org)
-  - [Google maps](https://developers.google.com/maps/documentation/javascript/overview)
-  - [Apple MapKit JS](https://developer.apple.com/documentation/mapkitjs/)
+
+- [Leaflet.js](https://leafletjs.com/) with [OpenStreetMap](https://www.openstreetmap.org)
+- [Google maps](https://developers.google.com/maps/documentation/javascript/overview)
+- [Apple MapKit JS](https://developer.apple.com/documentation/mapkitjs/)
+
 ### Data Storage
-  - Google sheets with build time conversion to static JSON
-  - Hard coded JSON
+
+- Google sheets with build time conversion to static JSON
+- Hard coded JSON
 
 ## Decision Outcome
 
 ### Core Framework
+
 [Svelte](https://svelte.dev/docs/svelte/overview) with [SvelteKit](https://svelte.dev/docs/kit/introduction) generating a static site
 
 While not the most popular frontend framework, Svelte does have bundle size advantages over React as the compiler will only bundle framework features that are actually used.
 It also quite user friendly and easy to pick up from the docs.
 
 ### Styling
+
 [Tailwind](https://tailwindcss.com/) + [shadcn](https://www.shadcn-svelte.com/)
 
 This decision also comes from keeping bundle sizes in mind.
 Shadcn in particular means we only pay the cost for the components we actually use.
 
 ### Mapping libraries
+
 [Leaflet.js](https://leafletjs.com/) with [OpenStreetMap](https://www.openstreetmap.org)
 
 While Google Maps and MapKit both have generous free tiers, Leaflet and OpenStreetMaps being open source gives us more flexibility over time.
 
 ### Data Storage
-Google sheets with build time conversion to static JSON 
+
+Google sheets with build time conversion to static JSON
 
 While we will eventually want an API so that we're not loading all the data at once, for now keeping it one chunk should work for our use case.
 Also, keeping it in a Google sheet vs hard coded JSON allows for easy updates by those not familiar with git
@@ -75,4 +85,3 @@ Also, keeping it in a Google sheet vs hard coded JSON allows for easy updates by
 
 - [public-google-sheets-parser](https://github.com/fureweb-com/public-google-sheets-parser)
 - [OpenStreetMap Tile Server Usage Policy](https://operations.osmfoundation.org/policies/tiles/)
-
