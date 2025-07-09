@@ -43,13 +43,12 @@ While architecture decisions come in all shapes and sizes, some common examples 
 When an architectural decision needs to be recorded, please use the following steps:
 
 - Create a new branch for the ADR
-- Copy the [template](./template.md) into a new file with the `{YYYY-MM-DD}-{description}.md` naming convention 
-    - The ADR should use the status "Active"
-    - If this decision deprecates an existing ADR, update its status to indicate the reason (e.g. `"Superseded By [xxx](yyyymmdd-xxx.md)"`), and move it to the [deprecated](./deprecated/) directory
+- Copy the [template](./template.md) into a new file with the `{YYYY-MM-DD}-{description}.md` naming convention
+  - The ADR should use the status "Active"
+  - If this decision deprecates an existing ADR, update its status to indicate the reason (e.g. `"Superseded By [xxx](yyyymmdd-xxx.md)"`), and move it to the [deprecated](./deprecated/) directory
 - Open a PR and invite trusted reviewers and other core team members to review
 - After an ADR is approved, merge the PR
 - Create any needed follow up tickets in the project board in order to implement the ADR
-
 
 ## Additional Details
 

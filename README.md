@@ -1,15 +1,24 @@
-# Project Name
+# Take Shelter Now
 
-A single sentence description of the project
+A website for helping people in weather emergencies find shelter fast.
 
-## About the Project
+## Documentation
 
-A more in depth description of what this project is about and it's goals
+- [docs.opensgf.org](https://docs.opensgf.org/s/take-shelter-now-overview)
+  - Non technical documentation, including project overview, designs, and project management information
+- [./docs](./docs)
+  - Technical documentation, including architecture decisions
 
-## Repository Structure
+## First Time Setup
 
-- [./docs](./docs) contains project guides, documentation, and decision records
+- Make sure you have [Node 22.x](https://nodejs.org) (Ideally using [nvm](https://github.com/nvm-sh/nvm))
+- Install dependencies `npm i`
 
-## Development
+## Running the project
 
-An overview of how to spin up the project and develop on it
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
