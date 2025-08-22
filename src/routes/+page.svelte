@@ -1,6 +1,33 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Header  } from '$lib/components/ui/Header'
+	import { ShelterCard } from '$lib/components/ui/ShelterCard'
+	import { Sheet } from '$lib/components/ui/Sheet'
 </script>
 
-<h1>Take Shelter Now</h1>
-<Button href="https://docs.opensgf.org/s/take-shelter-now-overview" target="_blank">Docs</Button>
+<style>
+	.container{
+		height: 100vh;
+		overflow: none;
+		background-color: #e2e0e1;
+	}
+	.brand-logo{
+		height: 100px;
+		width: auto;
+	}
+</style>
+
+<div class="container">
+	<Header/>
+	<Sheet>
+		<ShelterCard/>
+		<ShelterCard/>
+		<ShelterCard/>
+		<ShelterCard/>
+	</Sheet>
+
+</div>
+
+
+
+
+
