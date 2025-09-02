@@ -1,11 +1,21 @@
-  <style>
-	.sheet{
+<div class="sheet">
+	<div class="handleContainer">
+		<div class="handle"></div>
+	</div>
+	<h1>Storm Shelters Near You</h1>
+	<div>
+		<slot></slot>
+	</div>
+</div>
+
+<style>
+	.sheet {
 		position: fixed;
 		right: 0px;
 		height: 100vh;
 		width: 30vw;
-		background-color: #FFF;
-		padding: 48px 16px;	
+		background-color: #fff;
+		padding: 48px 16px;
 		border-top-left-radius: 16px;
 		border-bottom-left-radius: 16px;
 		overflow-y: auto;
@@ -16,17 +26,17 @@
 		line-height: 22px;
 		font-weight: 800;
 		text-align: left;
-		font-family: "DM Sans", sans-serif;
+		font-family: 'DM Sans', sans-serif;
 		padding-bottom: 16px;
 	}
 
-  	/* Mobile Styles */
+	/* Mobile Styles */
 	@media (max-width: 768px) {
-		.sheet{
+		.sheet {
 			bottom: 0px;
 			width: 100vw;
 			height: 50vh;
-			padding: 16px 16px;	
+			padding: 16px 16px;
 			border-top-right-radius: 16px;
 			border-bottom-left-radius: 0px;
 		}
@@ -36,7 +46,7 @@
 			align-content: center;
 			justify-content: center;
 		}
-		.handle{
+		.handle {
 			width: 60px;
 			height: 4px;
 			border-radius: 8px;
@@ -45,15 +55,4 @@
 			margin-bottom: 16px;
 		}
 	}
-  </style>
-  
-	<div class="sheet">
-    <div class="handleContainer">
-      <div class="handle"></div>
-    </div>
-		<h1>Storm Shelters Near You</h1>
-		<div>
-      		<slot></slot>
-		</div>
-	</div>
- 
+</style>
