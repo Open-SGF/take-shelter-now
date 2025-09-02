@@ -1,18 +1,19 @@
 <script lang="ts">
     // Props
-    export let title: string = "Default Title";
+    export let title: string = "Central High School";
     export let distance: number = 0.4;
     export let address: string = "423 East Central, Springfield, MO 65802";
   </script>
   
   <style>
     .card {
-      border-radius: 0.5rem;
+      border-radius: 16px;
       background-color: #f4f4f4;
       /* border: 1px solid #ccc; */
-      margin-bottom: 8px;
+      margin-bottom: 16px;
       display: flex;
       flex-direction: row;
+      box-shadow: 0px 4px 4px 0px rgba(0,0,0,22%); 
     }
     .distance-view{
       display: flex;
@@ -42,7 +43,9 @@
       font-weight: 800;
     }
     .address-text{
-
+      font-family: "DM Sans", sans-serif;
+      font-size: 12px;
+      font-weight: 400;
     }
   
     button {
