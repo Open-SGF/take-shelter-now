@@ -1,8 +1,7 @@
 <div
-	class="fixed right-0 z-60 h-screen w-[400px] overflow-y-auto rounded-tl-2xl rounded-bl-2xl bg-white p-12
-           px-4 max-md:bottom-0
-           max-md:h-1/2 max-md:w-screen
-           max-md:rounded-tr-2xl max-md:rounded-bl-none max-md:p-4 md:top-0 md:right-0 md:rounded-tr-none md:rounded-br-none"
+	class="rounded-tl-2xl rounded-bl-2xl bg-white p-12
+      px-4 max-md:rounded-tr-2xl max-md:rounded-bl-none max-md:p-4
+  md:rounded-tr-none md:rounded-br-none"
 >
 	<!-- Handle only shows on mobile -->
 	<div class="hidden w-full items-center justify-center max-md:flex">
