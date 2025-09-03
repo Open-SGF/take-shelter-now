@@ -1,17 +1,5 @@
 <script>
 	import { hasLocation } from '$lib/stores/global';
-	import { onMount } from 'svelte';
-
-	let locationEnabled = false;
-
-	// Subscribe to the store
-	const unsubscribe = hasLocation.subscribe((value) => {
-		locationEnabled = value;
-	});
-
-	onMount(() => {
-		return () => unsubscribe();
-	});
 
 	function enableLocation() {
 		hasLocation.set(true);
