@@ -25,8 +25,4 @@
 		background-color: #e2e0e1;
 		margin: 0;
 	}
-	.brand-logo {
-		height: 100px;
-		width: auto;
-	}
 </style>

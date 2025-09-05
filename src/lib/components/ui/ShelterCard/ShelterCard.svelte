@@ -63,20 +63,6 @@
 		font-weight: 400;
 	}
 
-	button {
-		padding: 0.5rem 1rem;
-		cursor: pointer;
-		border-radius: 4px;
-		background-color: #007bff;
-		color: white;
-		border: none;
-	}
-	.shelter-img {
-		/* height: 100%; */
-		border-top-left-radius: 0.5rem;
-		border-bottom-left-radius: 0.5rem;
-		width: 150px;
-	}
 	.text-view {
 		padding: 16px;
 	}

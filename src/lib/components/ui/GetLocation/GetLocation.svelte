@@ -11,6 +11,7 @@
 		<img
 			src="https://res.cloudinary.com/du9tnv8ss/image/upload/v1756782708/navigation_bgtfde.png"
 			class="locationIcon"
+			alt=""
 		/>
 		Current Location</button
 	>

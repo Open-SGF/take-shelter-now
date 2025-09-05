@@ -2,6 +2,7 @@
 	<img
 		class="app-logo"
 		src="https://res.cloudinary.com/du9tnv8ss/image/upload/v1755893551/logo_dark_b1yskw.png"
+		alt="Take Shelter Now Logo"
 	/>
 </section>
 
