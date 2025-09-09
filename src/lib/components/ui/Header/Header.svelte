@@ -1,23 +1,10 @@
-<section class="header">
+<section
+	class="flex items-center justify-center p-8 w-screen h-[72px] bg-white rounded-b-2xl z-50 md:justify-left
+	md:justify-start"
+>
 	<img
-		class="app-logo"
+		class="w-[218px]"
 		src="https://res.cloudinary.com/du9tnv8ss/image/upload/v1755893551/logo_dark_b1yskw.png"
 		alt="Take Shelter Now Logo"
 	/>
 </section>
-
-<style>
-	.header {
-		display: flex;
-		background-color: #fff;
-		width: 100vw;
-		height: 72px;
-		align-items: center;
-		justify-content: center;
-		border-bottom-left-radius: 16px;
-		border-bottom-right-radius: 16px;
-	}
-	.app-logo {
-		width: 218px;
-	}
-</style>

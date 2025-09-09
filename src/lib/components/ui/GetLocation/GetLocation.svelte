@@ -7,31 +7,15 @@
 </script>
 
 <div>
-	<button class="getLocationButton" on:click={() => enableLocation()}>
+	<button
+		on:click={enableLocation}
+		class="flex items-center justify-center w-full h-[58px] rounded-lg bg-[#0892d2] text-white"
+	>
 		<img
 			src="https://res.cloudinary.com/du9tnv8ss/image/upload/v1756782708/navigation_bgtfde.png"
-			class="locationIcon"
 			alt=""
+			class="w-6 h-6 mr-2"
 		/>
-		Current Location</button
-	>
+		Current Location
+	</button>
 </div>
-
-<style>
-	.getLocationButton {
-		background-color: #0892d2;
-		height: 58px;
-		width: 100%;
-		border-radius: 8px;
-		display: flex;
-		flex-direction: center;
-		align-items: center;
-		justify-content: center;
-		color: #fff;
-	}
-	.locationIcon {
-		height: 24px;
-		width: 24px;
-		margin-right: 8px;
-	}
-</style>

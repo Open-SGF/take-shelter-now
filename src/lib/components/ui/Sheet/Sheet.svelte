@@ -1,58 +1,19 @@
-<div class="sheet">
-	<div class="handleContainer">
-		<div class="handle"></div>
+<div
+	class="fixed right-0 h-screen w-[400px] bg-white p-12 px-4 rounded-tl-2xl rounded-bl-2xl overflow-y-auto 
+           md:rounded-br-none md:rounded-tr-none
+           md:right-0 md:top-0
+           max-md:bottom-0 max-md:w-screen max-md:h-1/2 max-md:p-4 max-md:rounded-tr-2xl max-md:rounded-bl-none z-60"
+>
+	<!-- Handle only shows on mobile -->
+	<div class="hidden max-md:flex w-full justify-center items-center">
+		<div class="w-[60px] h-[4px] rounded-lg bg-gray-400 mb-4"></div>
 	</div>
-	<h1>Storm Shelters Near You</h1>
+
+	<h1 class="text-[22px] leading-[22px] font-extrabold text-left font-[DM_Sans] pb-4">
+		Storm Shelters Near You
+	</h1>
+
 	<div>
 		<slot></slot>
 	</div>
 </div>
-
-<style>
-	.sheet {
-		position: fixed;
-		right: 0px;
-		height: 100vh;
-		width: 30vw;
-		background-color: #fff;
-		padding: 48px 16px;
-		border-top-left-radius: 16px;
-		border-bottom-left-radius: 16px;
-		overflow-y: auto;
-	}
-
-	h1 {
-		font-size: 22px;
-		line-height: 22px;
-		font-weight: 800;
-		text-align: left;
-		font-family: 'DM Sans', sans-serif;
-		padding-bottom: 16px;
-	}
-
-	/* Mobile Styles */
-	@media (max-width: 768px) {
-		.sheet {
-			bottom: 0px;
-			width: 100vw;
-			height: 50vh;
-			padding: 16px 16px;
-			border-top-right-radius: 16px;
-			border-bottom-left-radius: 0px;
-		}
-		.handleContainer {
-			display: flex;
-			width: 100%;
-			align-content: center;
-			justify-content: center;
-		}
-		.handle {
-			width: 60px;
-			height: 4px;
-			border-radius: 8px;
-			align-self: center;
-			background-color: gray;
-			margin-bottom: 16px;
-		}
-	}
-</style>

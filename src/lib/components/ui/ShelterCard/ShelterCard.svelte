@@ -5,65 +5,22 @@
 	export let address: string = '423 East Central, Springfield, MO 65802';
 </script>
 
-<div class="card">
-	<div class="distance-view">
-		<p class="distance-number">{distance}</p>
-		<p class="miles-away">Miles Away</p>
-	</div>
-	<div class="text-view">
-		<h2>{title}</h2>
-		<p class="address-text">
-			{address}
+<div
+	class="flex flex-row rounded-2xl bg-[#f4f4f4] mb-4 shadow-md"
+>
+	<!-- Distance view -->
+	<div class="flex flex-col items-center justify-center text-center p-4">
+		<p class="font-[DM_Sans] text-[#c91c1c] text-[22px] leading-[18px] font-black">
+			{distance}
+		</p>
+		<p class="font-[DM_Sans] text-[#c91c1c] text-[6px] leading-[18px]">
+			Miles Away
 		</p>
 	</div>
 
-	<!-- <button on:click={increment}>Increment</button> -->
+	<!-- Text view -->
+	<div class="p-4">
+		<h2 class="text-[16px] font-extrabold">{title}</h2>
+		<p class="font-[DM_Sans] text-[12px] font-normal">{address}</p>
+	</div>
 </div>
-
-<style>
-	.card {
-		border-radius: 16px;
-		background-color: #f4f4f4;
-		/* border: 1px solid #ccc; */
-		margin-bottom: 16px;
-		display: flex;
-		flex-direction: row;
-		box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 22%);
-	}
-	.distance-view {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		padding: 16px;
-	}
-	.distance-number {
-		font-family: 'DM Sans', sans-serif;
-		color: #c91c1c;
-		font-size: 22px;
-		line-height: 18px;
-		font-weight: 900;
-	}
-	.miles-away {
-		font-family: 'DM Sans', sans-serif;
-		color: #c91c1c;
-		font-size: 6px;
-		line-height: 18px;
-	}
-
-	h2 {
-		/* margin-bottom: 16px; */
-		font-size: 16px;
-		font-weight: 800;
-	}
-	.address-text {
-		font-family: 'DM Sans', sans-serif;
-		font-size: 12px;
-		font-weight: 400;
-	}
-
-	.text-view {
-		padding: 16px;
-	}
-</style>

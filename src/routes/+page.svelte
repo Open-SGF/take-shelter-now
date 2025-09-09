@@ -6,7 +6,7 @@
 	import { hasLocation } from '$lib/stores/global';
 </script>
 
-<div class="container">
+<div class="relative h-screen overflow-hidden bg-[#e2e0e1] m-0">
 	<Header />
 	<Sheet>
 		{#if !$hasLocation}
@@ -16,13 +16,3 @@
 		{/if}
 	</Sheet>
 </div>
-
-<style>
-	.container {
-		height: 100vh;
-		overflow: hidden;
-		position: relative;
-		background-color: #e2e0e1;
-		margin: 0;
-	}
-</style>
