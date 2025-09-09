@@ -1,5 +1,5 @@
 <section
-	class="flex items-center justify-center p-8 w-screen h-[72px] bg-white rounded-b-2xl z-50 md:justify-left
+	class="md:justify-left z-50 flex h-[72px] w-screen items-center justify-center rounded-b-2xl bg-white p-8
 	md:justify-start"
 >
 	<img

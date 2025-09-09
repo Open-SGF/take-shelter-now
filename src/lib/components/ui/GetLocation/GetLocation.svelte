@@ -1,6 +1,5 @@
 <script>
 	import { hasLocation } from '$lib/stores/global';
-	import { Button } from '$lib/components/ui/Button'
 
 	function enableLocation() {
 		hasLocation.set(true);
@@ -8,8 +7,8 @@
 </script>
 
 <div>
-	<Button 
-		onclick={() => {enableLocation()}}
+	<button 
+		on:click={enableLocation}
 		class="flex items-center justify-center w-full h-[58px] rounded-lg bg-[#0892d2] text-white"
 	>		
 		<img
@@ -18,5 +17,5 @@
 			class="w-6 h-6 mr-2"
 		/>
 		Current Location
-	</Button>
+	</button>
 </div>

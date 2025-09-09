@@ -6,7 +6,7 @@
 	import { hasLocation } from '$lib/stores/global';
 </script>
 
-<div class="relative h-screen overflow-hidden bg-[#e2e0e1] m-0">
+<div class="relative m-0 h-screen overflow-hidden bg-[#e2e0e1]">
 	<Header />
 	<Sheet>
 		{#if !$hasLocation}
