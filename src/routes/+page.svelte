@@ -9,11 +9,10 @@
 
 	import { onMount } from 'svelte';
 
-	let map_div: HTMLDivElement | undefined;
+	let mapElement: HTMLDivElement | undefined;
 
 	onMount(() => {
-		// Initialize map
-		const map = L.map(map_div, {
+		const map = L.map(mapElement!, {
 			center: [37.208957, -93.292299],
 			zoom: 13,
 			preferCanvas: true,
@@ -43,5 +42,5 @@
 			{/if}
 		</Sheet>
 	</div>
-	<div class="z-1 h-dvh" bind:this={map_div}></div>
+	<div class="z-1 h-dvh" bind:this={mapElement}></div>
 </div>
