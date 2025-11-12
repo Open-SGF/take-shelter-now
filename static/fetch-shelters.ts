@@ -1,4 +1,4 @@
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -14,6 +14,7 @@ interface ShelterRecord {
 }
 
 /**
+ *
  * Parse CSV string to array of objects
  * @param csvText - CSV content
  * @returns Array of objects with headers as keys
@@ -70,6 +71,8 @@ async function fetchShelters(): Promise<void> {
 		const csvText = await response.text();
 		const jsonData = parseCSV(csvText);
 
+		// Ensure the output directory exists
+		await mkdir(dirname(OUTPUT_PATH), { recursive: true });
 		await writeFile(OUTPUT_PATH, JSON.stringify(jsonData, null, 2), 'utf-8');
 
 		console.log(`✓ Successfully saved ${jsonData.length} shelter records to ${OUTPUT_PATH}`);
