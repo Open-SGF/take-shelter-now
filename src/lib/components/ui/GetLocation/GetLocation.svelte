@@ -1,9 +1,22 @@
 <script>
-	import { hasLocation } from '$lib/stores/global';
+	import { hasLocation, userLocation } from '$lib/stores/global';
 	import { Button } from '$lib/components/ui/button';
 
 	function enableLocation() {
-		hasLocation.set(true);
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					userLocation.set({
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude
+					});
+					hasLocation.set(true);
+				},
+				(error) => {
+					console.error('Error getting location:', error);
+				}
+			);
+		}
 	}
 </script>
 

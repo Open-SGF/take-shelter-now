@@ -32,7 +32,7 @@
 <div class="relative m-0 h-dvh bg-[#e2e0e1]">
 	<div class="fixed top-0 z-60"><Header /></div>
 	<div
-		class="fixed right-0 z-60 w-[400px] overflow-y-auto max-md:bottom-0 max-md:h-1/2 max-md:w-screen md:right-0"
+		class="fixed right-0 top-0 z-60 h-dvh w-[400px] overflow-y-auto max-md:bottom-0 max-md:top-auto max-md:h-1/2 max-md:w-screen md:right-0"
 	>
 		<Sheet>
 			{#if !$hasLocation}
