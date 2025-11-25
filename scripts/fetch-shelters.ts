@@ -15,7 +15,7 @@ interface ShelterRecord {
 
 /**
  * Parse CSV string to array of objects
- * @param csvText - CSV content
+ * @param csvText - CSV  content
  * @returns Array of objects with headers as keys
  */
 function parseCSV(csvText: string): ShelterRecord[] {
