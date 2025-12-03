@@ -14,7 +14,7 @@
 		<p class="font-[DM_Sans] text-[22px] leading-[18px] font-black text-[#c91c1c]">
 			{distanceValue}
 		</p>
-		<p class="font-[DM_Sans] text-[6px] leading-[18px] text-[#c91c1c]">{unit}</p>
+		<p class="font-[DM_Sans] text-[12px] leading-[18px] text-[#c91c1c]">{unit}</p>
 	</div>
 
 	<!-- Text view -->
