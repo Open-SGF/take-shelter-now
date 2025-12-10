@@ -8,13 +8,13 @@
 				(position) => {
 					userLocation.set({
 						latitude: position.coords.latitude,
-						longitude: position.coords.longitude
+						longitude: position.coords.longitude,
 					});
 					hasLocation.set(true);
 				},
 				(error) => {
 					console.error('Error getting location:', error);
-				}
+				},
 			);
 		}
 	}

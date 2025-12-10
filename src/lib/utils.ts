@@ -15,12 +15,7 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?:
 /**
  * Calculate distance between two coordinates in miles using Haversine formula
  */
-export function calculateDistance(
-	lat1: number,
-	lon1: number,
-	lat2: number,
-	lon2: number
-): number {
+export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
 	const R = 3959; // Earth's radius in miles
 	const dLat = ((lat2 - lat1) * Math.PI) / 180;
 	const dLon = ((lon2 - lon1) * Math.PI) / 180;

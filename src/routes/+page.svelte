@@ -51,12 +51,12 @@
 				html: markerHtml,
 				className: 'user-location-icon',
 				iconSize: [60, 60],
-				iconAnchor: [30, 30]
+				iconAnchor: [30, 30],
 			});
 
 			// Add marker with custom icon
 			userMarker = L.marker([location.latitude, location.longitude], {
-				icon: customIcon
+				icon: customIcon,
 			}).addTo(map);
 
 			// Center map on user's location
@@ -64,6 +64,22 @@
 		}
 	});
 </script>
+
+<div class="relative m-0 h-dvh bg-[#e2e0e1]">
+	<div class="fixed top-0 z-60"><Header /></div>
+	<div
+		class="fixed top-0 right-0 z-60 h-dvh w-[400px] overflow-y-auto max-md:top-auto max-md:bottom-0 max-md:h-1/2 max-md:w-screen md:right-0"
+	>
+		<Sheet>
+			{#if !$hasLocation}
+				<GetLocation />
+			{:else}
+				<ShelterList />
+			{/if}
+		</Sheet>
+	</div>
+	<div class="z-1 h-dvh" bind:this={mapElement}></div>
+</div>
 
 <style>
 	/* Remove default Leaflet marker styles */
@@ -83,7 +99,7 @@
 		position: absolute;
 		width: 16px;
 		height: 16px;
-		background-color: #4285F4;
+		background-color: #4285f4;
 		border: 3px solid #ffffff;
 		border-radius: 50%;
 		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
@@ -95,7 +111,7 @@
 		position: absolute;
 		width: 16px;
 		height: 16px;
-		border: 3px solid #4285F4;
+		border: 3px solid #4285f4;
 		border-radius: 50%;
 		animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 		z-index: 1;
@@ -106,25 +122,10 @@
 			transform: scale(1);
 			opacity: 1;
 		}
-		75%, 100% {
+		75%,
+		100% {
 			transform: scale(3);
 			opacity: 0;
 		}
 	}
 </style>
-
-<div class="relative m-0 h-dvh bg-[#e2e0e1]">
-	<div class="fixed top-0 z-60"><Header /></div>
-	<div
-		class="fixed right-0 top-0 z-60 h-dvh w-[400px] overflow-y-auto max-md:bottom-0 max-md:top-auto max-md:h-1/2 max-md:w-screen md:right-0"
-	>
-		<Sheet>
-			{#if !$hasLocation}
-				<GetLocation />
-			{:else}
-				<ShelterList />
-			{/if}
-		</Sheet>
-	</div>
-	<div class="z-1 h-dvh" bind:this={mapElement}></div>
-</div>

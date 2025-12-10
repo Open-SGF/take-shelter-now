@@ -37,14 +37,14 @@
 							location!.latitude,
 							location!.longitude,
 							parseFloat(shelter.Latitude),
-							parseFloat(shelter.Longitude)
-						)
+							parseFloat(shelter.Longitude),
+						),
 					}))
 					.sort((a, b) => a.distance - b.distance);
 			} else {
 				shelters = data.map((shelter) => ({
 					...shelter,
-					distance: 0
+					distance: 0,
 				}));
 			}
 		} catch (error) {
