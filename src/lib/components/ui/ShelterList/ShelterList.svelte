@@ -13,7 +13,6 @@
 		Zip: string;
 		Latitude: string;
 		Longitude: string;
-		[key: string]: string;
 	}
 
 	let shelters: Array<Shelter & { distance: number }> = [];
