@@ -9,6 +9,11 @@ A website for helping people in weather emergencies find shelter fast.
 - [./docs](./docs)
   - Technical documentation, including architecture decisions
 
+## Live Deployments
+
+- [Production](https://takeshelternow.org/)
+- [Develop](https://develop--take-shelter-now.netlify.app/)
+
 ## First Time Setup
 
 - Make sure you have [Node 22.x](https://nodejs.org) (Ideally using [nvm](https://github.com/nvm-sh/nvm))
