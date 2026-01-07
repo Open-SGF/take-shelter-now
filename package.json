@@ -18,7 +18,7 @@
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright test",
 		"shadcn": "shadcn-svelte",
-		"fetch-shelters": "tsx static/fetch-shelters.ts"
+		"fetch-shelters": "tsx scripts/fetch-shelters.ts"
 	},
 	"dependencies": {
 		"leaflet": "^1.9.4"
