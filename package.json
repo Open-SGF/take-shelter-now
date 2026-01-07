@@ -20,8 +20,7 @@
 		"fetch-shelters": "tsx static/fetch-shelters.ts"
 	},
 	"dependencies": {
-		"leaflet": "^1.9.4",
-		"leaflet-routing-machine": "^3.2.12"
+		"leaflet": "^1.9.4"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.0.0",
@@ -35,7 +34,6 @@
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/svelte": "^5.2.9",
 		"@types/leaflet": "^1.9.21",
-		"@types/leaflet-routing-machine": "^3.2.9",
 		"@types/node": "^24.10.1",
 		"@vitest/coverage-v8": "^4.0.14",
 		"clsx": "^2.1.1",
