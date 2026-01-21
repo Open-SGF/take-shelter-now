@@ -3,7 +3,7 @@
 	import { Sheet } from '$lib/components/ui/Sheet';
 	import GetLocation from '$lib/components/ui/GetLocation/GetLocation.svelte';
 	import ShelterList from '$lib/components/ui/ShelterList/ShelterList.svelte';
-	import { hasLocation, userLocation } from '$lib/stores/global';
+	import { hasLocation, userLocation, shelters } from '$lib/stores/global';
 
 	import L from 'leaflet';
 
@@ -12,6 +12,7 @@
 	let mapElement: HTMLDivElement | undefined;
 	let map: L.Map;
 	let userMarker: L.Marker | undefined;
+	let shelterMarkers: L.Marker[] = [];
 
 	onMount(() => {
 		map = L.map(mapElement!, {
@@ -59,8 +60,59 @@
 				icon: customIcon,
 			}).addTo(map);
 
-			// Center map on user's location
-			map.setView([location.latitude, location.longitude], 13);
+			// Fit bounds will be handled by shelters subscription
+		}
+	});
+
+	// Subscribe to shelters and add markers, then fit map bounds
+	shelters.subscribe((shelterList) => {
+		if (map && shelterList.length > 0) {
+			// Remove old shelter markers
+			shelterMarkers.forEach((marker) => marker.remove());
+			shelterMarkers = [];
+
+			// Create a bounds object
+			const bounds = L.latLngBounds([]);
+
+			// Add user location to bounds if available
+			const location = $userLocation;
+			if (location) {
+				bounds.extend([location.latitude, location.longitude]);
+			}
+
+			// Add markers for each shelter and extend bounds
+			shelterList.forEach((shelter) => {
+				const lat = parseFloat(shelter.Latitude);
+				const lng = parseFloat(shelter.Longitude);
+
+				// Add to bounds
+				bounds.extend([lat, lng]);
+
+				// Create marker
+				const marker = L.marker([lat, lng], {
+					title: shelter.Name,
+				}).addTo(map);
+
+				// Add popup with shelter info and Google Maps link
+				const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+				marker.bindPopup(`
+					<strong>${shelter.Name}</strong><br>
+					${shelter['Address Line 1']}<br>
+					<a href="${googleMapsUrl}" target="_blank" rel="noopener noreferrer" class="google-maps-link">
+						Open in Google Maps
+					</a>
+				`);
+
+				shelterMarkers.push(marker);
+			});
+
+			// Fit map to show all shelters (and user location if available)
+			if (bounds.isValid()) {
+				map.fitBounds(bounds, {
+					padding: [50, 50], // Add some padding around the bounds
+					maxZoom: 15, // Don't zoom in too close
+				});
+			}
 		}
 	});
 </script>
@@ -127,5 +179,22 @@
 			transform: scale(3);
 			opacity: 0;
 		}
+	}
+
+	/* Google Maps link in popups */
+	:global(.google-maps-link) {
+		display: inline-block;
+		margin-top: 8px;
+		padding: 6px 12px;
+		background-color: #4285f4;
+		color: white !important;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: 500;
+	}
+
+	:global(.google-maps-link:hover) {
+		background-color: #3367d6;
 	}
 </style>
