@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Header } from '$lib/components/ui/Header';
 	import { Sheet } from '$lib/components/ui/Sheet';
+	import { Sidebar } from '$lib/components/ui/Sidebar';
 	import GetLocation from '$lib/components/ui/GetLocation/GetLocation.svelte';
 	import ShelterList from '$lib/components/ui/ShelterList/ShelterList.svelte';
 	import { hasLocation, userLocation, shelters } from '$lib/stores/global';
@@ -9,10 +10,13 @@
 
 	import { onMount } from 'svelte';
 
+	const SIDEBAR_WIDTH = 400;
+
 	let mapElement: HTMLDivElement | undefined;
 	let map: L.Map;
 	let userMarker: L.Marker | undefined;
 	let shelterMarkers: L.Marker[] = [];
+	let isLocating = $state(true);
 
 	onMount(() => {
 		map = L.map(mapElement!, {
@@ -29,6 +33,26 @@
 			crossOrigin: false,
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 		}).addTo(map);
+
+		// Automatically request location on page load
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					userLocation.set({
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude,
+					});
+					hasLocation.set(true);
+					isLocating = false;
+				},
+				(error) => {
+					console.error('Error getting location:', error);
+					isLocating = false;
+				},
+			);
+		} else {
+			isLocating = false;
+		}
 	});
 
 	// Subscribe to user location and add/update marker
@@ -119,18 +143,93 @@
 
 <div class="relative m-0 h-dvh bg-[#e2e0e1]">
 	<div class="fixed top-0 z-60"><Header /></div>
-	<div
-		class="fixed top-0 right-0 z-60 h-dvh w-[400px] overflow-y-auto max-md:top-auto max-md:bottom-0 max-md:h-1/2 max-md:w-screen md:right-0"
-	>
+
+	<!-- Desktop Sidebar -->
+	<Sidebar width={SIDEBAR_WIDTH}>
 		<Sheet>
-			{#if !$hasLocation}
+			{#if isLocating}
+				<div class="flex flex-col items-center justify-center py-8">
+					<div class="mb-4 flex items-center gap-2">
+						<svg
+							class="h-5 w-5 animate-spin text-[#0892d2]"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+						>
+							<circle
+								class="opacity-25"
+								cx="12"
+								cy="12"
+								r="10"
+								stroke="currentColor"
+								stroke-width="4"
+							></circle>
+							<path
+								class="opacity-75"
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+							></path>
+						</svg>
+						<span class="text-lg font-medium">Locating...</span>
+					</div>
+					<div class="h-2 w-48 overflow-hidden rounded-full bg-gray-200">
+						<div class="loading-bar h-full rounded-full bg-[#0892d2]"></div>
+					</div>
+				</div>
+			{:else if !$hasLocation}
+				<GetLocation />
+			{:else}
+				<ShelterList />
+			{/if}
+		</Sheet>
+	</Sidebar>
+
+	<!-- Mobile Bottom Sheet -->
+	<div class="fixed bottom-0 z-50 h-1/2 w-screen overflow-y-auto md:hidden">
+		<Sheet>
+			{#if isLocating}
+				<div class="flex flex-col items-center justify-center py-8">
+					<div class="mb-4 flex items-center gap-2">
+						<svg
+							class="h-5 w-5 animate-spin text-[#0892d2]"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+						>
+							<circle
+								class="opacity-25"
+								cx="12"
+								cy="12"
+								r="10"
+								stroke="currentColor"
+								stroke-width="4"
+							></circle>
+							<path
+								class="opacity-75"
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+							></path>
+						</svg>
+						<span class="text-lg font-medium">Locating...</span>
+					</div>
+					<div class="h-2 w-48 overflow-hidden rounded-full bg-gray-200">
+						<div class="loading-bar h-full rounded-full bg-[#0892d2]"></div>
+					</div>
+				</div>
+			{:else if !$hasLocation}
 				<GetLocation />
 			{:else}
 				<ShelterList />
 			{/if}
 		</Sheet>
 	</div>
-	<div class="z-1 h-dvh" bind:this={mapElement}></div>
+
+	<!-- Map container: adjusts width on desktop to accommodate sidebar -->
+	<div
+		class="z-1 h-dvh md:mr-[var(--sidebar-width)]"
+		style="--sidebar-width: {SIDEBAR_WIDTH}px;"
+		bind:this={mapElement}
+	></div>
 </div>
 
 <style>
@@ -196,5 +295,23 @@
 
 	:global(.google-maps-link:hover) {
 		background-color: #3367d6;
+	}
+
+	/* Loading bar animation */
+	.loading-bar {
+		width: 30%;
+		animation: loading 1.5s ease-in-out infinite;
+	}
+
+	@keyframes loading {
+		0% {
+			transform: translateX(-100%);
+		}
+		50% {
+			transform: translateX(250%);
+		}
+		100% {
+			transform: translateX(-100%);
+		}
 	}
 </style>
