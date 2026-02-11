@@ -12,15 +12,15 @@
 		{ name: 'American Red Cross', phone: '1-800-733-2767', description: '24/7 Disaster Relief' },
 		{
 			name: 'Greene County Emergency Management',
-			phone: '417-829-6120',
+			phone: '(NEEDED)',
 			description: 'Local Emergency Coordination',
 		},
 		{
 			name: 'Missouri Emergency Management',
-			phone: '573-526-9100',
+			phone: '(NEEDED)',
 			description: 'State Emergency Services',
 		},
-		{ name: 'FEMA', phone: '1-800-621-3362', description: 'Federal Disaster Assistance' },
+		{ name: 'FEMA', phone: '(NEEDED)', description: 'Federal Disaster Assistance' },
 	];
 
 	function toggleExpanded() {
