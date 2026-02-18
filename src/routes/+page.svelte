@@ -4,7 +4,7 @@
 	import { Sidebar } from '$lib/components/ui/Sidebar';
 	import GetLocation from '$lib/components/ui/GetLocation/GetLocation.svelte';
 	import ShelterList from '$lib/components/ui/ShelterList/ShelterList.svelte';
-	import { hasLocation, userLocation, shelters } from '$lib/stores/global';
+	import { hasLocation, userLocation, shelters, selectedShelter } from '$lib/stores/global';
 
 	import L from 'leaflet';
 
@@ -85,6 +85,25 @@
 			}).addTo(map);
 
 			// Fit bounds will be handled by shelters subscription
+		}
+	});
+
+	// Subscribe to selected shelter and fly to it
+	selectedShelter.subscribe((selected) => {
+		if (map && selected) {
+			map.flyTo([selected.lat, selected.lng], 17);
+
+			// Open the popup for the matching shelter marker
+			const marker = shelterMarkers.find((m) => {
+				const pos = m.getLatLng();
+				return pos.lat === selected.lat && pos.lng === selected.lng;
+			});
+			if (marker) {
+				marker.openPopup();
+			}
+
+			// Reset so clicking the same shelter again still works
+			selectedShelter.set(null);
 		}
 	});
 

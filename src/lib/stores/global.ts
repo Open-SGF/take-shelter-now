@@ -19,3 +19,6 @@ export const userLocation = writable<{ latitude: number; longitude: number } | n
 
 // Stores all shelters with distance calculations
 export const shelters = writable<Array<Shelter & { distance: number }>>([]);
+
+// Stores the selected shelter coordinates for map zoom
+export const selectedShelter = writable<{ lat: number; lng: number } | null>(null);

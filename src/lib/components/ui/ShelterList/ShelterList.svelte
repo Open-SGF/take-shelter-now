@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ShelterCard } from '$lib/components/ui/ShelterCard';
-	import { userLocation, shelters, type Shelter } from '$lib/stores/global';
+	import { userLocation, shelters, selectedShelter, type Shelter } from '$lib/stores/global';
 	import { calculateDistance } from '$lib/utils';
 	import { onMount } from 'svelte';
 
@@ -54,6 +54,7 @@
 			title={shelter.Name}
 			address={`${shelter['Address Line 1']}${shelter['Address Line 2'] ? ', ' + shelter['Address Line 2'] : ''}, ${shelter.City}, ${shelter.State} ${shelter.Zip}`}
 			distance={shelter.distance}
+			onclick={() => selectedShelter.set({ lat: parseFloat(shelter.Latitude), lng: parseFloat(shelter.Longitude) })}
 		/>
 	{/each}
 </div>
