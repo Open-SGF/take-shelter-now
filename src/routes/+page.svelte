@@ -4,8 +4,6 @@
 	import { Sidebar } from '$lib/components/ui/Sidebar';
 	import GetLocation from '$lib/components/ui/GetLocation/GetLocation.svelte';
 	import ShelterList from '$lib/components/ui/ShelterList/ShelterList.svelte';
-	import { AlertBanner } from '$lib/components/ui/WeatherAlerts';
-	import { EmergencyContacts } from '$lib/components/ui/EmergencyContacts';
 	import { hasLocation, userLocation, shelters } from '$lib/stores/global';
 
 	import L from 'leaflet';
@@ -145,14 +143,12 @@
 
 <div class="relative m-0 h-dvh bg-[#e2e0e1]">
 	<div class="fixed top-0 z-[60] w-full">
-		<AlertBanner />
 		<Header />
 	</div>
 
 	<!-- Desktop Sidebar -->
 	<Sidebar width={SIDEBAR_WIDTH}>
 		<Sheet>
-			<EmergencyContacts />
 			{#if isLocating}
 				<div class="flex flex-col items-center justify-center py-8">
 					<div class="mb-4 flex items-center gap-2">
@@ -193,7 +189,6 @@
 	<!-- Mobile Bottom Sheet -->
 	<div class="fixed bottom-0 z-50 h-1/2 w-screen overflow-y-auto md:hidden">
 		<Sheet>
-			<EmergencyContacts />
 			{#if isLocating}
 				<div class="flex flex-col items-center justify-center py-8">
 					<div class="mb-4 flex items-center gap-2">

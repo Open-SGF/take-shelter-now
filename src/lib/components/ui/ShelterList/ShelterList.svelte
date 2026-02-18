@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { ShelterCard } from '$lib/components/ui/ShelterCard';
-	import { EmergencyContacts } from '$lib/components/ui/EmergencyContacts';
 	import { userLocation, shelters, type Shelter } from '$lib/stores/global';
 	import { calculateDistance } from '$lib/utils';
 	import { onMount } from 'svelte';
@@ -57,7 +56,4 @@
 			distance={shelter.distance}
 		/>
 	{/each}
-
-	<!-- Emergency Contacts Section -->
-	<EmergencyContacts />
 </div>

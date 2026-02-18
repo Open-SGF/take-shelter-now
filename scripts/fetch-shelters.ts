@@ -68,7 +68,26 @@ async function fetchShelters(): Promise<void> {
 		}
 
 		const csvText = await response.text();
-		const jsonData = parseCSV(csvText);
+		const allData = parseCSV(csvText);
+
+		// Only keep the fields needed by the frontend
+		const keepFields = [
+			'Name',
+			'Address Line 1',
+			'Address Line 2',
+			'City',
+			'State',
+			'Zip',
+			'Latitude',
+			'Longitude',
+		];
+		const jsonData = allData.map((row) => {
+			const trimmed: ShelterRecord = {};
+			for (const field of keepFields) {
+				if (field in row) trimmed[field] = row[field];
+			}
+			return trimmed;
+		});
 
 		await writeFile(OUTPUT_PATH, JSON.stringify(jsonData, null, 2), 'utf-8');
 
