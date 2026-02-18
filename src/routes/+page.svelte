@@ -8,7 +8,7 @@
 
 	import L from 'leaflet';
 
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	const SIDEBAR_WIDTH = 400;
 
@@ -16,7 +16,36 @@
 	let map: L.Map;
 	let userMarker: L.Marker | undefined;
 	let shelterMarkers: L.Marker[] = [];
+	let radarLayer: L.TileLayer | undefined;
+	let radarRefreshInterval: ReturnType<typeof setInterval>;
 	let isLocating = $state(true);
+
+	async function loadRadarOverlay() {
+		try {
+			const response = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+			const data = await response.json();
+			const frames = data.radar.past;
+			if (frames.length === 0) return;
+
+			const latestFrame = frames[frames.length - 1];
+			const tileUrl = data.host + latestFrame.path + '/256/{z}/{x}/{y}/2/1_1.png';
+
+			if (radarLayer) {
+				radarLayer.remove();
+			}
+
+			radarLayer = L.tileLayer(tileUrl, {
+				tileSize: 256,
+				opacity: 0.5,
+				maxNativeZoom: 7,
+				maxZoom: 30,
+				zIndex: 10,
+				attribution: '<a href="https://www.rainviewer.com" target="_blank">RainViewer</a>',
+			}).addTo(map);
+		} catch (error) {
+			console.error('Error loading radar overlay:', error);
+		}
+	}
 
 	onMount(() => {
 		map = L.map(mapElement!, {
@@ -33,6 +62,10 @@
 			crossOrigin: false,
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 		}).addTo(map);
+
+		// Load radar overlay and refresh every 5 minutes
+		loadRadarOverlay();
+		radarRefreshInterval = setInterval(loadRadarOverlay, 5 * 60 * 1000);
 
 		// Automatically request location on page load
 		if (navigator.geolocation) {
@@ -53,6 +86,10 @@
 		} else {
 			isLocating = false;
 		}
+	});
+
+	onDestroy(() => {
+		clearInterval(radarRefreshInterval);
 	});
 
 	// Subscribe to user location and add/update marker
