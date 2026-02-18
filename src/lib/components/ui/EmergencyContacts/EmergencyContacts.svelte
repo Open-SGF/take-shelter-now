@@ -5,7 +5,7 @@
 		description: string;
 	}
 
-	let isExpanded = false;
+	let isExpanded = $state(false);
 
 	const contacts: EmergencyContact[] = [
 		{ name: '911', phone: '911', description: 'Police, Fire, Medical Emergency' },
@@ -22,17 +22,13 @@
 		},
 		{ name: 'FEMA', phone: '(NEEDED)', description: 'Federal Disaster Assistance' },
 	];
-
-	function toggleExpanded() {
-		isExpanded = !isExpanded;
-	}
 </script>
 
 <div class="mb-4 rounded-2xl bg-[#f4f4f4] shadow-md">
 	<button
 		type="button"
 		class="flex w-full cursor-pointer items-center justify-between p-4"
-		onclick={toggleExpanded}
+		onclick={() => (isExpanded = !isExpanded)}
 	>
 		<div class="flex items-center gap-2">
 			<svg class="h-5 w-5 text-[#0892d2]" fill="currentColor" viewBox="0 0 20 20">
@@ -54,7 +50,7 @@
 
 	{#if isExpanded}
 		<div class="border-t border-gray-200 p-4 pt-2">
-			{#each contacts as contact (contact.phone)}
+			{#each contacts as contact (contact.name)}
 				<div
 					class="flex items-center justify-between border-b border-gray-100 py-3 last:border-b-0"
 				>

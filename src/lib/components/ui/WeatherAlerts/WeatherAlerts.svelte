@@ -13,7 +13,7 @@
 	const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 	let refreshInterval: ReturnType<typeof setInterval>;
-	let expandedAlertId: string | null = null;
+	let expandedAlertId: string | null = $state(null);
 
 	function doFetch() {
 		const loc = $userLocation;

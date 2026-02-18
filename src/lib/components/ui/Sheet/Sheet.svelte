@@ -1,3 +1,13 @@
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		children?: Snippet;
+	}
+
+	let { children }: Props = $props();
+</script>
+
 <div
 	class="rounded-tl-2xl rounded-bl-2xl bg-white p-12
       px-4 max-md:rounded-tr-2xl max-md:rounded-bl-none max-md:p-4
@@ -13,6 +23,8 @@
 	</h1>
 
 	<div>
-		<slot></slot>
+		{#if children}
+			{@render children()}
+		{/if}
 	</div>
 </div>

@@ -233,7 +233,7 @@
 
 	<!-- Map container: adjusts width on desktop to accommodate sidebar -->
 	<div
-		class="z-1 h-dvh md:mr-[var(--sidebar-width)]"
+		class="isolate z-0 h-dvh md:mr-[var(--sidebar-width)]"
 		style="--sidebar-width: {SIDEBAR_WIDTH}px;"
 		bind:this={mapElement}
 	></div>

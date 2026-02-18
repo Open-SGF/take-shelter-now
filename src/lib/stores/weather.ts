@@ -49,7 +49,7 @@ const TEST_ALERT: NWSAlert = {
 };
 
 export const weatherAlertsState = writable<WeatherAlertsState>({
-	alerts:[], // Remove TEST_ALERT when done testing
+	alerts:[TEST_ALERT], // Remove TEST_ALERT when done testing
 	loading: false,
 	error: null,
 	lastUpdated: new Date(),
