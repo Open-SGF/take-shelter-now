@@ -9,14 +9,18 @@
 </script>
 
 <section class="z-50 w-screen rounded-b-2xl bg-white shadow-md">
-	<div
-		class="md:justify-left flex h-[72px] items-center justify-center p-8 md:justify-start"
-	>
+	<div class="flex h-[72px] items-center justify-between p-8">
 		<img
 			class="w-[218px]"
 			src="https://res.cloudinary.com/du9tnv8ss/image/upload/v1755893551/logo_dark_b1yskw.png"
 			alt="Take Shelter Now Logo"
 		/>
+		<a
+			href="/manage"
+			class="shrink-0 rounded-lg border border-[#0892d2] px-4 py-2 text-sm font-semibold text-[#0892d2] transition-colors hover:bg-[#0892d2] hover:text-white"
+		>
+			Shelter Manager Login
+		</a>
 	</div>
 
 	<nav class="flex gap-2 overflow-x-auto border-t border-gray-200 px-4 py-2">

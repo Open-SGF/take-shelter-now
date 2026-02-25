@@ -56,7 +56,6 @@
 
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 30,
-			minZoom: 13,
 			referrerPolicy: 'no-referrer',
 			detectRetina: true,
 			crossOrigin: false,
@@ -162,22 +161,26 @@
 
 			// Add markers for each shelter and extend bounds
 			shelterList.forEach((shelter) => {
-				const lat = parseFloat(shelter.Latitude);
-				const lng = parseFloat(shelter.Longitude);
+				const lat = shelter.latitude;
+				const lng = shelter.longitude;
 
 				// Add to bounds
 				bounds.extend([lat, lng]);
 
 				// Create marker
 				const marker = L.marker([lat, lng], {
-					title: shelter.Name,
+					title: shelter.name,
 				}).addTo(map);
 
 				// Add popup with shelter info and Google Maps link
 				const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+				const availBadge = shelter.availability_status
+					? `<span style="display:inline-block;margin-top:6px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;background:${shelter.availability_status === 'Full' ? '#fee2e2' : '#dcfce7'};color:${shelter.availability_status === 'Full' ? '#b91c1c' : '#15803d'};">${shelter.availability_status}</span><br>`
+					: '';
 				marker.bindPopup(`
-					<strong>${shelter.Name}</strong><br>
-					${shelter['Address Line 1']}<br>
+					<strong>${shelter.name}</strong><br>
+					${shelter.address_line1}<br>
+					${availBadge}
 					<a href="${googleMapsUrl}" target="_blank" rel="noopener noreferrer" class="google-maps-link">
 						Open in Google Maps
 					</a>
@@ -205,80 +208,54 @@
 	<!-- Desktop Sidebar -->
 	<Sidebar width={SIDEBAR_WIDTH}>
 		<Sheet>
-			{#if isLocating}
-				<div class="flex flex-col items-center justify-center py-8">
-					<div class="mb-4 flex items-center gap-2">
-						<svg
-							class="h-5 w-5 animate-spin text-[#0892d2]"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-						>
-							<circle
-								class="opacity-25"
-								cx="12"
-								cy="12"
-								r="10"
-								stroke="currentColor"
-								stroke-width="4"
-							></circle>
-							<path
-								class="opacity-75"
-								fill="currentColor"
-								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-							></path>
-						</svg>
-						<span class="text-lg font-medium">Locating...</span>
-					</div>
-					<div class="h-2 w-48 overflow-hidden rounded-full bg-gray-200">
-						<div class="loading-bar h-full rounded-full bg-[#0892d2]"></div>
-					</div>
+			{#if isLocating || !$hasLocation}
+				<div class="mb-4">
+					{#if isLocating}
+						<div class="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-3">
+							<svg
+								class="h-4 w-4 shrink-0 animate-spin text-[#0892d2]"
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+							<span class="text-sm text-[#0892d2]">Finding your location to sort by distance…</span>
+						</div>
+					{:else}
+						<GetLocation />
+					{/if}
 				</div>
-			{:else if !$hasLocation}
-				<GetLocation />
-			{:else}
-				<ShelterList />
 			{/if}
+			<ShelterList />
 		</Sheet>
 	</Sidebar>
 
 	<!-- Mobile Bottom Sheet -->
 	<div class="fixed bottom-0 z-50 h-1/2 w-screen overflow-y-auto md:hidden">
 		<Sheet>
-			{#if isLocating}
-				<div class="flex flex-col items-center justify-center py-8">
-					<div class="mb-4 flex items-center gap-2">
-						<svg
-							class="h-5 w-5 animate-spin text-[#0892d2]"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-						>
-							<circle
-								class="opacity-25"
-								cx="12"
-								cy="12"
-								r="10"
-								stroke="currentColor"
-								stroke-width="4"
-							></circle>
-							<path
-								class="opacity-75"
-								fill="currentColor"
-								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-							></path>
-						</svg>
-						<span class="text-lg font-medium">Locating...</span>
-					</div>
-					<div class="h-2 w-48 overflow-hidden rounded-full bg-gray-200">
-						<div class="loading-bar h-full rounded-full bg-[#0892d2]"></div>
-					</div>
+			{#if isLocating || !$hasLocation}
+				<div class="mb-4">
+					{#if isLocating}
+						<div class="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-3">
+							<svg
+								class="h-4 w-4 shrink-0 animate-spin text-[#0892d2]"
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+							<span class="text-sm text-[#0892d2]">Finding your location to sort by distance…</span>
+						</div>
+					{:else}
+						<GetLocation />
+					{/if}
 				</div>
-			{:else if !$hasLocation}
-				<GetLocation />
-			{:else}
-				<ShelterList />
 			{/if}
+			<ShelterList />
 		</Sheet>
 	</div>
 
