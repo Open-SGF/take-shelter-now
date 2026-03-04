@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import { expect, within } from 'storybook/test';
 	import Sheet from './Sheet.svelte';
 
 	const { Story } = defineMeta({
@@ -14,7 +15,15 @@
 	});
 </script>
 
-<Story name="Default" asChild>
+<Story
+	name="Default"
+	asChild
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByTestId('sheet-handle')).toBeInTheDocument();
+		await expect(canvas.getByTestId('sheet-content')).toHaveClass('overflow-y-auto');
+	}}
+>
 	<div class="relative h-dvh w-full overflow-hidden bg-slate-900">
 		<div
 			class="absolute inset-0 bg-[radial-gradient(circle_at_top,#0f172a,transparent_65%),linear-gradient(180deg,#0b1b2b,#0f172a_45%,#111827_100%)]"
