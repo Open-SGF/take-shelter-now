@@ -39,8 +39,14 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - run: npm run build-storybook
       - run: npm run check
       - run: npm run test:unit:coverage
+      - name: Run Chromatic
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: npm run chromatic
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
         with:
