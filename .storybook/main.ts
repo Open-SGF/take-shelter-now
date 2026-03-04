@@ -4,6 +4,7 @@ const config: StorybookConfig = {
 	stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|ts|svelte)'],
 	addons: [
 		'@storybook/addon-a11y',
+		'@storybook/addon-vitest',
 		{
 			name: '@storybook/addon-svelte-csf',
 			options: {
