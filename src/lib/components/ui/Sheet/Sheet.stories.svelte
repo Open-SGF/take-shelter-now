@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { expect, within } from 'storybook/test';
+	import type { Snippet } from 'svelte';
+	import { expect, fireEvent, within } from 'storybook/test';
 	import Sheet from './Sheet.svelte';
 
 	const { Story } = defineMeta({
@@ -15,15 +16,7 @@
 	});
 </script>
 
-<Story
-	name="Default"
-	asChild
-	play={async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvas.getByTestId('sheet-handle')).toBeInTheDocument();
-		await expect(canvas.getByTestId('sheet-content')).toHaveClass('overflow-y-auto');
-	}}
->
+{#snippet Shell(children: Snippet | undefined)}
 	<div class="relative h-dvh w-full overflow-hidden bg-slate-900">
 		<div
 			class="absolute inset-0 bg-[radial-gradient(circle_at_top,#0f172a,transparent_65%),linear-gradient(180deg,#0b1b2b,#0f172a_45%,#111827_100%)]"
@@ -42,26 +35,104 @@
 				Shelter Map
 			</div>
 		</div>
-		<Sheet snapPoints={[0.4, 0.8]} collapsedHeight={96} snapIndex={0} handleLabel="Drag to resize">
-			<div class="space-y-4">
-				<p class="text-sm text-slate-700">
-					Use your location to find nearby shelter options and real-time alerts.
-				</p>
-				<div class="space-y-3 pr-1">
-					{#each Array.from({ length: 12 }, (_, index) => index) as index (index)}
-						<div class="rounded-xl bg-slate-100 p-3 text-sm">
-							<div class="font-semibold text-slate-900">
-								Shelter {index + 1}
-							</div>
-							<div class="text-xs text-slate-600">
-								Open now · 1.{index} miles away
-							</div>
-						</div>
-					{/each}
-				</div>
-			</div>
-		</Sheet>
+		{@render children?.()}
 	</div>
+{/snippet}
+
+{#snippet DefaultContent(items: number)}
+	<div class="space-y-4">
+		<p class="text-sm text-slate-700">
+			Use your location to find nearby shelter options and real-time alerts.
+		</p>
+		<div class="space-y-3 pr-1">
+			{#each Array.from({ length: items }, (_, index) => index) as index (index)}
+				<div class="rounded-xl bg-slate-100 p-3 text-sm">
+					<div class="font-semibold text-slate-900">Shelter {index + 1}</div>
+					<div class="text-xs text-slate-600">Open now · 1.{index} miles away</div>
+				</div>
+			{/each}
+		</div>
+	</div>
+{/snippet}
+
+{#snippet DefaultBody()}
+	<Sheet snapPoints={[0.4, 0.8]} collapsedHeight={96} snapIndex={0} handleLabel="Drag to resize">
+		{@render DefaultContent(12)}
+	</Sheet>
+{/snippet}
+
+{#snippet DragBody()}
+	<Sheet snapPoints={[0.4, 0.8]} collapsedHeight={96} snapIndex={0} handleLabel="Drag to resize">
+		{@render DefaultContent(8)}
+	</Sheet>
+{/snippet}
+
+<Story
+	name="Default"
+	asChild
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByTestId('sheet-handle')).toBeInTheDocument();
+		await expect(canvas.getByTestId('sheet-content')).toHaveClass('overflow-y-auto');
+	}}
+>
+	{@render Shell(DefaultBody)}
+</Story>
+
+<Story
+	name="Drag Snap Points"
+	asChild
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const win = canvasElement.ownerDocument?.defaultView ?? window;
+		const handle = canvas.getByTestId('sheet-handle');
+		const sheet = canvas.getByTestId('sheet');
+		const viewportHeight = win.innerHeight;
+		const snapPoints = [0.4, 0.8];
+		const minHeight = 96;
+		const snapHeights = snapPoints
+			.map((point) => Math.max(minHeight, Math.round(point * viewportHeight)))
+			.sort((a, b) => a - b);
+		const maxHeight = Math.max(...snapHeights);
+
+		const getTranslateY = () => {
+			const transform = sheet.style.transform;
+			const match = /translateY\(([-\d.]+)px\)/.exec(transform);
+			return match ? Number(match[1]) : 0;
+		};
+
+		const dragToHeight = async (startHeight: number, targetHeight: number) => {
+			const { top, height } = handle.getBoundingClientRect();
+			const startY = top + height / 2;
+			const deltaY = startHeight - targetHeight;
+			const endY = startY + deltaY;
+			fireEvent.pointerDown(handle, {
+				clientY: startY,
+				pointerId: 1,
+				pointerType: 'mouse',
+				buttons: 1,
+			});
+			fireEvent.pointerMove(win, {
+				clientY: endY,
+				pointerId: 1,
+			});
+			fireEvent.pointerUp(win, {
+				clientY: endY,
+				pointerId: 1,
+			});
+			await new Promise((resolve) => win.requestAnimationFrame(() => resolve(undefined)));
+		};
+
+		await dragToHeight(snapHeights[0], snapHeights[1]);
+		await expect(sheet).toHaveAttribute('data-snap-index', '1');
+		await expect(getTranslateY()).toBeCloseTo(maxHeight - snapHeights[1], 0);
+
+		await dragToHeight(snapHeights[1], snapHeights[0]);
+		await expect(sheet).toHaveAttribute('data-snap-index', '0');
+		await expect(getTranslateY()).toBeCloseTo(maxHeight - snapHeights[0], 0);
+	}}
+>
+	{@render Shell(DragBody)}
 </Story>
 
 <Story name="Expanded" asChild>

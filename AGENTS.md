@@ -17,8 +17,9 @@ Minimal guidance for automation and AI agents working in this repo.
 - Build: `npm run build`
 - Tests
   - `npm run test:unit`: unit tests
+  - `npm run test:storybook`: Storybook component tests
   - `npm run test:e2e`: Playwright e2e
-  - `npm run test`: runs both unit and e2e tests
+  - `npm run test`: runs unit, storybook, and e2e tests
 - Lint: `npm run lint`
 
 ## Docs
