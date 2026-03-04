@@ -14,8 +14,8 @@
 	});
 </script>
 
-<Story name="Default">
-	<div class="relative h-[640px] w-full overflow-hidden rounded-2xl bg-slate-900">
+<Story name="Default" asChild>
+	<div class="relative h-dvh w-full overflow-hidden bg-slate-900">
 		<div
 			class="absolute inset-0 bg-[radial-gradient(circle_at_top,#0f172a,transparent_65%),linear-gradient(180deg,#0b1b2b,#0f172a_45%,#111827_100%)]"
 		>
@@ -33,36 +33,29 @@
 				Shelter Map
 			</div>
 		</div>
-		<div class="absolute inset-x-0 bottom-0">
-			<Sheet
-				snapPoints={[0.4, 0.8]}
-				collapsedHeight={96}
-				snapIndex={0}
-				handleLabel="Drag to resize"
-			>
-				<div class="space-y-4">
-					<p class="text-sm text-slate-700">
-						Use your location to find nearby shelter options and real-time alerts.
-					</p>
-					<div class="max-h-[260px] space-y-3 overflow-y-auto pr-1">
-						{#each Array.from({ length: 12 }, (_, index) => index) as index (index)}
-							<div class="rounded-xl bg-slate-100 p-3 text-sm">
-								<div class="font-semibold text-slate-900">
-									Shelter {index + 1}
-								</div>
-								<div class="text-xs text-slate-600">
-									Open now · 1.{index} miles away
-								</div>
+		<Sheet snapPoints={[0.4, 0.8]} collapsedHeight={96} snapIndex={0} handleLabel="Drag to resize">
+			<div class="space-y-4">
+				<p class="text-sm text-slate-700">
+					Use your location to find nearby shelter options and real-time alerts.
+				</p>
+				<div class="space-y-3 pr-1">
+					{#each Array.from({ length: 12 }, (_, index) => index) as index (index)}
+						<div class="rounded-xl bg-slate-100 p-3 text-sm">
+							<div class="font-semibold text-slate-900">
+								Shelter {index + 1}
 							</div>
-						{/each}
-					</div>
+							<div class="text-xs text-slate-600">
+								Open now · 1.{index} miles away
+							</div>
+						</div>
+					{/each}
 				</div>
-			</Sheet>
-		</div>
+			</div>
+		</Sheet>
 	</div>
 </Story>
 
-<Story name="Expanded">
+<Story name="Expanded" asChild>
 	<Sheet snapPoints={[0.4, 0.8]} collapsedHeight={96} snapIndex={1} handleLabel="Drag to resize">
 		<div class="space-y-3">
 			<p class="text-sm text-slate-700">Expanded layout preview with summary content.</p>
@@ -77,7 +70,7 @@
 	</Sheet>
 </Story>
 
-<Story name="Custom Snap Points">
+<Story name="Custom Snap Points" asChild>
 	<Sheet
 		snapPoints={[0.3, 0.6, 0.9]}
 		collapsedHeight={80}

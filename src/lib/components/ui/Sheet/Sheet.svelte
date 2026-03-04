@@ -48,9 +48,11 @@
 	let clampedSnapIndex = $derived.by((): number =>
 		clamp(snapIndex, 0, effectiveSnapHeights.length - 1),
 	);
+	let maxSheetHeight = $derived.by((): number => Math.max(...effectiveSnapHeights));
 	let currentHeight = $derived.by(
 		(): number => dragHeight ?? effectiveSnapHeights[clampedSnapIndex],
 	);
+	let translateY = $derived.by((): number => maxSheetHeight - currentHeight);
 
 	const updateViewportHeight = () => {
 		viewportHeight = typeof window === 'undefined' ? 0 : window.innerHeight;
@@ -70,7 +72,7 @@
 	const onPointerMove = (event: PointerEvent) => {
 		if (!isDragging) return;
 		const deltaY = event.clientY - dragStartY;
-		const nextHeight = clamp(dragStartHeight - deltaY, minHeight, viewportHeight);
+		const nextHeight = clamp(dragStartHeight - deltaY, minHeight, maxSheetHeight);
 		dragHeight = nextHeight;
 	};
 
@@ -95,6 +97,16 @@
 		window.addEventListener('pointerup', endDrag);
 	};
 
+	const onContentScroll = (event: Event) => {
+		if (isDragging) return;
+		if (clampedSnapIndex >= effectiveSnapHeights.length - 1) return;
+		const target = event.currentTarget as HTMLElement | null;
+		if (!target) return;
+		if (target.scrollTop > 0) {
+			snapIndex = effectiveSnapHeights.length - 1;
+		}
+	};
+
 	$effect(() => {
 		if (snapIndex !== clampedSnapIndex) {
 			snapIndex = clampedSnapIndex;
@@ -116,8 +128,8 @@
 <div
 	data-testid="sheet"
 	data-snap-index={snapIndex}
-	class="flex w-full flex-col rounded-tl-2xl rounded-bl-2xl bg-white px-4 pt-4 pb-6 shadow-lg transition-[height] duration-200 ease-out max-md:rounded-tr-2xl max-md:rounded-bl-none md:rounded-tr-none md:rounded-br-none"
-	style={`height: ${currentHeight}px;`}
+	class="absolute inset-x-0 bottom-0 flex w-full flex-col rounded-tl-2xl rounded-bl-2xl bg-white px-4 pt-4 shadow-lg transition-[transform] duration-200 ease-out max-md:rounded-tr-2xl max-md:rounded-bl-none md:rounded-tr-none md:rounded-br-none"
+	style={`height: ${maxSheetHeight}px; transform: translateY(${translateY}px);`}
 >
 	<button
 		type="button"
@@ -130,7 +142,11 @@
 		<span class="h-[4px] w-[60px] rounded-lg bg-gray-400"></span>
 	</button>
 
-	<div data-testid="sheet-content" class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+	<div
+		data-testid="sheet-content"
+		class="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4"
+		onscroll={onContentScroll}
+	>
 		{@render children?.()}
 	</div>
 </div>
