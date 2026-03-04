@@ -1,3 +1,23 @@
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+
+	type SheetProps = {
+		snapPoints?: number[];
+		collapsedHeight?: number;
+		snapIndex?: number;
+		handleLabel?: string;
+		children?: Snippet;
+	};
+
+	let {
+		snapPoints = [0.4, 0.8],
+		collapsedHeight = 96,
+		snapIndex = $bindable(0),
+		handleLabel = 'Drag to resize',
+		children,
+	}: SheetProps = $props();
+</script>
+
 <div
 	class="rounded-tl-2xl rounded-bl-2xl bg-white p-12
       px-4 max-md:rounded-tr-2xl max-md:rounded-bl-none max-md:p-4
@@ -13,6 +33,6 @@
 	</h1>
 
 	<div>
-		<slot></slot>
+		{@render children?.()}
 	</div>
 </div>

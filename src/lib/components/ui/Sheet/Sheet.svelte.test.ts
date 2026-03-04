@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import '@testing-library/jest-dom/vitest';
+import { createRawSnippet } from 'svelte';
 import Sheet from './Sheet.svelte';
 
 const setViewportHeight = (height: number) => {
@@ -18,14 +19,20 @@ describe('Sheet', () => {
 	});
 
 	test('renders handle and scrollable content area', () => {
+		const children = createRawSnippet(() => ({
+			render: () => '<div data-testid="sheet-slot">Slot content</div>',
+		}));
+
 		render(Sheet, {
 			props: {
 				snapPoints: [0.25, 0.75],
 				collapsedHeight: 100,
+				children,
 			},
 		});
 
 		expect(screen.getByTestId('sheet-handle')).toBeInTheDocument();
+		expect(screen.getByTestId('sheet-slot')).toBeInTheDocument();
 		const content = screen.getByTestId('sheet-content');
 		expect(content).toHaveClass('overflow-y-auto');
 		expect(content).toHaveClass('overscroll-contain');
