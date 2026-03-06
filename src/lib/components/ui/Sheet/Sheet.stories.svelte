@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import type { Snippet } from 'svelte';
+	import type { ComponentProps } from 'svelte';
 	import { expect, fireEvent, within } from 'storybook/test';
 	import Sheet from './Sheet.svelte';
 
@@ -14,9 +14,11 @@
 			handleLabel: 'Drag to resize',
 		},
 	});
+
+	type SheetArgs = ComponentProps<typeof Sheet>;
 </script>
 
-{#snippet Shell(children: Snippet | undefined)}
+{#snippet StoryShell(args: SheetArgs, items: number)}
 	<div class="relative h-dvh w-full overflow-hidden bg-slate-900">
 		<div
 			class="absolute inset-0 bg-[radial-gradient(circle_at_top,#0f172a,transparent_65%),linear-gradient(180deg,#0b1b2b,#0f172a_45%,#111827_100%)]"
@@ -35,7 +37,9 @@
 				Shelter Map
 			</div>
 		</div>
-		{@render children?.()}
+		<Sheet {...args}>
+			{@render DefaultContent(items)}
+		</Sheet>
 	</div>
 {/snippet}
 
@@ -55,33 +59,59 @@
 	</div>
 {/snippet}
 
-{#snippet DefaultBody()}
-	<Sheet snapPoints={[0.4, 0.8]} collapsedHeight={96} snapIndex={0} handleLabel="Drag to resize">
-		{@render DefaultContent(12)}
+{#snippet DefaultTemplate(args: SheetArgs)}
+	{@render StoryShell(args, 12)}
+{/snippet}
+
+{#snippet DragTemplate(args: SheetArgs)}
+	{@render StoryShell(args, 8)}
+{/snippet}
+
+{#snippet ExpandedTemplate(args: SheetArgs)}
+	<Sheet {...args}>
+		<div class="space-y-3">
+			<p class="text-sm text-slate-700">Expanded layout preview with summary content.</p>
+			<div class="rounded-xl bg-slate-100 p-3 text-sm">
+				<ul class="space-y-1">
+					<li>Ozark Community Center</li>
+					<li>Parkview High School</li>
+					<li>Doling Family Center</li>
+				</ul>
+			</div>
+		</div>
 	</Sheet>
 {/snippet}
 
-{#snippet DragBody()}
-	<Sheet snapPoints={[0.4, 0.8]} collapsedHeight={96} snapIndex={0} handleLabel="Drag to resize">
-		{@render DefaultContent(8)}
+{#snippet CustomSnapPointsTemplate(args: SheetArgs)}
+	<Sheet {...args}>
+		<div class="space-y-3">
+			<p class="text-sm text-slate-700">
+				Custom snap points set to 30%, 60%, 90% with a shorter collapsed height.
+			</p>
+			<div class="rounded-xl bg-slate-100 p-3 text-sm">
+				<ul class="space-y-1">
+					<li>Jefferson Street Shelter</li>
+					<li>Downtown Library</li>
+					<li>Meadow Park Rec Center</li>
+				</ul>
+			</div>
+		</div>
 	</Sheet>
 {/snippet}
 
 <Story
 	name="Default"
-	asChild
+	template={DefaultTemplate}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByTestId('sheet-handle')).toBeInTheDocument();
 		await expect(canvas.getByTestId('sheet-content')).toHaveClass('overflow-y-auto');
 	}}
->
-	{@render Shell(DefaultBody)}
-</Story>
+/>
 
 <Story
 	name="Drag Snap Points"
-	asChild
+	template={DragTemplate}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const win = canvasElement.ownerDocument?.defaultView ?? window;
@@ -106,17 +136,17 @@
 			const startY = top + height / 2;
 			const deltaY = startHeight - targetHeight;
 			const endY = startY + deltaY;
-			fireEvent.pointerDown(handle, {
+			await fireEvent.pointerDown(handle, {
 				clientY: startY,
 				pointerId: 1,
 				pointerType: 'mouse',
 				buttons: 1,
 			});
-			fireEvent.pointerMove(win, {
+			await fireEvent.pointerMove(win, {
 				clientY: endY,
 				pointerId: 1,
 			});
-			fireEvent.pointerUp(win, {
+			await fireEvent.pointerUp(win, {
 				clientY: endY,
 				pointerId: 1,
 			});
@@ -131,43 +161,12 @@
 		await expect(sheet).toHaveAttribute('data-snap-index', '0');
 		await expect(getTranslateY()).toBeCloseTo(maxHeight - snapHeights[0], 0);
 	}}
->
-	{@render Shell(DragBody)}
-</Story>
+/>
 
-<Story name="Expanded" asChild>
-	<Sheet snapPoints={[0.4, 0.8]} collapsedHeight={96} snapIndex={1} handleLabel="Drag to resize">
-		<div class="space-y-3">
-			<p class="text-sm text-slate-700">Expanded layout preview with summary content.</p>
-			<div class="rounded-xl bg-slate-100 p-3 text-sm">
-				<ul class="space-y-1">
-					<li>Ozark Community Center</li>
-					<li>Parkview High School</li>
-					<li>Doling Family Center</li>
-				</ul>
-			</div>
-		</div>
-	</Sheet>
-</Story>
+<Story name="Expanded" args={{ snapIndex: 1 }} template={ExpandedTemplate} />
 
-<Story name="Custom Snap Points" asChild>
-	<Sheet
-		snapPoints={[0.3, 0.6, 0.9]}
-		collapsedHeight={80}
-		snapIndex={2}
-		handleLabel="Drag to resize"
-	>
-		<div class="space-y-3">
-			<p class="text-sm text-slate-700">
-				Custom snap points set to 30%, 60%, 90% with a shorter collapsed height.
-			</p>
-			<div class="rounded-xl bg-slate-100 p-3 text-sm">
-				<ul class="space-y-1">
-					<li>Jefferson Street Shelter</li>
-					<li>Downtown Library</li>
-					<li>Meadow Park Rec Center</li>
-				</ul>
-			</div>
-		</div>
-	</Sheet>
-</Story>
+<Story
+	name="Custom Snap Points"
+	args={{ snapPoints: [0.3, 0.6, 0.9], collapsedHeight: 80, snapIndex: 2 }}
+	template={CustomSnapPointsTemplate}
+/>
