@@ -1,6 +1,6 @@
 # Take Shelter Now
 
-[![codecov](https://codecov.io/gh/Open-SGF/take-shelter-now/branch/develop/graph/badge.svg?token=1jtUoxpyd4)](https://codecov.io/gh/Open-SGF/take-shelter-now)
+[![codecov](https://codecov.io/gh/Open-SGF/take-shelter-now/branch/develop/graph/badge.svg?token=1jtUoxpyd4)](https://app.codecov.io/gh/Open-SGF/take-shelter-now/tree/develop)
 
 A website for helping people in weather emergencies find shelter fast.
 
