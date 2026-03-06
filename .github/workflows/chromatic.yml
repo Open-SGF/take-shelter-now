@@ -48,7 +48,9 @@ jobs:
         uses: chromaui/action@v15
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
-          autoAcceptChanges: main
+          onlyChanged: true
+          exitOnceUploaded: true
+          autoAcceptChanges: '@(main|develop)'
 
   chromatic-push:
     if: github.event_name == 'push'
@@ -75,4 +77,6 @@ jobs:
         uses: chromaui/action@v15
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
-          autoAcceptChanges: main
+          onlyChanged: true
+          exitOnceUploaded: true
+          autoAcceptChanges: '@(main|develop)'
