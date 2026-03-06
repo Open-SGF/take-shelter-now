@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
+	import { onMount } from 'svelte';
 
 	type SheetProps = {
 		snapPoints?: number[];
@@ -27,27 +27,21 @@
 	let dragStartHeight = $state(0);
 
 	let minHeight = $derived(Math.max(0, collapsedHeight));
-	let normalizedSnapPoints = $derived.by((): number[] => {
+	let normalizedSnapPoints = $derived.by(() => {
 		if (!snapPoints || snapPoints.length === 0) return [];
 
-		return snapPoints
-			.map((point: number) => clamp(point, 0, 1))
-			.sort((a: number, b: number) => a - b);
+		return snapPoints.map((point) => clamp(point, 0, 1)).sort((a, b) => a - b);
 	});
-	let pointSnapHeights = $derived.by((): number[] =>
-		normalizedSnapPoints.map((point: number) =>
-			Math.max(minHeight, Math.round(point * viewportHeight)),
-		),
+	let pointSnapHeights = $derived(
+		normalizedSnapPoints.map((point) => Math.max(minHeight, Math.round(point * viewportHeight))),
 	);
-	let effectiveSnapHeights = $derived.by((): number[] => [minHeight, ...pointSnapHeights]);
-	let maxExternalSnapIndex = $derived.by((): number => effectiveSnapHeights.length - 2);
-	let clampedSnapIndex = $derived.by((): number => clamp(snapIndex, -1, maxExternalSnapIndex));
-	let clampedInternalSnapIndex = $derived.by((): number => clampedSnapIndex + 1);
-	let maxSheetHeight = $derived.by((): number => Math.max(...effectiveSnapHeights));
-	let currentHeight = $derived.by(
-		(): number => dragHeight ?? effectiveSnapHeights[clampedInternalSnapIndex],
-	);
-	let translateY = $derived.by((): number => maxSheetHeight - currentHeight);
+	let effectiveSnapHeights = $derived([minHeight, ...pointSnapHeights]);
+	let maxExternalSnapIndex = $derived(effectiveSnapHeights.length - 2);
+	let clampedSnapIndex = $derived(clamp(snapIndex, -1, maxExternalSnapIndex));
+	let clampedInternalSnapIndex = $derived(clampedSnapIndex + 1);
+	let maxSheetHeight = $derived(Math.max(...effectiveSnapHeights));
+	let currentHeight = $derived(dragHeight ?? effectiveSnapHeights[clampedInternalSnapIndex]);
+	let translateY = $derived(maxSheetHeight - currentHeight);
 
 	const updateViewportHeight = () => {
 		viewportHeight = typeof window === 'undefined' ? 0 : window.innerHeight;
@@ -55,7 +49,7 @@
 
 	const findClosestSnapIndex = (height: number) => {
 		const heights = effectiveSnapHeights;
-		return heights.reduce((closestIndex: number, candidateHeight: number, index: number) => {
+		return heights.reduce((closestIndex, candidateHeight, index) => {
 			const closestHeight = heights[closestIndex];
 			if (Math.abs(candidateHeight - height) < Math.abs(closestHeight - height)) {
 				return index;
@@ -67,8 +61,7 @@
 	const onPointerMove = (event: PointerEvent) => {
 		if (!isDragging) return;
 		const deltaY = event.clientY - dragStartY;
-		const nextHeight = clamp(dragStartHeight - deltaY, minHeight, maxSheetHeight);
-		dragHeight = nextHeight;
+		dragHeight = clamp(dragStartHeight - deltaY, minHeight, maxSheetHeight);
 	};
 
 	const endDrag = () => {
@@ -130,8 +123,7 @@
 		type="button"
 		data-testid="sheet-handle"
 		aria-label={handleLabel}
-		class="flex w-full items-center justify-center pt-1 pb-3 text-gray-500"
-		style="touch-action: none;"
+		class="flex w-full touch-none items-center justify-center pt-1 pb-3 text-gray-500"
 		onpointerdown={onPointerDown}
 	>
 		<span class="h-[4px] w-[60px] rounded-lg bg-gray-400"></span>
