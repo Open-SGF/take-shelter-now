@@ -1,94 +1,24 @@
 name: Chromatic
 
 on:
-  workflow_run:
-    workflows: [CI Pipeline]
-    types: [completed]
   pull_request_target:
-    types: [labeled]
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
   push:
     branches: [main, develop]
 
 permissions:
-  actions: read
   contents: read
   pull-requests: read
 
 jobs:
-  chromatic-pr-from-ci:
-    if: >
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.pull_requests[0] != null
-    runs-on: ubuntu-latest
-    env:
-      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-    steps:
-      - name: Load pull request metadata
-        id: pr
-        uses: actions/github-script@v8
-        with:
-          script: |
-            const trustedAssociations = ['OWNER', 'MEMBER', 'COLLABORATOR', 'CONTRIBUTOR'];
-            const pullNumber = context.payload.workflow_run.pull_requests[0].number;
-            const { data: pull } = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pullNumber
-            });
-
-            const trustedAuthor = trustedAssociations.includes(pull.author_association);
-            const hasSafeToTest = pull.labels.some((label) => label.name === 'safe-to-test');
-            const allowed = pull.head.repo.fork === false || trustedAuthor || hasSafeToTest;
-
-            core.setOutput('allowed', String(allowed));
-            core.setOutput('reason', allowed ? 'Trusted PR' : 'Fork PR requires trusted author or safe-to-test label');
-            core.setOutput('repo_full_name', pull.head.repo.full_name);
-            core.setOutput('head_sha', pull.head.sha);
-            core.setOutput('head_ref', pull.head.ref);
-
-      - name: Report skipped run reason
-        if: steps.pr.outputs.allowed != 'true'
-        run: |
-          echo "Skipping Chromatic: ${{ steps.pr.outputs.reason }}"
-
-      - name: Checkout PR head commit
-        if: steps.pr.outputs.allowed == 'true'
-        uses: actions/checkout@v6
-        with:
-          repository: ${{ steps.pr.outputs.repo_full_name }}
-          ref: ${{ steps.pr.outputs.head_sha }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Setup Node.js
-        if: steps.pr.outputs.allowed == 'true'
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: Install dependencies
-        if: steps.pr.outputs.allowed == 'true'
-        run: npm ci
-
-      - name: Run Chromatic
-        if: steps.pr.outputs.allowed == 'true' && env.CHROMATIC_PROJECT_TOKEN != ''
-        uses: chromaui/action@v15
-        env:
-          CHROMATIC_BRANCH: ${{ steps.pr.outputs.head_ref }}
-          CHROMATIC_SHA: ${{ steps.pr.outputs.head_sha }}
-          CHROMATIC_SLUG: ${{ steps.pr.outputs.repo_full_name }}
-        with:
-          projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
-          autoAcceptChanges: main
-
-  chromatic-pr-from-label:
+  chromatic-pr:
     if: >
       github.event_name == 'pull_request_target' &&
-      github.event.action == 'labeled' &&
-      github.event.label.name == 'safe-to-test'
+      (
+        github.event.pull_request.head.repo.fork == false ||
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR","CONTRIBUTOR"]'), github.event.pull_request.author_association) ||
+        contains(github.event.pull_request.labels.*.name, 'safe-to-test')
+      )
     runs-on: ubuntu-latest
     env:
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -96,35 +26,7 @@ jobs:
       CHROMATIC_SHA: ${{ github.event.pull_request.head.sha }}
       CHROMATIC_SLUG: ${{ github.event.pull_request.head.repo.full_name }}
     steps:
-      - name: Check CI Pipeline status
-        id: ci
-        uses: actions/github-script@v8
-        with:
-          script: |
-            const headSha = context.payload.pull_request.head.sha;
-            const { data: runs } = await github.rest.actions.listWorkflowRunsForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              event: 'pull_request',
-              head_sha: headSha,
-              status: 'completed',
-              per_page: 50
-            });
-
-            const ciPassed = runs.workflow_runs.some((run) => run.name === 'CI Pipeline' && run.conclusion === 'success');
-
-            core.setOutput('passed', String(ciPassed));
-            if (!ciPassed) {
-              core.setOutput('reason', 'CI Pipeline must pass before running Chromatic');
-            }
-
-      - name: Report skipped run reason
-        if: steps.ci.outputs.passed != 'true'
-        run: |
-          echo "Skipping Chromatic: ${{ steps.ci.outputs.reason }}"
-
       - name: Checkout PR head commit
-        if: steps.ci.outputs.passed == 'true'
         uses: actions/checkout@v6
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -133,18 +35,16 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node.js
-        if: steps.ci.outputs.passed == 'true'
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
-        if: steps.ci.outputs.passed == 'true'
         run: npm ci
 
       - name: Run Chromatic
-        if: steps.ci.outputs.passed == 'true' && env.CHROMATIC_PROJECT_TOKEN != ''
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
         uses: chromaui/action@v15
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
