@@ -43,13 +43,13 @@ describe('Sheet', () => {
 			props: {
 				snapPoints: [0.25, 0.75],
 				collapsedHeight: 100,
-				snapIndex: 0,
+				snapIndex: -1,
 			},
 		});
 
 		const sheet = screen.getByTestId('sheet');
 		const handle = screen.getByTestId('sheet-handle');
-		expect(sheet).toHaveAttribute('data-snap-index', '0');
+		expect(sheet).toHaveAttribute('data-snap-index', '-1');
 
 		await fireEvent.pointerDown(handle, { pointerId: 1, clientY: 900 });
 		await fireEvent.pointerMove(window, { pointerId: 1, clientY: 200 });
@@ -75,6 +75,6 @@ describe('Sheet', () => {
 		await fireEvent.pointerMove(window, { pointerId: 1, clientY: 920 });
 		await fireEvent.pointerUp(window, { pointerId: 1, clientY: 920 });
 
-		expect(sheet).toHaveAttribute('data-snap-index', '0');
+		expect(sheet).toHaveAttribute('data-snap-index', '-1');
 	});
 });
