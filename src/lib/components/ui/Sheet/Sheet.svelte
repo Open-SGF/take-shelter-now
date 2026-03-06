@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { cn } from '$lib/utils.js';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
 
@@ -7,6 +8,7 @@
 		collapsedHeight?: number;
 		snapIndex?: number;
 		handleLabel?: string;
+		class?: string;
 		children?: Snippet;
 	};
 
@@ -17,6 +19,7 @@
 		collapsedHeight = 96,
 		snapIndex = $bindable(0),
 		handleLabel = 'Drag to resize',
+		class: className,
 		children,
 	}: SheetProps = $props();
 
@@ -116,7 +119,13 @@
 <div
 	data-testid="sheet"
 	data-snap-index={snapIndex}
-	class="absolute inset-x-0 bottom-0 flex w-full flex-col rounded-tl-2xl rounded-bl-2xl bg-white px-4 pt-4 shadow-lg transition-[transform] duration-200 ease-out max-md:rounded-tr-2xl max-md:rounded-bl-none md:rounded-tr-none md:rounded-br-none"
+	class={cn(
+		'absolute inset-x-0 bottom-0 flex w-full flex-col',
+		'rounded-tl-2xl rounded-bl-2xl bg-white px-4 pt-4 shadow-lg',
+		'transition-[transform] duration-200 ease-out',
+		'max-md:rounded-tr-2xl max-md:rounded-bl-none md:rounded-tr-none md:rounded-br-none',
+		className,
+	)}
 	style={`height: ${maxSheetHeight}px; transform: translateY(${translateY}px);`}
 >
 	<button
