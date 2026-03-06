@@ -49,6 +49,7 @@ jobs:
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
+          exitOnceUploaded: true
           autoAcceptChanges: main
 
   chromatic-push:
@@ -77,4 +78,5 @@ jobs:
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
+          exitOnceUploaded: true
           autoAcceptChanges: main
