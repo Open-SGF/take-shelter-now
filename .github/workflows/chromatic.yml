@@ -50,7 +50,7 @@ jobs:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
           exitOnceUploaded: true
-          autoAcceptChanges: main
+          autoAcceptChanges: '@(main|develop)'
 
   chromatic-push:
     if: github.event_name == 'push'
@@ -79,4 +79,4 @@ jobs:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
           exitOnceUploaded: true
-          autoAcceptChanges: main
+          autoAcceptChanges: '@(main|develop)'
