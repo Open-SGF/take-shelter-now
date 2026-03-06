@@ -48,6 +48,7 @@ jobs:
         uses: chromaui/action@v15
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
+          onlyChanged: true
           autoAcceptChanges: main
 
   chromatic-push:
@@ -75,4 +76,5 @@ jobs:
         uses: chromaui/action@v15
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
+          onlyChanged: true
           autoAcceptChanges: main
