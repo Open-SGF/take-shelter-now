@@ -28,29 +28,24 @@
 
 	let minHeight = $derived(Math.max(0, collapsedHeight));
 	let normalizedSnapPoints = $derived.by((): number[] => {
-		if (!snapPoints || snapPoints.length === 0) {
-			const fallback = viewportHeight > 0 ? minHeight / viewportHeight : 0;
-			return [clamp(fallback, 0, 1)];
-		}
+		if (!snapPoints || snapPoints.length === 0) return [];
 
 		return snapPoints
 			.map((point: number) => clamp(point, 0, 1))
 			.sort((a: number, b: number) => a - b);
 	});
-	let snapHeights = $derived.by((): number[] =>
+	let pointSnapHeights = $derived.by((): number[] =>
 		normalizedSnapPoints.map((point: number) =>
 			Math.max(minHeight, Math.round(point * viewportHeight)),
 		),
 	);
-	let effectiveSnapHeights = $derived.by((): number[] =>
-		snapHeights.length > 0 ? snapHeights : [minHeight],
-	);
-	let clampedSnapIndex = $derived.by((): number =>
-		clamp(snapIndex, 0, effectiveSnapHeights.length - 1),
-	);
+	let effectiveSnapHeights = $derived.by((): number[] => [minHeight, ...pointSnapHeights]);
+	let maxExternalSnapIndex = $derived.by((): number => effectiveSnapHeights.length - 2);
+	let clampedSnapIndex = $derived.by((): number => clamp(snapIndex, -1, maxExternalSnapIndex));
+	let clampedInternalSnapIndex = $derived.by((): number => clampedSnapIndex + 1);
 	let maxSheetHeight = $derived.by((): number => Math.max(...effectiveSnapHeights));
 	let currentHeight = $derived.by(
-		(): number => dragHeight ?? effectiveSnapHeights[clampedSnapIndex],
+		(): number => dragHeight ?? effectiveSnapHeights[clampedInternalSnapIndex],
 	);
 	let translateY = $derived.by((): number => maxSheetHeight - currentHeight);
 
@@ -80,7 +75,7 @@
 		if (!isDragging) return;
 		isDragging = false;
 		if (dragHeight !== null) {
-			snapIndex = findClosestSnapIndex(dragHeight);
+			snapIndex = findClosestSnapIndex(dragHeight) - 1;
 		}
 		dragHeight = null;
 		window.removeEventListener('pointermove', onPointerMove);
@@ -99,11 +94,11 @@
 
 	const onContentScroll = (event: Event) => {
 		if (isDragging) return;
-		if (clampedSnapIndex >= effectiveSnapHeights.length - 1) return;
+		if (clampedSnapIndex >= maxExternalSnapIndex) return;
 		const target = event.currentTarget as HTMLElement | null;
 		if (!target) return;
 		if (target.scrollTop > 0) {
-			snapIndex = effectiveSnapHeights.length - 1;
+			snapIndex = maxExternalSnapIndex;
 		}
 	};
 
