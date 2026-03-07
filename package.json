@@ -25,8 +25,10 @@
 		"fetch-shelters": "tsx static/fetch-shelters.ts"
 	},
 	"dependencies": {
+		"@maplibre/maplibre-gl-leaflet": "^0.1.3",
 		"clsx": "^2.1.1",
 		"leaflet": "^1.9.4",
+		"maplibre-gl": "^5.19.0",
 		"tailwind-merge": "^3.5.0",
 		"tailwind-variants": "^3.2.2",
 		"tw-animate-css": "^1.4.0"
@@ -37,8 +39,8 @@
 		"@lucide/svelte": "^0.577.0",
 		"@playwright/test": "^1.58.2",
 		"@storybook/addon-a11y": "^10.2.16",
-		"@storybook/addon-vitest": "^10.2.16",
 		"@storybook/addon-svelte-csf": "^5.0.11",
+		"@storybook/addon-vitest": "^10.2.16",
 		"@storybook/sveltekit": "^10.2.16",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.53.4",
@@ -48,15 +50,17 @@
 		"@testing-library/svelte": "^5.3.1",
 		"@types/leaflet": "^1.9.21",
 		"@types/node": "^25.3.5",
-		"@vitest/coverage-v8": "^4.0.18",
+		"@types/vt-pbf": "^3.1.1",
 		"@vitest/browser": "^4.0.18",
 		"@vitest/browser-playwright": "^4.0.18",
+		"@vitest/coverage-v8": "^4.0.18",
 		"chromatic": "^15.2.0",
 		"eslint": "^10.0.3",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.15.0",
 		"globals": "^17.4.0",
 		"jsdom": "^28.1.0",
+		"msw": "^2.12.10",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.5.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
@@ -69,6 +73,12 @@
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.56.1",
 		"vite": "^7.3.1",
-		"vitest": "^4.0.6"
+		"vitest": "^4.0.6",
+		"vt-pbf": "^3.1.3"
+	},
+	"msw": {
+		"workerDirectory": [
+			".storybook/public"
+		]
 	}
 }

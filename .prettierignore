@@ -6,3 +6,4 @@ bun.lock
 bun.lockb
 storybook-static
 .agents
+.storybook/public/mockServiceWorker.js
