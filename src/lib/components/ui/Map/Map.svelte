@@ -52,16 +52,15 @@
 	const createMarkerIcon = (L: typeof import('leaflet')): DivIcon =>
 		L.divIcon({
 			className: 'tsn-map-marker-icon flex items-center justify-center bg-transparent border-0',
-			html: '<span data-testid="map-marker" class="pointer-events-none inline-block h-[14px] w-[14px] rounded-full border-2 border-white bg-red-700 shadow-[0_2px_6px_rgba(0,0,0,0.35)]" aria-hidden="true"></span>',
-			iconSize: [26, 26],
-			iconAnchor: [13, 13],
+			html: '<img data-testid="map-marker" src="/icons/map-pin.svg" alt="" aria-hidden="true" class="pointer-events-none block h-[36px] w-[36px]" />',
+			iconSize: [36, 36],
+			iconAnchor: [18, 33],
 		});
 
 	const createCurrentLocationIcon = (L: typeof import('leaflet')): DivIcon =>
 		L.divIcon({
-			className:
-				'tsn-current-location-icon relative flex items-center justify-center bg-transparent border-0',
-			html: '<span data-testid="map-current-location" class="pointer-events-none absolute inline-block h-[26px] w-[26px] rounded-full border-2 border-sky-600/65 animate-ping" aria-hidden="true"></span><span class="pointer-events-none absolute inline-block h-[14px] w-[14px] rounded-full border-2 border-white bg-sky-500 shadow-[0_2px_6px_rgba(0,0,0,0.35)]" aria-hidden="true"></span>',
+			className: 'tsn-current-location-icon relative bg-transparent border-0',
+			html: '<span data-testid="map-current-location" class="pointer-events-none relative block h-[42px] w-[42px]" aria-hidden="true"><span class="absolute left-1/2 top-1/2 block h-[28px] w-[28px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-sky-600/55 animate-ping"></span><span class="absolute left-1/2 top-1/2 block h-[14px] w-[14px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-sky-500 shadow-[0_2px_6px_rgba(0,0,0,0.35)]"></span></span>',
 			iconSize: [42, 42],
 			iconAnchor: [21, 21],
 		});
