@@ -1,10 +1,10 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import Header from './Header.svelte';
+	import Nav from './Nav.svelte';
 
 	const { Story } = defineMeta({
-		title: 'UI/Header',
-		component: Header,
+		title: 'UI/Nav',
+		component: Nav,
 	});
 </script>
 
