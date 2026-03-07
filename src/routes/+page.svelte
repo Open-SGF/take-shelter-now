@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Header } from '$lib/components/ui/Header';
+	import { Nav } from '$lib/components/ui/Nav';
 	import { Sheet } from '$lib/components/ui/Sheet';
 	import GetLocation from '$lib/components/ui/GetLocation/GetLocation.svelte';
 	import ShelterList from '$lib/components/ui/ShelterList/ShelterList.svelte';
@@ -66,7 +66,7 @@
 </script>
 
 <div class="relative m-0 h-dvh bg-[#e2e0e1]">
-	<div class="fixed top-0 z-60"><Header /></div>
+	<div class="fixed top-0 z-60"><Nav /></div>
 	<div
 		class="fixed top-0 right-0 z-60 h-dvh w-[400px] overflow-y-auto max-md:top-auto max-md:bottom-0 max-md:h-1/2 max-md:w-screen md:right-0"
 	>
