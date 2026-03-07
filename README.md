@@ -25,7 +25,7 @@ A website for helping people in weather emergencies find shelter fast.
 
 ## First Time Setup
 
-- Make sure you have [Node 22.x](https://nodejs.org) (Ideally using [nvm](https://github.com/nvm-sh/nvm))
+- Make sure you have [Node 24.x](https://nodejs.org) (Ideally using [nvm](https://github.com/nvm-sh/nvm))
 - Install dependencies `npm i`
 
 ## Running the project
