@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { cn } from '$lib/utils.js';
 	import { onMount } from 'svelte';
-	import type { DivIcon, LayerGroup, Map as LeafletMap, Marker } from 'leaflet';
+	import type * as Leaflet from 'leaflet';
+	import type {} from '@maplibre/maplibre-gl-leaflet';
 	import { isValidPoint, toLatLngTuple, type GeoPoint } from '$lib/geo';
 	import { buildMarkerSignature, buildPointSignature, filterValidMarkers } from './markers';
 	import { createRecenterPlan } from './viewport';
+	import { loadLeaflet } from './leaflet-loader';
 	import type { MapMarker, MapViewportChangedDetail } from './types';
 
 	const DEFAULT_MAP_CENTER: GeoPoint = {
@@ -12,11 +14,7 @@
 		longitude: -93.292299,
 	};
 
-	const BASEMAP_TILE_URL = 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png';
-	const BASEMAP_ATTRIBUTION =
-		'&copy; <a href="https://stadiamaps.com/" target="_blank" rel="noopener noreferrer">Stadia Maps</a> ' +
-		'&copy; <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">OpenMapTiles</a> ' +
-		'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>';
+	const BASEMAP_STYLE_URL = 'https://tiles.stadiamaps.com/styles/alidade_smooth.json';
 
 	type MapProps = {
 		markers?: MapMarker[];
@@ -43,10 +41,11 @@
 	}: MapProps = $props();
 
 	let mapElement: HTMLDivElement | null = null;
-	let leaflet: typeof import('leaflet') | null = null;
-	let map: LeafletMap | null = null;
-	let markerLayer: LayerGroup | null = null;
-	let currentLocationMarker: Marker | null = null;
+	let leaflet: typeof Leaflet | null = null;
+	let map: Leaflet.Map | null = null;
+	let basemapLayer: Leaflet.Layer | null = null;
+	let markerLayer: Leaflet.LayerGroup | null = null;
+	let currentLocationMarker: Leaflet.Marker | null = null;
 	let lastMarkerSignature = '';
 	let lastCurrentLocationSignature = '';
 	let isReady = $state(false);
@@ -55,7 +54,7 @@
 	let markerSignature = $derived(buildMarkerSignature(validMarkers));
 	let currentLocationSignature = $derived(buildPointSignature(currentLocation));
 
-	const createMarkerIcon = (L: typeof import('leaflet')): DivIcon =>
+	const createMarkerIcon = (L: typeof Leaflet): Leaflet.DivIcon =>
 		L.divIcon({
 			className: 'tsn-map-marker-icon flex items-center justify-center bg-transparent border-0',
 			html: `
@@ -71,7 +70,7 @@
 			iconAnchor: [18, 33],
 		});
 
-	const createCurrentLocationIcon = (L: typeof import('leaflet')): DivIcon =>
+	const createCurrentLocationIcon = (L: typeof Leaflet): Leaflet.DivIcon =>
 		L.divIcon({
 			className: 'tsn-current-location-icon relative bg-transparent border-0',
 			html: `
@@ -99,6 +98,13 @@
 			iconSize: [42, 42],
 			iconAnchor: [21, 21],
 		});
+
+	const createBasemapLayer = (L: typeof Leaflet): Leaflet.Layer => {
+		return L.maplibreGL({
+			style: BASEMAP_STYLE_URL,
+			interactive: false,
+		});
+	};
 
 	const recenterMapToMarkers = () => {
 		if (!map) return;
@@ -187,7 +193,7 @@
 		let disposed = false;
 
 		const initializeMap = async () => {
-			const L = await import('leaflet');
+			const L = await loadLeaflet();
 			if (disposed || !mapElement) return;
 
 			leaflet = L;
@@ -207,12 +213,8 @@
 					position: 'bottomright',
 				})
 				.addTo(nextMap);
-			L.tileLayer(BASEMAP_TILE_URL, {
-				attribution: BASEMAP_ATTRIBUTION,
-				maxZoom,
-				minZoom,
-				detectRetina: true,
-			}).addTo(nextMap);
+
+			basemapLayer = createBasemapLayer(L).addTo(nextMap);
 
 			markerLayer = L.layerGroup().addTo(nextMap);
 			isReady = true;
@@ -231,6 +233,11 @@
 			if (markerLayer) {
 				markerLayer.clearLayers();
 				markerLayer = null;
+			}
+
+			if (basemapLayer) {
+				basemapLayer.remove();
+				basemapLayer = null;
 			}
 
 			if (map) {
