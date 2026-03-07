@@ -6,15 +6,13 @@
 	import { isValidPoint, toLatLngTuple, type GeoPoint } from '$lib/geo';
 	import { buildMarkerSignature, buildPointSignature, filterValidMarkers } from './markers';
 	import { createRecenterPlan } from './viewport';
-	import { loadLeaflet } from './leaflet-loader';
+	import { loadBasemapStyle, loadLeaflet } from './leaflet-loader';
 	import type { MapMarker, MapViewportChangedDetail } from './types';
 
 	const DEFAULT_MAP_CENTER: GeoPoint = {
 		latitude: 37.208957,
 		longitude: -93.292299,
 	};
-
-	const BASEMAP_STYLE_URL = 'https://tiles.stadiamaps.com/styles/alidade_smooth.json';
 
 	type MapProps = {
 		markers?: MapMarker[];
@@ -56,7 +54,7 @@
 
 	const createMarkerIcon = (L: typeof Leaflet): Leaflet.DivIcon =>
 		L.divIcon({
-			className: 'tsn-map-marker-icon flex items-center justify-center bg-transparent border-0',
+			className: 'flex items-center justify-center bg-transparent border-0',
 			html: `
 				<img
 					data-testid="map-marker"
@@ -72,7 +70,7 @@
 
 	const createCurrentLocationIcon = (L: typeof Leaflet): Leaflet.DivIcon =>
 		L.divIcon({
-			className: 'tsn-current-location-icon relative bg-transparent border-0',
+			className: 'relative bg-transparent border-0',
 			html: `
 				<span
 					data-testid="map-current-location"
@@ -99,9 +97,12 @@
 			iconAnchor: [21, 21],
 		});
 
-	const createBasemapLayer = (L: typeof Leaflet): Leaflet.Layer => {
+	const createBasemapLayer = (
+		L: typeof Leaflet,
+		style: Leaflet.LeafletMaplibreGLOptions['style'],
+	): Leaflet.Layer => {
 		return L.maplibreGL({
-			style: BASEMAP_STYLE_URL,
+			style,
 			interactive: false,
 		});
 	};
@@ -193,7 +194,7 @@
 		let disposed = false;
 
 		const initializeMap = async () => {
-			const L = await loadLeaflet();
+			const [L, basemapStyle] = await Promise.all([loadLeaflet(), loadBasemapStyle()]);
 			if (disposed || !mapElement) return;
 
 			leaflet = L;
@@ -214,7 +215,7 @@
 				})
 				.addTo(nextMap);
 
-			basemapLayer = createBasemapLayer(L).addTo(nextMap);
+			basemapLayer = createBasemapLayer(L, basemapStyle).addTo(nextMap);
 
 			markerLayer = L.layerGroup().addTo(nextMap);
 			isReady = true;
