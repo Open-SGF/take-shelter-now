@@ -12,6 +12,12 @@
 		longitude: -93.292299,
 	};
 
+	const BASEMAP_TILE_URL = 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png';
+	const BASEMAP_ATTRIBUTION =
+		'&copy; <a href="https://stadiamaps.com/" target="_blank" rel="noopener noreferrer">Stadia Maps</a> ' +
+		'&copy; <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">OpenMapTiles</a> ' +
+		'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>';
+
 	type MapProps = {
 		markers?: MapMarker[];
 		currentLocation?: GeoPoint | null;
@@ -52,7 +58,15 @@
 	const createMarkerIcon = (L: typeof import('leaflet')): DivIcon =>
 		L.divIcon({
 			className: 'tsn-map-marker-icon flex items-center justify-center bg-transparent border-0',
-			html: '<img data-testid="map-marker" src="/icons/map-pin.svg" alt="" aria-hidden="true" class="pointer-events-none block h-[36px] w-[36px]" />',
+			html: `
+				<img
+					data-testid="map-marker"
+					src="/icons/map-pin.svg"
+					alt=""
+					aria-hidden="true"
+					class="pointer-events-none block h-[36px] w-[36px]"
+				/>
+			`,
 			iconSize: [36, 36],
 			iconAnchor: [18, 33],
 		});
@@ -60,7 +74,28 @@
 	const createCurrentLocationIcon = (L: typeof import('leaflet')): DivIcon =>
 		L.divIcon({
 			className: 'tsn-current-location-icon relative bg-transparent border-0',
-			html: '<span data-testid="map-current-location" class="pointer-events-none relative block h-[42px] w-[42px]" aria-hidden="true"><span class="absolute left-1/2 top-1/2 block h-[28px] w-[28px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-sky-600/55 animate-ping"></span><span class="absolute left-1/2 top-1/2 block h-[14px] w-[14px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-sky-500 shadow-[0_2px_6px_rgba(0,0,0,0.35)]"></span></span>',
+			html: `
+				<span
+					data-testid="map-current-location"
+					class="pointer-events-none relative block h-[42px] w-[42px]"
+					aria-hidden="true"
+				>
+					<span
+						class="
+							absolute left-1/2 top-1/2 block h-[28px] w-[28px]
+							-translate-x-1/2 -translate-y-1/2 rounded-full border-2
+							border-sky-600/55 animate-ping
+						"
+					></span>
+					<span
+						class="
+							absolute left-1/2 top-1/2 block h-[14px] w-[14px]
+							-translate-x-1/2 -translate-y-1/2 rounded-full border-2
+							border-white bg-sky-500 shadow-[0_2px_6px_rgba(0,0,0,0.35)]
+						"
+					></span>
+				</span>
+			`,
 			iconSize: [42, 42],
 			iconAnchor: [21, 21],
 		});
@@ -172,12 +207,11 @@
 					position: 'bottomright',
 				})
 				.addTo(nextMap);
-			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-				attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+			L.tileLayer(BASEMAP_TILE_URL, {
+				attribution: BASEMAP_ATTRIBUTION,
 				maxZoom,
 				minZoom,
 				detectRetina: true,
-				referrerPolicy: 'no-referrer',
 			}).addTo(nextMap);
 
 			markerLayer = L.layerGroup().addTo(nextMap);
