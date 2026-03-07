@@ -5,7 +5,7 @@
 	import { isValidPoint, toLatLngTuple, type GeoPoint } from '$lib/geo';
 	import { buildMarkerSignature, buildPointSignature, filterValidMarkers } from './markers';
 	import { createRecenterPlan } from './viewport';
-	import type { MapMarker } from './types';
+	import type { MapMarker, MapViewportChangedDetail } from './types';
 
 	const DEFAULT_MAP_CENTER: GeoPoint = {
 		latitude: 37.208957,
@@ -20,6 +20,7 @@
 		minZoom?: number;
 		maxZoom?: number;
 		onMarkerTap?: (marker: MapMarker) => void;
+		onViewportChanged?: (detail: MapViewportChangedDetail) => void;
 		class?: string;
 	};
 
@@ -31,6 +32,7 @@
 		minZoom = 3,
 		maxZoom = 19,
 		onMarkerTap,
+		onViewportChanged,
 		class: className,
 	}: MapProps = $props();
 
@@ -71,14 +73,26 @@
 		const plan = createRecenterPlan(validMarkers, fallbackCenter, defaultZoom);
 
 		if (plan.mode === 'bounds') {
+			const detail: MapViewportChangedDetail = {
+				trigger: 'markers',
+				mode: plan.mode,
+			};
+
 			map.fitBounds(
 				plan.bounds.map((marker) => toLatLngTuple(marker)),
 				plan.options,
 			);
+			onViewportChanged?.(detail);
 			return;
 		}
 
+		const detail: MapViewportChangedDetail = {
+			trigger: 'markers',
+			mode: plan.mode,
+		};
+
 		map.setView(toLatLngTuple(plan.center), plan.zoom);
+		onViewportChanged?.(detail);
 	};
 
 	const renderMarkers = () => {
