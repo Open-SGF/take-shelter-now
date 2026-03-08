@@ -13,10 +13,10 @@ A website for helping people in weather emergencies find shelter fast.
 
 ## Live Deployments
 
-| Environment         | Status                                                                                                                                                                                  | Url                                                                                     |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Production (`main`) | [![Netlify Status](https://api.netlify.com/api/v1/badges/92aebb13-22ba-4b68-af11-a1dc893d705f/deploy-status?branch=main)](https://app.netlify.com/projects/take-shelter-now/deploys)    | [takeshelternow.org](https://takeshelternow.org/)                                       |
-| Staging (`develop`) | [![Netlify Status](https://api.netlify.com/api/v1/badges/92aebb13-22ba-4b68-af11-a1dc893d705f/deploy-status?branch=develop)](https://app.netlify.com/projects/take-shelter-now/deploys) | [develop--take-shelter-now.netlify.app](https://develop--take-shelter-now.netlify.app/) |
+| Environment        | Status                                                                                                                                                                               | Url                                                                          |
+| ------------------ |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| Production | [![Netlify Status](https://api.netlify.com/api/v1/badges/92aebb13-22ba-4b68-af11-a1dc893d705f/deploy-status)](https://app.netlify.com/projects/take-shelter-now/deploys) | [takeshelternow.org](https://takeshelternow.org/)                            |
+| Staging  | [![Netlify Status](https://api.netlify.com/api/v1/badges/e2e55cbc-e8e4-41d5-b596-2a8759f8460a/deploy-status)](https://app.netlify.com/projects/take-shelter-now-staging/deploys) | [staging.takeshelternow.org](https://staging.takeshelternow.org/) |
 
 ## Component Preview
 
