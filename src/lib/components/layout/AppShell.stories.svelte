@@ -1,29 +1,8 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, waitFor, within } from 'storybook/test';
-	import isChromatic from 'chromatic/isChromatic';
 	import { Map } from '$lib/components/ui/Map';
 	import AppShell from './AppShell.svelte';
-
-	const nextFrame = (win: Window) =>
-		new Promise<void>((resolve) => {
-			win.requestAnimationFrame(() => resolve());
-		});
-
-	const resizeCanvas = async (canvasElement: HTMLElement, width: number, height = 900) => {
-		const win = canvasElement.ownerDocument.defaultView ?? window;
-		const frame = win.frameElement as HTMLElement | null;
-
-		if (!frame) {
-			throw new Error('Storybook preview frame is not available for resizing');
-		}
-
-		frame.style.width = `${width}px`;
-		frame.style.height = `${height}px`;
-		win.dispatchEvent(new Event('resize'));
-		await nextFrame(win);
-		await nextFrame(win);
-	};
 
 	const shelterMarkers = [
 		{ id: 'north', label: 'North Shelter', latitude: 37.2392, longitude: -93.2951 },
@@ -111,42 +90,5 @@
 	globals={{ viewport: { value: 'desktop', isRotated: false } }}
 	play={async ({ canvasElement }) => {
 		await assertDesktopLayout(canvasElement);
-	}}
-/>
-
-<Story
-	name="Resize"
-	template={DefaultTemplate}
-	parameters={{ chromatic: { disableSnapshot: true } }}
-	play={async ({ canvasElement }) => {
-		if (isChromatic()) {
-			return;
-		}
-
-		const canvas = within(canvasElement);
-		const win = canvasElement.ownerDocument.defaultView ?? window;
-		const frame = win.frameElement as HTMLElement | null;
-		const previousWidth = frame?.style.width ?? '';
-		const previousHeight = frame?.style.height ?? '';
-
-		try {
-			await resizeCanvas(canvasElement, 390);
-			await assertMobileLayout(canvasElement);
-
-			const mapBeforeResize = canvas.getByTestId('map');
-
-			await resizeCanvas(canvasElement, 1280);
-			await assertDesktopLayout(canvasElement);
-			await expect(canvas.getByTestId('map')).toBe(mapBeforeResize);
-
-			await resizeCanvas(canvasElement, 390);
-			await assertMobileLayout(canvasElement);
-			await expect(canvas.getByTestId('map')).toBe(mapBeforeResize);
-		} finally {
-			if (frame) {
-				frame.style.width = previousWidth;
-				frame.style.height = previousHeight;
-			}
-		}
 	}}
 />

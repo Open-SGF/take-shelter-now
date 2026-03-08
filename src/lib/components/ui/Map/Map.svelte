@@ -242,6 +242,7 @@
 			}
 
 			if (map) {
+				map.stop();
 				map.remove();
 				map = null;
 			}
