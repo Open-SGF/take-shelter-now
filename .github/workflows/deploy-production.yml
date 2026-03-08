@@ -1,0 +1,94 @@
+name: Deploy Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event_name != 'release' || github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: netlify-production
+      cancel-in-progress: false
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+
+      - name: Trigger Netlify build from release source
+        id: trigger
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
+        run: |
+          zip -r source.zip . -x ".git/*"
+          response=$(curl --silent --show-error --fail \
+            -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" \
+            -F "zip=@source.zip" \
+            -F "title=release ${RELEASE_TAG} ${GITHUB_SHA}" \
+            "https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/builds")
+
+          build_id=$(printf '%s' "$response" | jq -r '.id')
+          if [ -z "$build_id" ] || [ "$build_id" = "null" ]; then
+            echo "Failed to create Netlify build"
+            printf '%s\n' "$response"
+            exit 1
+          fi
+
+          echo "build_id=$build_id" >> "$GITHUB_OUTPUT"
+          echo "Started Netlify build $build_id"
+
+      - name: Wait for Netlify build completion
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          BUILD_ID: ${{ steps.trigger.outputs.build_id }}
+        run: |
+          attempts=0
+          max_attempts=90
+          sleep_seconds=10
+
+          while [ "$attempts" -lt "$max_attempts" ]; do
+            build=$(curl --silent --show-error --fail \
+              -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" \
+              "https://api.netlify.com/api/v1/builds/${BUILD_ID}")
+
+            done_flag=$(printf '%s' "$build" | jq -r '.done')
+            error_message=$(printf '%s' "$build" | jq -r '.error // empty')
+            deploy_id=$(printf '%s' "$build" | jq -r '.deploy_id // empty')
+
+            if [ "$done_flag" = "true" ]; then
+              if [ -n "$error_message" ]; then
+                echo "Netlify build failed: $error_message"
+                exit 1
+              fi
+
+              echo "Netlify build completed successfully"
+              if [ -n "$deploy_id" ]; then
+                echo "Deploy ID: $deploy_id"
+                deploy=$(curl --silent --show-error --fail \
+                  -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" \
+                  "https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/deploys/${deploy_id}")
+                deploy_url=$(printf '%s' "$deploy" | jq -r '.deploy_ssl_url // .deploy_url // .ssl_url // .url // empty')
+                if [ -n "$deploy_url" ]; then
+                  echo "Deploy URL: $deploy_url"
+                fi
+              fi
+              exit 0
+            fi
+
+            attempts=$((attempts + 1))
+            echo "Waiting for Netlify build ${BUILD_ID} (${attempts}/${max_attempts})"
+            sleep "$sleep_seconds"
+          done
+
+          echo "Timed out waiting for Netlify build ${BUILD_ID}"
+          exit 1
