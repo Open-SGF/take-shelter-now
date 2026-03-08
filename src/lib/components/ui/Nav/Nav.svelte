@@ -11,7 +11,7 @@
 <header
 	data-testid="nav"
 	class={cn(
-		'z-50 flex h-[72px] w-screen items-center justify-center rounded-b-2xl bg-white p-8 md:justify-start',
+		'z-50 flex h-[72px] w-full items-center justify-center rounded-b-2xl bg-white p-8 md:justify-start',
 		className,
 	)}
 >
