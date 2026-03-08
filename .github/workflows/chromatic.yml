@@ -4,7 +4,7 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review, labeled]
   push:
-    branches: [main, develop]
+    branches: [main]
 
 permissions:
   contents: read
@@ -50,7 +50,7 @@ jobs:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
           exitOnceUploaded: true
-          autoAcceptChanges: '@(main|develop)'
+          autoAcceptChanges: main
 
   chromatic-push:
     if: github.event_name == 'push'
@@ -79,4 +79,4 @@ jobs:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
           exitOnceUploaded: true
-          autoAcceptChanges: '@(main|develop)'
+          autoAcceptChanges: main

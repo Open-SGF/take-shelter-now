@@ -1,6 +1,6 @@
 # Take Shelter Now
 
-[![codecov](https://codecov.io/gh/Open-SGF/take-shelter-now/branch/develop/graph/badge.svg?token=1jtUoxpyd4)](https://app.codecov.io/gh/Open-SGF/take-shelter-now/tree/develop)
+[![codecov](https://codecov.io/gh/Open-SGF/take-shelter-now/branch/main/graph/badge.svg?token=1jtUoxpyd4)](https://app.codecov.io/gh/Open-SGF/take-shelter-now/tree/main)
 
 A website for helping people in weather emergencies find shelter fast.
 
@@ -13,15 +13,15 @@ A website for helping people in weather emergencies find shelter fast.
 
 ## Live Deployments
 
-| Environment        | Status                                                                                                                                                                               | Url                                                                          |
-| ------------------ |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| Production | [![Netlify Status](https://api.netlify.com/api/v1/badges/92aebb13-22ba-4b68-af11-a1dc893d705f/deploy-status)](https://app.netlify.com/projects/take-shelter-now/deploys) | [takeshelternow.org](https://takeshelternow.org/)                            |
-| Staging  | [![Netlify Status](https://api.netlify.com/api/v1/badges/e2e55cbc-e8e4-41d5-b596-2a8759f8460a/deploy-status)](https://app.netlify.com/projects/take-shelter-now-staging/deploys) | [staging.takeshelternow.org](https://staging.takeshelternow.org/) |
+| Environment | Status                                                                                                                                                                           | Url                                                               |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Production  | [![Netlify Status](https://api.netlify.com/api/v1/badges/92aebb13-22ba-4b68-af11-a1dc893d705f/deploy-status)](https://app.netlify.com/projects/take-shelter-now/deploys)         | [takeshelternow.org](https://takeshelternow.org/)                 |
+| Staging     | [![Netlify Status](https://api.netlify.com/api/v1/badges/e2e55cbc-e8e4-41d5-b596-2a8759f8460a/deploy-status)](https://app.netlify.com/projects/take-shelter-now-staging/deploys) | [staging.takeshelternow.org](https://staging.takeshelternow.org/) |
 
 ## Component Preview
 
-- [Storybook](https://develop--69a78a9d412eefeb045e4248.chromatic.com)
-- [Chromatic Library](https://www.chromatic.com/library?appId=69a78a9d412eefeb045e4248&branch=develop)
+- [Storybook](https://main--69a78a9d412eefeb045e4248.chromatic.com)
+- [Chromatic Library](https://www.chromatic.com/library?appId=69a78a9d412eefeb045e4248&branch=main)
 
 ## First Time Setup
 
