@@ -21,8 +21,7 @@
 		"test:storybook": "vitest --project=storybook",
 		"test": "npm run test:unit -- --run && npm run test:storybook -- --run && npm run test:e2e",
 		"test:e2e": "playwright test",
-		"shadcn": "shadcn-svelte",
-		"fetch-shelters": "tsx static/fetch-shelters.ts"
+		"shadcn": "shadcn-svelte"
 	},
 	"dependencies": {
 		"@maplibre/maplibre-gl-leaflet": "^0.1.3",
