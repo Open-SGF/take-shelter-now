@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, waitFor, within } from 'storybook/test';
+	import isChromatic from 'chromatic/isChromatic';
 	import { Map } from '$lib/components/ui/Map';
 	import AppShell from './AppShell.svelte';
 
@@ -34,6 +35,42 @@
 		title: 'Layout/App Shell',
 		component: AppShell,
 	});
+
+	const assertMobileLayout = async (canvasElement: HTMLElement) => {
+		const canvas = within(canvasElement);
+
+		await expect(canvas.getByTestId('app-shell')).toBeInTheDocument();
+		await expect(canvas.getByTestId('nav')).toBeInTheDocument();
+		await expect(canvas.getByTestId('sheet')).toBeInTheDocument();
+		await expect(canvas.queryByTestId('sidebar')).not.toBeInTheDocument();
+
+		await waitFor(() => {
+			expect(canvas.getAllByTestId('map-marker').length).toBeGreaterThan(0);
+		});
+
+		await expect(canvas.getByText('Shelter Results')).toBeInTheDocument();
+		await expect(canvas.getAllByTestId('map')).toHaveLength(1);
+	};
+
+	const assertDesktopLayout = async (canvasElement: HTMLElement) => {
+		const canvas = within(canvasElement);
+
+		await expect(canvas.getByTestId('app-shell')).toBeInTheDocument();
+		await expect(canvas.getByTestId('nav')).toBeInTheDocument();
+
+		await waitFor(() => {
+			expect(canvas.getByTestId('sidebar')).toBeInTheDocument();
+		});
+
+		await expect(canvas.queryByTestId('sheet')).not.toBeInTheDocument();
+
+		await waitFor(() => {
+			expect(canvas.getAllByTestId('map-marker').length).toBeGreaterThan(0);
+		});
+
+		await expect(canvas.getByText('Shelter Results')).toBeInTheDocument();
+		await expect(canvas.getAllByTestId('map')).toHaveLength(1);
+	};
 </script>
 
 {#snippet DefaultTemplate()}
@@ -60,9 +97,32 @@
 {/snippet}
 
 <Story
-	name="Default"
+	name="Mobile"
 	template={DefaultTemplate}
+	globals={{ viewport: { value: 'mobile1', isRotated: false } }}
 	play={async ({ canvasElement }) => {
+		await assertMobileLayout(canvasElement);
+	}}
+/>
+
+<Story
+	name="Desktop"
+	template={DefaultTemplate}
+	globals={{ viewport: { value: 'desktop', isRotated: false } }}
+	play={async ({ canvasElement }) => {
+		await assertDesktopLayout(canvasElement);
+	}}
+/>
+
+<Story
+	name="Resize"
+	template={DefaultTemplate}
+	parameters={{ chromatic: { disableSnapshot: true } }}
+	play={async ({ canvasElement }) => {
+		if (isChromatic()) {
+			return;
+		}
+
 		const canvas = within(canvasElement);
 		const win = canvasElement.ownerDocument.defaultView ?? window;
 		const frame = win.frameElement as HTMLElement | null;
@@ -71,43 +131,21 @@
 
 		try {
 			await resizeCanvas(canvasElement, 390);
-
-			await expect(canvas.getByTestId('app-shell')).toBeInTheDocument();
-			await expect(canvas.getByTestId('nav')).toBeInTheDocument();
-			await expect(canvas.getByTestId('sheet')).toBeInTheDocument();
-			await expect(canvas.queryByTestId('sidebar')).not.toBeInTheDocument();
-
-			await waitFor(() => {
-				expect(canvas.getAllByTestId('map-marker').length).toBeGreaterThan(0);
-			});
+			await assertMobileLayout(canvasElement);
 
 			const mapBeforeResize = canvas.getByTestId('map');
 
-			await expect(canvas.getByText('Shelter Results')).toBeInTheDocument();
-
 			await resizeCanvas(canvasElement, 1280);
-
-			await waitFor(() => {
-				expect(canvas.getByTestId('sidebar')).toBeInTheDocument();
-			});
-			await expect(canvas.queryByTestId('sheet')).not.toBeInTheDocument();
+			await assertDesktopLayout(canvasElement);
 			await expect(canvas.getByTestId('map')).toBe(mapBeforeResize);
-			await expect(canvas.getAllByTestId('map')).toHaveLength(1);
 
 			await resizeCanvas(canvasElement, 390);
-
-			await waitFor(() => {
-				expect(canvas.getByTestId('sheet')).toBeInTheDocument();
-			});
-			await expect(canvas.queryByTestId('sidebar')).not.toBeInTheDocument();
+			await assertMobileLayout(canvasElement);
 			await expect(canvas.getByTestId('map')).toBe(mapBeforeResize);
-			await expect(canvas.getAllByTestId('map')).toHaveLength(1);
 		} finally {
 			if (frame) {
 				frame.style.width = previousWidth;
 				frame.style.height = previousHeight;
-				win.dispatchEvent(new Event('resize'));
-				await nextFrame(win);
 			}
 		}
 	}}
