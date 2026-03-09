@@ -6,13 +6,10 @@ import { buildGoogleSheetCsvUrl, getPublicSheltersFromCsv } from '$lib/shelters/
 export const prerender = true;
 
 export const GET: RequestHandler = async ({ fetch }) => {
-	let sheetUrl: URL;
+	const sheetUrl = buildGoogleSheetCsvUrl(env.GOOGLE_SHEET_ID, env.GOOGLE_SHEET_GID);
 
-	try {
-		sheetUrl = buildGoogleSheetCsvUrl(env.GOOGLE_SHEET_ID, env.GOOGLE_SHEET_GID);
-	} catch (unknownError) {
-		const message = unknownError instanceof Error ? unknownError.message : 'Invalid sheet config';
-		throw error(500, message);
+	if (!sheetUrl) {
+		return json([]);
 	}
 
 	const response = await fetch(sheetUrl);

@@ -96,11 +96,9 @@ const pickCoordinates = (row: CsvRecord): { latitude: number; longitude: number 
 export const buildGoogleSheetCsvUrl = (
 	sheetId: string | undefined,
 	gid: string | undefined,
-): URL => {
+): URL | undefined => {
 	if (!sheetId) {
-		throw new Error(
-			'Missing GOOGLE_SHEET_ID. Set it in your environment before running the build.',
-		);
+		return undefined;
 	}
 
 	const url = new URL(`https://docs.google.com/spreadsheets/d/e/${sheetId}/pub`);

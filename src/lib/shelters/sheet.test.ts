@@ -61,15 +61,21 @@ describe('shelters mapping', () => {
 });
 
 describe('buildGoogleSheetCsvUrl', () => {
-	test('throws when sheet id is missing', () => {
-		expect(() => buildGoogleSheetCsvUrl(undefined, undefined)).toThrow('Missing GOOGLE_SHEET_ID');
+	test('returns undefined when sheet id is missing', () => {
+		expect(buildGoogleSheetCsvUrl(undefined, undefined)).toBeUndefined();
 	});
 
 	test('builds url with output=csv and optional gid', () => {
-		expect(buildGoogleSheetCsvUrl('sheet-id', '42').toString()).toBe(
+		const withGid = buildGoogleSheetCsvUrl('sheet-id', '42');
+		const withoutGid = buildGoogleSheetCsvUrl('sheet-id', undefined);
+
+		expect(withGid).toBeDefined();
+		expect(withoutGid).toBeDefined();
+
+		expect(withGid?.toString()).toBe(
 			'https://docs.google.com/spreadsheets/d/e/sheet-id/pub?output=csv&gid=42',
 		);
-		expect(buildGoogleSheetCsvUrl('sheet-id', undefined).toString()).toBe(
+		expect(withoutGid?.toString()).toBe(
 			'https://docs.google.com/spreadsheets/d/e/sheet-id/pub?output=csv',
 		);
 	});
