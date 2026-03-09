@@ -1,5 +1,6 @@
 import type { Shelter } from './types';
 import { parse } from 'csv-parse/sync';
+import { parseShelterHours } from './hours';
 
 type CsvRecord = Record<string, string>;
 
@@ -145,7 +146,7 @@ export const mapSheetRowToShelter = (row: CsvRecord): Shelter | null => {
 		petFriendly: toOptionalBoolean(row[SHEET_FIELDS.petFriendly]),
 		accessibility: toOptionalBoolean(row[SHEET_FIELDS.accessibility]),
 		hasBackupPower: toOptionalBoolean(row[SHEET_FIELDS.hasBackupPower]),
-		hoursAsShelter: toOptionalText(row[SHEET_FIELDS.hoursAsShelter]),
+		hours: parseShelterHours(row[SHEET_FIELDS.hoursAsShelter]),
 		specialInstructions: toOptionalText(row[SHEET_FIELDS.specialInstructions]),
 		shelterType: toOptionalText(row[SHEET_FIELDS.shelterType]),
 		photoUrls: toStringArray(row[SHEET_FIELDS.photoUrls]),
