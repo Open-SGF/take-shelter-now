@@ -5,9 +5,9 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: {
 		adapter: adapter(),
-		prerender: {
-			entries: ['*', '/shelters.json'],
-		},
+		// prerender: {
+		// 	entries: ['*', '/shelters.json'],
+		// },
 	},
 };
 
