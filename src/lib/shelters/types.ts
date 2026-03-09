@@ -1,3 +1,13 @@
+export type ShelterHoursInterval = {
+	startMinute: number;
+	endMinute: number;
+};
+
+export type ShelterHours = {
+	timeZone: string;
+	intervals: ShelterHoursInterval[];
+};
+
 export type Shelter = {
 	name: string;
 	addressLine1: string;
@@ -12,7 +22,7 @@ export type Shelter = {
 	petFriendly?: boolean;
 	accessibility?: boolean;
 	hasBackupPower?: boolean;
-	hoursAsShelter?: string;
+	hours?: ShelterHours;
 	specialInstructions?: string;
 	shelterType?: string;
 	photoUrls: string[];
