@@ -27,6 +27,12 @@ A website for helping people in weather emergencies find shelter fast.
 
 - Make sure you have [Node 24.x](https://nodejs.org) (Ideally using [nvm](https://github.com/nvm-sh/nvm))
 - Install dependencies `npm i`
+- Copy `.env.example` to `.env` and fill in the Google Sheet values
+
+### Required environment variables
+
+- `GOOGLE_SHEET_ID`: Published Google Sheet ID from `/spreadsheets/d/e/<ID>/pub`
+- `GOOGLE_SHEET_GID` (optional): Specific worksheet/tab gid to export as CSV
 
 ## Running the project
 

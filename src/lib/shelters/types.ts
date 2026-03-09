@@ -1,0 +1,20 @@
+export type Shelter = {
+	name: string;
+	addressLine1: string;
+	addressLine2: string;
+	city: string;
+	state: string;
+	zip: string;
+	latitude: number;
+	longitude: number;
+	capacity?: number;
+	category?: string;
+	petFriendly?: boolean;
+	accessibility?: boolean;
+	hasBackupPower?: boolean;
+	hoursAsShelter?: string;
+	specialInstructions?: string;
+	shelterType?: string;
+	photoUrls: string[];
+	lastUpdated?: string;
+};

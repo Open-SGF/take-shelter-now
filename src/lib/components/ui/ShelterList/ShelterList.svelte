@@ -1,19 +1,9 @@
 <script lang="ts">
 	import { ShelterCard } from '$lib/components/ui/ShelterCard';
+	import type { Shelter } from '$lib/shelters/types';
 	import { userLocation } from '$lib/stores/global';
 	import { calculateDistance } from '$lib/utils';
 	import { onMount } from 'svelte';
-
-	interface Shelter {
-		Name: string;
-		'Address Line 1': string;
-		'Address Line 2': string;
-		City: string;
-		State: string;
-		Zip: string;
-		Latitude: string;
-		Longitude: string;
-	}
 
 	let shelters: Array<Shelter & { distance: number }> = [];
 	let location: { latitude: number; longitude: number } | null = null;
@@ -35,8 +25,8 @@
 						distance: calculateDistance(
 							location!.latitude,
 							location!.longitude,
-							parseFloat(shelter.Latitude),
-							parseFloat(shelter.Longitude),
+							shelter.latitude,
+							shelter.longitude,
 						),
 					}))
 					.sort((a, b) => a.distance - b.distance);
@@ -57,10 +47,10 @@
 </script>
 
 <div class="pb-32" id="shelter_list">
-	{#each shelters as shelter (shelter.Name)}
+	{#each shelters as shelter (shelter.name)}
 		<ShelterCard
-			title={shelter.Name}
-			address={`${shelter['Address Line 1']}${shelter['Address Line 2'] ? ', ' + shelter['Address Line 2'] : ''}, ${shelter.City}, ${shelter.State} ${shelter.Zip}`}
+			title={shelter.name}
+			address={`${shelter.addressLine1}${shelter.addressLine2 ? ', ' + shelter.addressLine2 : ''}, ${shelter.city}, ${shelter.state} ${shelter.zip}`}
 			distance={shelter.distance}
 		/>
 	{/each}

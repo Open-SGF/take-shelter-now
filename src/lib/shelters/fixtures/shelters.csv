@@ -1,0 +1,5 @@
+Verification Status,Name,Address Line 1,Address Line 2,City,State,Zip,Latitude,Longitude,Building Latitude,Building Longitude,Capacity,Category,Pet Friendly,Accessibility,Has Backup Power,Hours as a Shelter,Special Instructions,Shelter Type,Photo URLs,Last Updated,(Internal) Shelter Contact Phone
+ OpEn ,  Alpha Shelter  , 123 Main St ,"Suite 100, Building A", Springfield , MO , 65806 ,37.208957,-93.292299,37.208111,-93.291111,"1,527",School,Yes,No,Yes,Non School Hours,"Enter Door 1, blue light above door.",Evac,"https://example.org/alpha-1.jpg, https://example.org/alpha-2.jpg",11/04/2025,555-000-1111
+Closed,Beta Shelter,456 Oak Ave,,Springfield,MO,65802,37.100000,-93.300000,37.100123,-93.300123,300,Church,No,Yes,No,24/7,,Post Impact,,10/01/2025,555-000-2222
+Open,Gamma Shelter,789 Elm St,,Springfield,MO,65807,not-a-number,-93.200000,bad-value,-93.200500,100,Other,,,Yes,,,Both,,11/07/2025,555-000-3333
+Open,Delta Shelter,910 Pine St,,Springfield,MO,65803,37.300000,-93.280000,,, ,Church,,,,,,Post Impact,,,
