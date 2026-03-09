@@ -1,6 +1,7 @@
 import type { Shelter } from './types';
 import { parse } from 'csv-parse/sync';
 import { parseShelterHours } from './hours';
+import { slugifyShelterName } from './slug';
 
 type CsvRecord = Record<string, string>;
 
@@ -126,6 +127,13 @@ export const mapSheetRowToShelter = (row: CsvRecord): Shelter | null => {
 		return null;
 	}
 
+	const name = toText(row[SHEET_FIELDS.name]);
+	const slug = slugifyShelterName(name);
+
+	if (name === '' || slug === '') {
+		return null;
+	}
+
 	const coordinates = pickCoordinates(row);
 
 	if (!coordinates) {
@@ -133,7 +141,8 @@ export const mapSheetRowToShelter = (row: CsvRecord): Shelter | null => {
 	}
 
 	return {
-		name: toText(row[SHEET_FIELDS.name]),
+		name,
+		slug,
 		addressLine1: toText(row[SHEET_FIELDS.addressLine1]),
 		addressLine2: toText(row[SHEET_FIELDS.addressLine2]),
 		city: toText(row[SHEET_FIELDS.city]),
