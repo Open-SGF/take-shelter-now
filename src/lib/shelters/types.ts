@@ -7,4 +7,14 @@ export type Shelter = {
 	zip: string;
 	latitude: number;
 	longitude: number;
+	capacity?: number;
+	category?: string;
+	petFriendly?: boolean;
+	accessibility?: boolean;
+	hasBackupPower?: boolean;
+	hoursAsShelter?: string;
+	specialInstructions?: string;
+	shelterType?: string;
+	photoUrls: string[];
+	lastUpdated?: string;
 };

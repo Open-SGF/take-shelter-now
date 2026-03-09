@@ -11,15 +11,87 @@ const SHEET_FIELDS = {
 	city: 'City',
 	state: 'State',
 	zip: 'Zip',
+	buildingLatitude: 'Building Latitude',
+	buildingLongitude: 'Building Longitude',
 	latitude: 'Latitude',
 	longitude: 'Longitude',
+	capacity: 'Capacity',
+	category: 'Category',
+	petFriendly: 'Pet Friendly',
+	accessibility: 'Accessibility',
+	hasBackupPower: 'Has Backup Power',
+	hoursAsShelter: 'Hours as a Shelter',
+	specialInstructions: 'Special Instructions',
+	shelterType: 'Shelter Type',
+	photoUrls: 'Photo URLs',
+	lastUpdated: 'Last Updated',
 } as const;
 
 const normalize = (value: string | undefined) => (value ?? '').trim().toLowerCase();
 
 const toText = (value: string | undefined) => (value ?? '').trim();
 
-const toNumber = (value: string | undefined) => Number.parseFloat((value ?? '').trim());
+const toOptionalText = (value: string | undefined): string | undefined => {
+	const trimmed = toText(value);
+	return trimmed === '' ? undefined : trimmed;
+};
+
+const toNumber = (value: string | undefined) => {
+	const trimmed = (value ?? '').trim();
+	if (trimmed === '') {
+		return Number.NaN;
+	}
+
+	return Number.parseFloat(trimmed.replace(/,/g, ''));
+};
+
+const toOptionalNumber = (value: string | undefined): number | undefined => {
+	const parsed = toNumber(value);
+	return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const toOptionalBoolean = (value: string | undefined): boolean | undefined => {
+	const normalizedValue = normalize(value);
+	if (normalizedValue === 'yes') {
+		return true;
+	}
+
+	if (normalizedValue === 'no') {
+		return false;
+	}
+
+	return undefined;
+};
+
+const toStringArray = (value: string | undefined): string[] => {
+	const trimmed = toText(value);
+	if (trimmed === '') {
+		return [];
+	}
+
+	return trimmed
+		.split(/[\n,]/)
+		.map((entry) => entry.trim())
+		.filter((entry) => entry !== '');
+};
+
+const pickCoordinates = (row: CsvRecord): { latitude: number; longitude: number } | null => {
+	const buildingLatitude = toNumber(row[SHEET_FIELDS.buildingLatitude]);
+	const buildingLongitude = toNumber(row[SHEET_FIELDS.buildingLongitude]);
+
+	if (Number.isFinite(buildingLatitude) && Number.isFinite(buildingLongitude)) {
+		return { latitude: buildingLatitude, longitude: buildingLongitude };
+	}
+
+	const latitude = toNumber(row[SHEET_FIELDS.latitude]);
+	const longitude = toNumber(row[SHEET_FIELDS.longitude]);
+
+	if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+		return { latitude, longitude };
+	}
+
+	return null;
+};
 
 export const buildGoogleSheetCsvUrl = (
 	sheetId: string | undefined,
@@ -55,10 +127,9 @@ export const mapSheetRowToShelter = (row: CsvRecord): Shelter | null => {
 		return null;
 	}
 
-	const latitude = toNumber(row[SHEET_FIELDS.latitude]);
-	const longitude = toNumber(row[SHEET_FIELDS.longitude]);
+	const coordinates = pickCoordinates(row);
 
-	if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+	if (!coordinates) {
 		return null;
 	}
 
@@ -69,8 +140,18 @@ export const mapSheetRowToShelter = (row: CsvRecord): Shelter | null => {
 		city: toText(row[SHEET_FIELDS.city]),
 		state: toText(row[SHEET_FIELDS.state]),
 		zip: toText(row[SHEET_FIELDS.zip]),
-		latitude,
-		longitude,
+		latitude: coordinates.latitude,
+		longitude: coordinates.longitude,
+		capacity: toOptionalNumber(row[SHEET_FIELDS.capacity]),
+		category: toOptionalText(row[SHEET_FIELDS.category]),
+		petFriendly: toOptionalBoolean(row[SHEET_FIELDS.petFriendly]),
+		accessibility: toOptionalBoolean(row[SHEET_FIELDS.accessibility]),
+		hasBackupPower: toOptionalBoolean(row[SHEET_FIELDS.hasBackupPower]),
+		hoursAsShelter: toOptionalText(row[SHEET_FIELDS.hoursAsShelter]),
+		specialInstructions: toOptionalText(row[SHEET_FIELDS.specialInstructions]),
+		shelterType: toOptionalText(row[SHEET_FIELDS.shelterType]),
+		photoUrls: toStringArray(row[SHEET_FIELDS.photoUrls]),
+		lastUpdated: toOptionalText(row[SHEET_FIELDS.lastUpdated]),
 	};
 };
 
