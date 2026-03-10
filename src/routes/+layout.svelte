@@ -4,18 +4,17 @@
 	import type { GeoPoint } from '$lib/geo';
 	import type { Snippet } from 'svelte';
 	import { Map, type MapMarker } from '$lib/components/ui/Map';
-	import { userLocation } from '$lib/stores/location';
-	import { createSheltersStore } from '$lib/stores/shelters';
-	import { setSheltersStoreContext } from '$lib/stores/shelters-context';
+	import { createAppState } from '$lib/state/app-state.svelte';
+	import { setAppStateContext } from '$lib/state/app-state-context';
 	import type { Shelter } from '$lib/shelters/types';
 
 	let { data, children }: { data: { shelters: Shelter[] }; children: Snippet } = $props();
 
-	const sheltersStore = createSheltersStore([]);
-	setSheltersStoreContext(sheltersStore);
+	const appState = createAppState([]);
+	setAppStateContext(appState);
 
 	$effect(() => {
-		sheltersStore.setShelters(data.shelters);
+		appState.setShelters(data.shelters);
 	});
 
 	const defaultCenter: GeoPoint = {
@@ -38,7 +37,7 @@
 		<Map
 			class="h-full w-full"
 			{markers}
-			currentLocation={$userLocation}
+			currentLocation={appState.location}
 			{defaultCenter}
 			defaultZoom={13}
 		/>

@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { ShelterCard } from '$lib/components/ui/ShelterCard';
-	import { getSheltersStoreContext } from '$lib/stores/shelters-context';
-	import { userLocation } from '$lib/stores/location';
+	import { getAppStateContext } from '$lib/state/app-state-context';
 
-	const sheltersStore = getSheltersStoreContext();
-	const sheltersWithDistance = sheltersStore.withDistance(userLocation);
+	const appState = getAppStateContext();
 </script>
 
 <div class="pb-32" id="shelter_list">
-	{#each $sheltersWithDistance as shelter (shelter.slug)}
+	{#each appState.sheltersWithDistance as shelter (shelter.slug)}
 		<ShelterCard
 			title={shelter.name}
 			address={`${shelter.addressLine1}${shelter.addressLine2 ? ', ' + shelter.addressLine2 : ''}, ${shelter.city}, ${shelter.state} ${shelter.zip}`}
