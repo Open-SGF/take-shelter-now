@@ -1,0 +1,12 @@
+import { getContext, setContext } from 'svelte';
+import type { AppState } from './app-state.svelte';
+
+const APP_STATE_CONTEXT_KEY = Symbol('app-state');
+
+export const setAppStateContext = (appState: AppState) => {
+	setContext(APP_STATE_CONTEXT_KEY, appState);
+};
+
+export const getAppStateContext = () => {
+	return getContext<AppState>(APP_STATE_CONTEXT_KEY);
+};
