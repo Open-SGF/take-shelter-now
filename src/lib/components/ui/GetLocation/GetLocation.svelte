@@ -1,5 +1,5 @@
 <script>
-	import { hasLocation, userLocation } from '$lib/stores/global';
+	import { userLocation } from '$lib/stores/location';
 	import { Button } from '$lib/components/ui/button';
 
 	function enableLocation() {
@@ -10,7 +10,6 @@
 						latitude: position.coords.latitude,
 						longitude: position.coords.longitude,
 					});
-					hasLocation.set(true);
 				},
 				(error) => {
 					console.error('Error getting location:', error);
