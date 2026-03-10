@@ -9,3 +9,5 @@ export type MapViewportChangedDetail = {
 	trigger: 'markers';
 	mode: 'default' | 'single' | 'bounds';
 };
+
+export type MapViewportWillChangeDetail = MapViewportChangedDetail;

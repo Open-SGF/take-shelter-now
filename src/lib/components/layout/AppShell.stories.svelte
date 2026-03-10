@@ -27,6 +27,10 @@
 			expect(canvas.getAllByTestId('map-marker').length).toBeGreaterThan(0);
 		});
 
+		await waitFor(() => {
+			expect(canvas.getByTestId('map-viewport-settled-count')).toHaveTextContent(/^[1-9]\d*$/);
+		});
+
 		await expect(canvas.getByText('Shelter Results')).toBeInTheDocument();
 		await expect(canvas.getAllByTestId('map')).toHaveLength(1);
 	};
@@ -47,18 +51,34 @@
 			expect(canvas.getAllByTestId('map-marker').length).toBeGreaterThan(0);
 		});
 
+		await waitFor(() => {
+			expect(canvas.getByTestId('map-viewport-settled-count')).toHaveTextContent(/^[1-9]\d*$/);
+		});
+
 		await expect(canvas.getByText('Shelter Results')).toBeInTheDocument();
 		await expect(canvas.getAllByTestId('map')).toHaveLength(1);
 	};
 </script>
 
+<script lang="ts">
+	let mapViewportSettledCount = $state(0);
+</script>
+
 {#snippet DefaultTemplate()}
 	<AppShell>
 		{#snippet map()}
-			<Map class="h-full w-full" markers={shelterMarkers} defaultZoom={13} />
+			<Map
+				class="h-full w-full"
+				markers={shelterMarkers}
+				defaultZoom={13}
+				onViewportChanged={() => {
+					mapViewportSettledCount += 1;
+				}}
+			/>
 		{/snippet}
 
 		<div class="space-y-4 p-4">
+			<div class="sr-only" data-testid="map-viewport-settled-count">{mapViewportSettledCount}</div>
 			<div>
 				<h2 class="text-lg font-semibold text-slate-900">Shelter Results</h2>
 				<p class="text-sm text-slate-600">Tap a shelter to update map context.</p>

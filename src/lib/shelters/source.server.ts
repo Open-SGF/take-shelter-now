@@ -7,7 +7,7 @@ export const loadSheltersAtBuildTime = async (fetchFn: typeof fetch): Promise<Sh
 	const sheetUrl = buildGoogleSheetCsvUrl(env.GOOGLE_SHEET_ID, env.GOOGLE_SHEET_GID);
 
 	if (!sheetUrl) {
-		throw error(500, 'Shelter source is not configured.');
+		return [];
 	}
 
 	const response = await fetchFn(sheetUrl);
