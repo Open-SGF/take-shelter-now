@@ -18,6 +18,7 @@ describe('shelters mapping', () => {
 		expect(shelters).toEqual([
 			{
 				name: 'Alpha Shelter',
+				slug: 'alpha-shelter',
 				addressLine1: '123 Main St',
 				addressLine2: 'Suite 100, Building A',
 				city: 'Springfield',
@@ -48,6 +49,7 @@ describe('shelters mapping', () => {
 			},
 			{
 				name: 'Delta Shelter',
+				slug: 'delta-shelter',
 				addressLine1: '910 Pine St',
 				addressLine2: '',
 				city: 'Springfield',

@@ -5,9 +5,17 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: {
 		adapter: adapter(),
-		// prerender: {
-		// 	entries: ['*', '/shelters.json'],
-		// },
+		prerender: {
+			handleUnseenRoutes: ({ routes }) => {
+				const onlyMissingShelterSlug = routes.length === 1 && routes[0] === '/shelters/[slug]';
+
+				if (onlyMissingShelterSlug) {
+					return;
+				}
+
+				throw new Error(`Unseen prerender routes: ${routes.join(', ')}`);
+			},
+		},
 	},
 };
 

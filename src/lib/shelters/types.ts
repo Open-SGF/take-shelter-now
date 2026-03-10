@@ -10,6 +10,7 @@ export type ShelterHours = {
 
 export type Shelter = {
 	name: string;
+	slug: string;
 	addressLine1: string;
 	addressLine2: string;
 	city: string;

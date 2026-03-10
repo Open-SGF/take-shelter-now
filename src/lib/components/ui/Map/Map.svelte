@@ -7,7 +7,7 @@
 	import { buildMarkerSignature, buildPointSignature, filterValidMarkers } from './markers';
 	import { createRecenterPlan } from './viewport';
 	import { loadBasemapStyle, loadLeaflet } from './leaflet-loader';
-	import type { MapMarker, MapViewportChangedDetail } from './types';
+	import type { MapMarker, MapViewportChangedDetail, MapViewportWillChangeDetail } from './types';
 
 	const DEFAULT_MAP_CENTER: GeoPoint = {
 		latitude: 37.208957,
@@ -22,6 +22,7 @@
 		minZoom?: number;
 		maxZoom?: number;
 		onMarkerTap?: (marker: MapMarker) => void;
+		onViewportWillChange?: (detail: MapViewportWillChangeDetail) => void;
 		onViewportChanged?: (detail: MapViewportChangedDetail) => void;
 		class?: string;
 	};
@@ -34,6 +35,7 @@
 		minZoom = 3,
 		maxZoom = 19,
 		onMarkerTap,
+		onViewportWillChange,
 		onViewportChanged,
 		class: className,
 	}: MapProps = $props();
@@ -44,6 +46,7 @@
 	let basemapLayer: Leaflet.Layer | null = null;
 	let markerLayer: Leaflet.LayerGroup | null = null;
 	let currentLocationMarker: Leaflet.Marker | null = null;
+	let pendingViewportChangedHandler: (() => void) | null = null;
 	let lastMarkerSignature = '';
 	let lastCurrentLocationSignature = '';
 	let isReady = $state(false);
@@ -107,6 +110,36 @@
 		});
 	};
 
+	const clearPendingViewportChangedHandler = () => {
+		if (!map || !pendingViewportChangedHandler) return;
+
+		map.off('moveend', pendingViewportChangedHandler);
+		pendingViewportChangedHandler = null;
+	};
+
+	const runViewportUpdate = (
+		detail: MapViewportChangedDetail,
+		applyViewport: (mapInstance: Leaflet.Map) => void,
+	) => {
+		if (!map) return;
+
+		onViewportWillChange?.(detail);
+		clearPendingViewportChangedHandler();
+
+		const mapInstance = map;
+		const handleViewportChanged = () => {
+			if (pendingViewportChangedHandler !== handleViewportChanged) return;
+
+			mapInstance.off('moveend', handleViewportChanged);
+			pendingViewportChangedHandler = null;
+			onViewportChanged?.(detail);
+		};
+
+		pendingViewportChangedHandler = handleViewportChanged;
+		mapInstance.on('moveend', handleViewportChanged);
+		applyViewport(mapInstance);
+	};
+
 	const recenterMapToMarkers = () => {
 		if (!map) return;
 
@@ -119,11 +152,12 @@
 				mode: plan.mode,
 			};
 
-			map.fitBounds(
-				plan.bounds.map((marker) => toLatLngTuple(marker)),
-				plan.options,
-			);
-			onViewportChanged?.(detail);
+			runViewportUpdate(detail, (mapInstance) => {
+				mapInstance.fitBounds(
+					plan.bounds.map((marker) => toLatLngTuple(marker)),
+					plan.options,
+				);
+			});
 			return;
 		}
 
@@ -132,8 +166,9 @@
 			mode: plan.mode,
 		};
 
-		map.setView(toLatLngTuple(plan.center), plan.zoom);
-		onViewportChanged?.(detail);
+		runViewportUpdate(detail, (mapInstance) => {
+			mapInstance.setView(toLatLngTuple(plan.center), plan.zoom);
+		});
 	};
 
 	const renderMarkers = () => {
@@ -225,6 +260,7 @@
 
 		return () => {
 			disposed = true;
+			clearPendingViewportChangedHandler();
 
 			if (currentLocationMarker) {
 				currentLocationMarker.remove();

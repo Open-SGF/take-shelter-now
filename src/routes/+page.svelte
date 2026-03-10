@@ -1,7 +1,7 @@
 <script lang="ts">
 	import GetLocation from '$lib/components/ui/GetLocation/GetLocation.svelte';
 	import ShelterList from '$lib/components/ui/ShelterList/ShelterList.svelte';
-	import { hasLocation } from '$lib/stores/global';
+	import { hasLocation } from '$lib/stores/location';
 </script>
 
 <div class="p-4 pt-6">

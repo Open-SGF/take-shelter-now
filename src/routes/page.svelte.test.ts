@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import { render, screen } from '@testing-library/svelte';
-import { hasLocation } from '$lib/stores/global';
+import { userLocation } from '$lib/stores/location';
 import Page from './+page.svelte';
 
 describe('/+page.svelte', () => {
 	beforeEach(() => {
-		hasLocation.set(false);
+		userLocation.set(null);
 	});
 
 	test('renders location call-to-action by default', () => {
