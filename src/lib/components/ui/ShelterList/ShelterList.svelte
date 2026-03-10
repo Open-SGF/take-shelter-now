@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ShelterCard } from '$lib/components/ui/ShelterCard';
+	import { ShelterListItem } from '$lib/components/ui/ShelterListItem';
 	import type { AppState } from '$lib/state/app-state.svelte';
 	import { getAppStateContext } from '$lib/state/app-state-context';
 
@@ -41,12 +41,7 @@
 	{:else}
 		<div class="space-y-3" data-testid="shelter-list-ready">
 			{#each appState.sheltersWithDistance as shelter (shelter.slug)}
-				<ShelterCard
-					title={shelter.name}
-					address={`${shelter.addressLine1}${shelter.addressLine2 ? ', ' + shelter.addressLine2 : ''}, ${shelter.city}, ${shelter.state} ${shelter.zip}`}
-					distance={shelter.distance}
-					slug={shelter.slug}
-				/>
+				<ShelterListItem {shelter} distanceMiles={shelter.distance} />
 			{/each}
 		</div>
 	{/if}
