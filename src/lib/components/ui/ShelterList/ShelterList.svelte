@@ -4,51 +4,6 @@
 	import { calculateDistance } from '$lib/utils';
 	import { onMount } from 'svelte';
 
-	const DEMO_SHELTERS: Shelter[] = [
-		{
-			id: 9001,
-			name: 'Wilder Elementary School',
-			address_line1: '2526 S. Hilsboro St.',
-			address_line2: null,
-			city: 'Springfield',
-			state: 'MO',
-			zip: '65807',
-			latitude: 37.1820,
-			longitude: -93.2950,
-			capacity: 200,
-			category: 'School',
-			shelter_type: 'Post Impact',
-			accessibility: 'Yes',
-			pet_friendly: 'No',
-			has_backup_power: 'No',
-			hours_as_shelter: 'Non-school hours',
-			special_instructions: null,
-			verification_status: 'Open',
-			availability_status: 'Full',
-		},
-		{
-			id: 9002,
-			name: 'Kingsway United Methodist Church',
-			address_line1: '2401 South Lone Pine',
-			address_line2: null,
-			city: 'Springfield',
-			state: 'MO',
-			zip: '65804',
-			latitude: 37.1865,
-			longitude: -93.2612,
-			capacity: 150,
-			category: 'Church',
-			shelter_type: 'Post Impact',
-			accessibility: 'Yes',
-			pet_friendly: 'No',
-			has_backup_power: 'Yes',
-			hours_as_shelter: null,
-			special_instructions: null,
-			verification_status: 'Open',
-			availability_status: 'Available',
-		},
-	];
-
 	let location: { latitude: number; longitude: number } | null = null;
 
 	userLocation.subscribe((value) => {
@@ -56,12 +11,39 @@
 		loadAndSortShelters();
 	});
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	function mapShelter(raw: any, index: number): Shelter {
+		return {
+			id: index,
+			name: raw['Name'] ?? '',
+			address_line1: raw['Address Line 1'] ?? '',
+			address_line2: raw['Address Line 2'] || null,
+			city: raw['City'] ?? '',
+			state: raw['State'] ?? '',
+			zip: raw['Zip'] ?? '',
+			latitude: parseFloat(raw['Latitude']),
+			longitude: parseFloat(raw['Longitude']),
+			capacity: raw['Capacity'] && raw['Capacity'] !== '0' ? parseInt(raw['Capacity']) : null,
+			category: raw['Category'] || null,
+			shelter_type: raw['Shelter Type'] || null,
+			accessibility: raw['Accesibility'] || null,
+			pet_friendly: raw['Pet Friendly'] || null,
+			has_backup_power: raw['Has Backup Power'] || null,
+			hours_as_shelter: raw['Hours as a Shelter'] || null,
+			special_instructions: raw['Special Instructions'] || null,
+			verification_status: raw['Verification Status'] || null,
+			availability_status: null,
+		};
+	}
+
 	async function loadAndSortShelters() {
 		try {
-			const apiUrl = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:5000';
-			const response = await fetch(`${apiUrl}/api/shelters`);
-			const json = await response.json();
-			const data: Shelter[] = [...json.shelters, ...DEMO_SHELTERS];
+			const response = await fetch('/shelters.json');
+			const raw = await response.json();
+
+			const data: Shelter[] = raw
+				.filter((r: any) => r['Verification Status'] !== 'Permanently Closed')
+				.map(mapShelter);
 
 			if (location) {
 				shelters.set(
@@ -78,24 +60,10 @@
 						.sort((a, b) => a.distance - b.distance),
 				);
 			} else {
-				shelters.set(
-					data.map((shelter) => ({
-						...shelter,
-						distance: null,
-					})),
-				);
+				shelters.set(data.map((shelter) => ({ ...shelter, distance: null })));
 			}
 		} catch (error) {
 			console.error('Error loading shelters:', error);
-			// Fall back to demo shelters if API is unavailable
-			shelters.set(
-				DEMO_SHELTERS.map((shelter) => ({
-					...shelter,
-					distance: location
-						? calculateDistance(location.latitude, location.longitude, shelter.latitude, shelter.longitude)
-						: null,
-				})),
-			);
 		}
 	}
 
@@ -110,7 +78,13 @@
 			title={shelter.name}
 			address={`${shelter.address_line1}${shelter.address_line2 ? ', ' + shelter.address_line2 : ''}, ${shelter.city}, ${shelter.state} ${shelter.zip}`}
 			distance={shelter.distance}
-			available={shelter.availability_status}
+			category={shelter.category}
+			shelterType={shelter.shelter_type}
+			capacity={shelter.capacity}
+			accessibility={shelter.accessibility}
+			petFriendly={shelter.pet_friendly}
+			hasBackupPower={shelter.has_backup_power}
+			hoursAsShelter={shelter.hours_as_shelter}
 			onclick={() => selectedShelter.set({ lat: shelter.latitude, lng: shelter.longitude })}
 		/>
 	{/each}

@@ -4,6 +4,8 @@
 	import { Sidebar } from '$lib/components/ui/Sidebar';
 	import GetLocation from '$lib/components/ui/GetLocation/GetLocation.svelte';
 	import ShelterList from '$lib/components/ui/ShelterList/ShelterList.svelte';
+	import { WeatherAlerts } from '$lib/components/ui/WeatherAlerts';
+	import { ToastContainer } from '$lib/components/ui/ToastContainer';
 	import { hasLocation, userLocation, shelters, selectedShelter } from '$lib/stores/global';
 
 	import L from 'leaflet';
@@ -19,6 +21,7 @@
 	let radarLayer: L.TileLayer | undefined;
 	let radarRefreshInterval: ReturnType<typeof setInterval>;
 	let isLocating = $state(true);
+	let showRadar = $state(false);
 
 	async function loadRadarOverlay() {
 		try {
@@ -36,7 +39,7 @@
 
 			radarLayer = L.tileLayer(tileUrl, {
 				tileSize: 256,
-				opacity: 0.5,
+				opacity: 0.3,
 				maxNativeZoom: 7,
 				maxZoom: 30,
 				zIndex: 10,
@@ -47,8 +50,18 @@
 		}
 	}
 
+	function toggleRadar() {
+		showRadar = !showRadar;
+		if (showRadar) {
+			loadRadarOverlay();
+		} else if (radarLayer) {
+			radarLayer.remove();
+			radarLayer = undefined;
+		}
+	}
+
 	onMount(() => {
-		map = L.map(mapElement!, {
+map = L.map(mapElement!, {
 			center: [37.208957, -93.292299],
 			zoom: 13,
 			preferCanvas: true,
@@ -62,9 +75,10 @@
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 		}).addTo(map);
 
-		// Load radar overlay and refresh every 5 minutes
-		loadRadarOverlay();
-		radarRefreshInterval = setInterval(loadRadarOverlay, 5 * 60 * 1000);
+		// Radar overlay is off by default; refresh interval starts only when enabled
+		radarRefreshInterval = setInterval(() => {
+			if (showRadar) loadRadarOverlay();
+		}, 5 * 60 * 1000);
 
 		// Automatically request location on page load
 		if (navigator.geolocation) {
@@ -164,23 +178,32 @@
 				const lat = shelter.latitude;
 				const lng = shelter.longitude;
 
-				// Add to bounds
 				bounds.extend([lat, lng]);
 
-				// Create marker
-				const marker = L.marker([lat, lng], {
-					title: shelter.name,
-				}).addTo(map);
+				const isSPS = shelter.category === 'SPS Tornado Safe Room';
 
-				// Add popup with shelter info and Google Maps link
+				const icon = L.divIcon({
+					className: '',
+					html: `<div style="
+						width:14px;height:14px;border-radius:50%;
+						background:${isSPS ? '#7c3aed' : '#0892d2'};
+						border:2px solid ${isSPS ? '#5b21b6' : '#0670a8'};
+						box-shadow:0 1px 4px rgba(0,0,0,0.35);
+					"></div>`,
+					iconSize: [14, 14],
+					iconAnchor: [7, 7],
+				});
+
+				const marker = L.marker([lat, lng], { title: shelter.name, icon }).addTo(map);
+
 				const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-				const availBadge = shelter.availability_status
-					? `<span style="display:inline-block;margin-top:6px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;background:${shelter.availability_status === 'Full' ? '#fee2e2' : '#dcfce7'};color:${shelter.availability_status === 'Full' ? '#b91c1c' : '#15803d'};">${shelter.availability_status}</span><br>`
+				const doorNote = shelter.special_instructions
+					? `<div style="margin-top:4px;font-size:11px;color:#555;">${shelter.special_instructions}</div>`
 					: '';
 				marker.bindPopup(`
 					<strong>${shelter.name}</strong><br>
 					${shelter.address_line1}<br>
-					${availBadge}
+					${doorNote}
 					<a href="${googleMapsUrl}" target="_blank" rel="noopener noreferrer" class="google-maps-link">
 						Open in Google Maps
 					</a>
@@ -200,6 +223,8 @@
 	});
 </script>
 
+<ToastContainer />
+
 <div class="relative m-0 h-dvh bg-[#e2e0e1]">
 	<div class="fixed top-0 z-[60] w-full">
 		<Header />
@@ -208,6 +233,7 @@
 	<!-- Desktop Sidebar -->
 	<Sidebar width={SIDEBAR_WIDTH}>
 		<Sheet>
+			<WeatherAlerts />
 			{#if isLocating || !$hasLocation}
 				<div class="mb-4">
 					{#if isLocating}
@@ -235,6 +261,7 @@
 	<!-- Mobile Bottom Sheet -->
 	<div class="fixed bottom-0 z-50 h-1/2 w-screen overflow-y-auto md:hidden">
 		<Sheet>
+			<WeatherAlerts />
 			{#if isLocating || !$hasLocation}
 				<div class="mb-4">
 					{#if isLocating}
@@ -258,6 +285,19 @@
 			<ShelterList />
 		</Sheet>
 	</div>
+
+	<!-- Radar toggle button -->
+	<button
+		onclick={toggleRadar}
+		class="fixed bottom-[calc(50%+0.75rem)] left-2 z-[55] flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-md transition-colors md:bottom-8 md:left-4
+			{showRadar ? 'bg-[#0892d2] text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}"
+		title="{showRadar ? 'Hide' : 'Show'} radar overlay"
+	>
+		<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+		</svg>
+		Radar
+	</button>
 
 	<!-- Map container: adjusts width on desktop to accommodate sidebar -->
 	<div

@@ -33,3 +33,17 @@ export const shelters = writable<Array<Shelter & { distance: number | null }>>([
 
 // Stores the selected shelter coordinates for map zoom
 export const selectedShelter = writable<{ lat: number; lng: number } | null>(null);
+
+// Stores active NWS weather alerts
+export interface WeatherAlert {
+	id: string;
+	properties: {
+		event: string;
+		headline: string | null;
+		description: string;
+		severity: 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown';
+		areaDesc: string;
+		effective: string;
+		expires: string;
+	};
+}
