@@ -1,30 +1,20 @@
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '$lib/utils.js';
+	import type { Snippet } from 'svelte';
 
-	interface Props {
-		/** Width of the sidebar in pixels (320-400px recommended) */
-		width?: number;
-		/** Additional classes to apply to the sidebar */
+	type SidebarProps = {
 		class?: string;
-		/** Content to render inside the sidebar */
-		children?: import('svelte').Snippet;
-	}
+		children?: Snippet;
+	};
 
-	let { width = 360, class: className, children }: Props = $props();
-
-	const HEADER_HEIGHT = 72;
+	let { class: className, children }: SidebarProps = $props();
 </script>
 
 <aside
-	class={cn(
-		'bg-sidebar text-sidebar-foreground fixed right-0 z-50',
-		'overflow-y-auto transition-all duration-300 ease-in-out',
-		'hidden md:block',
-		className,
-	)}
-	style="width: {width}px; top: {HEADER_HEIGHT}px; height: calc(100dvh - {HEADER_HEIGHT}px);"
+	data-testid="sidebar"
+	class={cn('flex h-full w-[360px] flex-col bg-white shadow-lg', className)}
 >
-	{#if children}
-		{@render children()}
-	{/if}
+	<div data-testid="sidebar-content" class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+		{@render children?.()}
+	</div>
 </aside>

@@ -6,4 +6,10 @@ export default defineConfig({
 		port: 4173,
 	},
 	testDir: 'e2e',
+	use: {
+		launchOptions: {
+			// Keep headless WebGL stable in CI/headless by using software rendering.
+			args: ['--use-gl=angle', '--use-angle=swiftshader'],
+		},
+	},
 });

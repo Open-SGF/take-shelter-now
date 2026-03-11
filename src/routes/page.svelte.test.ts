@@ -1,14 +1,22 @@
-import { describe, test, expect } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import { render, screen } from '@testing-library/svelte';
+import { createAppState } from '$lib/state/app-state.svelte';
 import Page from './+page.svelte';
 
+let appState = createAppState([]);
+
+vi.mock('$lib/state/app-state-context', () => ({
+	getAppStateContext: () => appState,
+}));
+
 describe('/+page.svelte', () => {
-	test('should render h1', () => {
+	beforeEach(() => {
+		appState = createAppState([]);
+	});
+
+	test('renders location call-to-action by default', () => {
 		render(Page);
-		// There are two h1s: one for desktop sidebar and one for mobile bottom sheet
-		const headings = screen.getAllByRole('heading', { level: 1 });
-		expect(headings.length).toBeGreaterThanOrEqual(1);
-		expect(headings[0]).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Current Location' })).toBeInTheDocument();
 	});
 });

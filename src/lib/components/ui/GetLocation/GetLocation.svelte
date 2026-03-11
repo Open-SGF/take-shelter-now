@@ -1,16 +1,17 @@
 <script>
-	import { hasLocation, userLocation } from '$lib/stores/global';
 	import { Button } from '$lib/components/ui/button';
+	import { getAppStateContext } from '$lib/state/app-state-context';
+
+	const appState = getAppStateContext();
 
 	function enableLocation() {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
 				(position) => {
-					userLocation.set({
+					appState.setLocation({
 						latitude: position.coords.latitude,
 						longitude: position.coords.longitude,
 					});
-					hasLocation.set(true);
 				},
 				(error) => {
 					console.error('Error getting location:', error);

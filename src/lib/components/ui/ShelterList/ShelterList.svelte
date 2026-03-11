@@ -1,91 +1,48 @@
 <script lang="ts">
-	import { ShelterCard } from '$lib/components/ui/ShelterCard';
-	import { userLocation, shelters, selectedShelter, type Shelter } from '$lib/stores/global';
-	import { calculateDistance } from '$lib/utils';
-	import { onMount } from 'svelte';
+	import { ShelterListItem } from '$lib/components/ui/ShelterListItem';
+	import type { AppState } from '$lib/state/app-state.svelte';
+	import { getAppStateContext } from '$lib/state/app-state-context';
 
-	let location: { latitude: number; longitude: number } | null = null;
+	type ShelterListProps = {
+		appState?: AppState;
+	};
 
-	userLocation.subscribe((value) => {
-		location = value;
-		loadAndSortShelters();
-	});
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function mapShelter(raw: any, index: number): Shelter {
-		return {
-			id: index,
-			name: raw['Name'] ?? '',
-			address_line1: raw['Address Line 1'] ?? '',
-			address_line2: raw['Address Line 2'] || null,
-			city: raw['City'] ?? '',
-			state: raw['State'] ?? '',
-			zip: raw['Zip'] ?? '',
-			latitude: parseFloat(raw['Latitude']),
-			longitude: parseFloat(raw['Longitude']),
-			capacity: raw['Capacity'] && raw['Capacity'] !== '0' ? parseInt(raw['Capacity']) : null,
-			category: raw['Category'] || null,
-			shelter_type: raw['Shelter Type'] || null,
-			accessibility: raw['Accesibility'] || null,
-			pet_friendly: raw['Pet Friendly'] || null,
-			has_backup_power: raw['Has Backup Power'] || null,
-			hours_as_shelter: raw['Hours as a Shelter'] || null,
-			special_instructions: raw['Special Instructions'] || null,
-			verification_status: raw['Verification Status'] || null,
-			availability_status: null,
-		};
-	}
-
-	async function loadAndSortShelters() {
-		try {
-			const response = await fetch('/shelters.json');
-			const raw = await response.json();
-
-			const data: Shelter[] = raw
-				.filter((r: any) => r['Verification Status'] !== 'Permanently Closed')
-				.map(mapShelter);
-
-			if (location) {
-				shelters.set(
-					data
-						.map((shelter) => ({
-							...shelter,
-							distance: calculateDistance(
-								location!.latitude,
-								location!.longitude,
-								shelter.latitude,
-								shelter.longitude,
-							),
-						}))
-						.sort((a, b) => a.distance - b.distance),
-				);
-			} else {
-				shelters.set(data.map((shelter) => ({ ...shelter, distance: null })));
-			}
-		} catch (error) {
-			console.error('Error loading shelters:', error);
-		}
-	}
-
-	onMount(() => {
-		loadAndSortShelters();
-	});
+	let { appState = getAppStateContext() }: ShelterListProps = $props();
 </script>
 
-<div class="pb-32" id="shelter_list">
-	{#each $shelters as shelter (shelter.id)}
-		<ShelterCard
-			title={shelter.name}
-			address={`${shelter.address_line1}${shelter.address_line2 ? ', ' + shelter.address_line2 : ''}, ${shelter.city}, ${shelter.state} ${shelter.zip}`}
-			distance={shelter.distance}
-			category={shelter.category}
-			shelterType={shelter.shelter_type}
-			capacity={shelter.capacity}
-			accessibility={shelter.accessibility}
-			petFriendly={shelter.pet_friendly}
-			hasBackupPower={shelter.has_backup_power}
-			hoursAsShelter={shelter.hours_as_shelter}
-			onclick={() => selectedShelter.set({ lat: shelter.latitude, lng: shelter.longitude })}
-		/>
-	{/each}
+<div class="pb-32" id="shelter_list" data-testid="shelter-list">
+	{#if appState.shelterDataState.kind === 'loading'}
+		<div class="space-y-3" data-testid="shelter-list-loading">
+			<p class="text-sm text-slate-600">Loading nearby shelters...</p>
+			{#each Array.from({ length: 3 }, (_, index) => index) as index (index)}
+				<div class="animate-pulse rounded-xl border border-slate-200 bg-white p-4">
+					<div class="h-4 w-2/3 rounded bg-slate-200"></div>
+					<div class="mt-3 h-3 w-11/12 rounded bg-slate-100"></div>
+					<div class="mt-2 h-3 w-1/3 rounded bg-slate-100"></div>
+				</div>
+			{/each}
+		</div>
+	{:else if appState.shelterDataState.kind === 'error'}
+		<div
+			class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-900"
+			data-testid="shelter-list-error"
+		>
+			<p class="text-sm font-semibold">Unable to load shelters.</p>
+			<p class="mt-1 text-sm">{appState.shelterDataState.message}</p>
+		</div>
+	{:else if appState.shelterDataState.kind === 'empty'}
+		<div
+			class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-800"
+			data-testid="shelter-list-empty"
+		>
+			<p class="text-sm font-semibold">No shelters available right now.</p>
+			<p class="mt-1 text-sm text-slate-600">Check back soon for updated shelter availability.</p>
+		</div>
+	{:else}
+		<div class="space-y-3" data-testid="shelter-list-ready">
+			{#each appState.sheltersWithDistance as shelter (shelter.slug)}
+				<ShelterListItem {shelter} distanceMiles={shelter.distance} />
+			{/each}
+		</div>
+	{/if}
 </div>
