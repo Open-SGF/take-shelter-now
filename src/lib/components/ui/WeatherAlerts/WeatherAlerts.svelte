@@ -1,9 +1,25 @@
 <script lang="ts">
-	import { userLocation, type WeatherAlert } from '$lib/stores/global';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { addToast } from '$lib/stores/toasts';
+	import { getAppStateContext } from '$lib/state/app-state-context';
 	import { onMount, onDestroy } from 'svelte';
 
-	let seenIds = new Set<string>();
+	type WeatherAlert = {
+		id: string;
+		properties: {
+			event: string;
+			headline: string;
+			description: string;
+			severity: string;
+			areaDesc: string;
+			effective: string;
+			expires: string;
+		};
+	};
+
+	const appState = getAppStateContext();
+
+	let seenIds = new SvelteSet<string>();
 
 	let alerts = $state<WeatherAlert[]>([]);
 	let loading = $state(true);
@@ -26,7 +42,7 @@
 
 	async function fetchAlerts() {
 		try {
-			const loc = $userLocation ?? { latitude: 37.2090, longitude: -93.2923 }; // default: Springfield, MO
+			const loc = appState.location ?? { latitude: 37.2090, longitude: -93.2923 }; // default: Springfield, MO
 			const url = `https://api.weather.gov/alerts/active?point=${loc.latitude.toFixed(4)},${loc.longitude.toFixed(4)}&status=actual`;
 
 			const res = await fetch(url, {
@@ -47,7 +63,7 @@
 						addToast({
 							event: alert.properties.event,
 							areaDesc: alert.properties.areaDesc,
-							severity: alert.properties.severity,
+							severity: alert.properties.severity as 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown',
 						});
 					}
 				}
@@ -65,6 +81,20 @@
 		}
 	}
 
+	const DEMO_ALERT: WeatherAlert = {
+		id: 'demo-alert-1',
+		properties: {
+			event: 'Tornado Warning',
+			headline: 'Tornado Warning issued for Greene County until 8:45 PM CDT',
+			description:
+				'THE NATIONAL WEATHER SERVICE IN SPRINGFIELD HAS ISSUED A TORNADO WARNING FOR GREENE COUNTY UNTIL 845 PM CDT.\n\nA LARGE AND EXTREMELY DANGEROUS TORNADO WAS LOCATED NEAR REPUBLIC, MOVING NORTHEAST AT 35 MPH.\n\nTAKE COVER NOW! Move to a basement or an interior room on the lowest floor of a sturdy building.',
+			severity: 'Extreme',
+			areaDesc: 'Greene County, MO',
+			effective: new Date().toISOString(),
+			expires: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
+		},
+	};
+
 	onMount(() => {
 		fetchAlerts();
 		refreshInterval = setInterval(fetchAlerts, 60 * 1000);
@@ -74,7 +104,7 @@
 
 	// Refetch when location becomes available
 	$effect(() => {
-		if ($userLocation) fetchAlerts();
+		if (appState.location) fetchAlerts();
 	});
 
 	function formatExpires(iso: string) {
@@ -95,11 +125,54 @@
 		Unable to load weather alerts.
 	</div>
 {:else if alerts.length === 0}
-	<div class="mb-3 flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">
-		<svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-		</svg>
-		No active weather alerts for your area.
+	<!-- DEMO ALERT - remove before launch -->
+	{@const colors = severityColor(DEMO_ALERT.properties.severity)}
+	<div class="mb-2 rounded bg-yellow-50 px-2 py-1 text-[10px] text-yellow-700 border border-yellow-200">
+		⚠ Demo alert — no real alerts active
+	</div>
+	<div class="mb-3 space-y-2">
+		<div class="flex items-center gap-2">
+			<svg class="h-4 w-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+			</svg>
+			<span class="text-sm font-bold text-gray-800">1 Active Weather Alert</span>
+		</div>
+		<div class="overflow-hidden rounded-lg border {colors.border} shadow-sm">
+			<button
+				class="flex w-full items-start gap-2 {colors.bg} {colors.text} px-3 py-2 text-left"
+				onclick={() => (expandedId = expandedId === DEMO_ALERT.id ? null : DEMO_ALERT.id)}
+			>
+				<span class="mt-0.5 shrink-0">
+					<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+					</svg>
+				</span>
+				<div class="min-w-0 flex-1">
+					<div class="flex items-center gap-2">
+						<span class="text-sm font-bold leading-tight">{DEMO_ALERT.properties.event}</span>
+						<span class="shrink-0 rounded-full {colors.badge} px-2 py-0.5 text-[10px] font-semibold uppercase">
+							{DEMO_ALERT.properties.severity}
+						</span>
+					</div>
+					<p class="mt-0.5 truncate text-xs opacity-90">{DEMO_ALERT.properties.areaDesc}</p>
+				</div>
+				<svg
+					class="mt-0.5 h-4 w-4 shrink-0 transition-transform {expandedId === DEMO_ALERT.id ? 'rotate-180' : ''}"
+					fill="none" stroke="currentColor" viewBox="0 0 24 24"
+				>
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+				</svg>
+			</button>
+			{#if expandedId === DEMO_ALERT.id}
+				<div class="bg-white px-3 py-2 text-xs text-gray-700">
+					{#if DEMO_ALERT.properties.headline}
+						<p class="mb-1 font-semibold">{DEMO_ALERT.properties.headline}</p>
+					{/if}
+					<p class="mb-2 whitespace-pre-wrap leading-relaxed">{DEMO_ALERT.properties.description}</p>
+					<p class="text-gray-400">Expires: {formatExpires(DEMO_ALERT.properties.expires)}</p>
+				</div>
+			{/if}
+		</div>
 	</div>
 {:else}
 	<div class="mb-3 space-y-2">

@@ -1,6 +1,27 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { Shelter } from '$lib/stores/global';
+
+	type Shelter = {
+		id: number;
+		name: string;
+		address_line1: string;
+		address_line2: string | null;
+		city: string;
+		state: string;
+		zip: string;
+		latitude: number;
+		longitude: number;
+		capacity: number;
+		category: string;
+		shelter_type: string;
+		accessibility: string | null;
+		pet_friendly: string | null;
+		has_backup_power: string | null;
+		hours_as_shelter: string | null;
+		special_instructions: string | null;
+		verification_status: string;
+		availability_status: string;
+	};
 
 	const MOCK_SHELTER: Shelter = {
 		id: 1,
