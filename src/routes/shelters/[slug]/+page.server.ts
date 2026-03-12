@@ -4,8 +4,6 @@ import type { Shelter } from '$lib/shelters/types';
 
 let shelterCache: Shelter[] | null = null;
 
-export const prerender = true;
-
 export const entries = async () => {
 	const shelters = await loadSheltersAtBuildTime(fetch);
 	return shelters.map((shelter) => ({
