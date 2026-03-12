@@ -1,7 +1,14 @@
 <script lang="ts">
 	import AccessibilityIcon from '@lucide/svelte/icons/accessibility';
 	import BatteryChargingIcon from '@lucide/svelte/icons/battery-charging';
+	import Building2Icon from '@lucide/svelte/icons/building-2';
+	import ChurchIcon from '@lucide/svelte/icons/church';
+	import Clock3Icon from '@lucide/svelte/icons/clock-3';
+	import InfoIcon from '@lucide/svelte/icons/info';
+	import MapPinIcon from '@lucide/svelte/icons/map-pin';
 	import PawPrintIcon from '@lucide/svelte/icons/paw-print';
+	import SchoolIcon from '@lucide/svelte/icons/school';
+	import UsersIcon from '@lucide/svelte/icons/users';
 	import { Badge } from '$lib/components/ui/badge';
 	import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
 	import {
@@ -9,8 +16,8 @@
 		formatShelterAddress,
 		formatShelterBoolean,
 		formatShelterCapacity,
-		formatShelterCategory,
 		formatSpecialInstructions,
+		normalizeShelterCategory,
 	} from '$lib/shelters/presentation';
 	import type { Shelter } from '$lib/shelters/types';
 
@@ -20,15 +27,26 @@
 
 	let { shelter }: ShelterDetailProps = $props();
 
+	const categoryMeta = {
+		School: { icon: SchoolIcon },
+		Church: { icon: ChurchIcon },
+		Other: { icon: Building2Icon },
+	} as const;
+
 	const positiveBadgeClass =
 		'h-5 gap-1 border-emerald-200 bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-800';
 	const neutralBadgeClass =
 		'h-5 gap-1 border-slate-200 bg-slate-50 px-2 text-[11px] font-semibold text-slate-700';
 	const warningBadgeClass =
 		'h-5 gap-1 border-amber-200 bg-amber-50 px-2 text-[11px] font-semibold text-amber-800';
+	const positivePillClass = 'border-emerald-200 bg-emerald-100 text-emerald-800';
+	const neutralPillClass = 'border-slate-200 bg-slate-100 text-slate-600';
 
 	let fullAddress = $derived(formatShelterAddress(shelter));
-	let category = $derived(formatShelterCategory(shelter.category));
+	let hasCategory = $derived((shelter.category ?? '') !== '');
+	let normalizedCategory = $derived(normalizeShelterCategory(shelter.category));
+	let categoryBadgeLabel = $derived(hasCategory ? normalizedCategory : 'Category not listed');
+	let CategoryIcon = $derived(categoryMeta[normalizedCategory].icon);
 	let petsAllowed = $derived(
 		formatShelterBoolean(shelter.petFriendly, {
 			yes: 'Allowed',
@@ -54,16 +72,6 @@
 	let capacity = $derived(formatShelterCapacity(shelter.capacity));
 	let specialInstructions = $derived(formatSpecialInstructions(shelter.specialInstructions));
 	let lastVerifiedDate = $derived(formatLastVerifiedDate(shelter.lastUpdated));
-
-	let petsBadgeClass = $derived(
-		shelter.petFriendly === true ? positiveBadgeClass : neutralBadgeClass,
-	);
-	let accessibilityBadgeClass = $derived(
-		shelter.accessibility === true ? positiveBadgeClass : neutralBadgeClass,
-	);
-	let backupPowerBadgeClass = $derived(
-		shelter.hasBackupPower === true ? positiveBadgeClass : neutralBadgeClass,
-	);
 	let availableHoursBadgeClass = $derived(
 		availableHoursSummary.status === 'open'
 			? positiveBadgeClass
@@ -71,71 +79,66 @@
 				? warningBadgeClass
 				: neutralBadgeClass,
 	);
+
+	let petsPillClass = $derived(shelter.petFriendly === true ? positivePillClass : neutralPillClass);
+	let accessibilityPillClass = $derived(
+		shelter.accessibility === true ? positivePillClass : neutralPillClass,
+	);
+	let backupPowerPillClass = $derived(
+		shelter.hasBackupPower === true ? positivePillClass : neutralPillClass,
+	);
 </script>
 
-<div
-	class="w-full rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-	data-testid="shelter-detail-card"
->
-	<h1 class="text-xl leading-tight font-black sm:text-2xl" data-testid="shelter-detail-name">
+<div class="w-full rounded-2xl p-5" data-testid="shelter-detail-card">
+	<h1 class="text-2xl leading-tight font-black sm:text-3xl" data-testid="shelter-detail-name">
 		{shelter.name}
 	</h1>
-	<p class="mt-2 text-sm text-slate-700" data-testid="shelter-detail-address">{fullAddress}</p>
+	<div class="mt-2 flex flex-wrap items-center gap-2">
+		<Badge
+			variant="secondary"
+			class="h-5 gap-1 bg-slate-100 px-2 text-[11px] font-semibold text-slate-700"
+			data-testid="shelter-detail-category"
+		>
+			{#if hasCategory}
+				<CategoryIcon class="size-3.5" aria-hidden="true" />
+			{/if}
+			{categoryBadgeLabel}
+		</Badge>
+		<Badge variant="outline" class={availableHoursBadgeClass} data-testid="shelter-detail-status">
+			{availableHoursSummary.statusLabel}
+		</Badge>
+	</div>
 	<p class="mt-1 text-xs font-medium text-slate-500" data-testid="shelter-detail-last-updated">
 		Last updated: {lastVerifiedDate}
 	</p>
 
-	<div class="mt-4 border-t border-slate-200 pt-4" data-testid="shelter-detail-core-info">
-		<h2 class="text-xs font-bold tracking-wide text-slate-500 uppercase">Core info</h2>
-		<dl class="mt-2 space-y-2 text-sm">
-			<div class="flex items-start justify-between gap-3">
-				<dt class="font-semibold text-slate-700">Category</dt>
-				<dd class="text-right text-slate-900">{category}</dd>
+	<div class="mt-5 border-t border-slate-200 pt-5" data-testid="shelter-detail-core-info">
+		<div class="space-y-4">
+			<div class="flex items-start gap-3">
+				<div
+					class="mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600"
+				>
+					<MapPinIcon class="size-5" aria-hidden="true" />
+				</div>
+				<div class="min-w-0">
+					<p class="text-sm font-medium text-slate-500">Address</p>
+					<p class="text-base leading-snug text-slate-900" data-testid="shelter-detail-address">
+						{fullAddress}
+					</p>
+				</div>
 			</div>
-		</dl>
-	</div>
 
-	<div class="mt-4 border-t border-slate-200 pt-4" data-testid="shelter-detail-accessibility">
-		<h2 class="text-xs font-bold tracking-wide text-slate-500 uppercase">
-			Accessibility and policy
-		</h2>
-		<dl class="mt-2 space-y-2 text-sm">
-			<div class="flex items-start justify-between gap-3">
-				<dt class="font-semibold text-slate-700">Pets</dt>
-				<dd>
-					<Badge variant="outline" class={petsBadgeClass}>
-						<PawPrintIcon class="size-3.5" aria-hidden="true" />
-						{petsAllowed}
-					</Badge>
-				</dd>
-			</div>
-			<div class="flex items-start justify-between gap-3">
-				<dt class="font-semibold text-slate-700">Wheelchair accessibility</dt>
-				<dd>
-					<Badge variant="outline" class={accessibilityBadgeClass}>
-						<AccessibilityIcon class="size-3.5" aria-hidden="true" />
-						{wheelchairAccess}
-					</Badge>
-				</dd>
-			</div>
-			<div class="flex items-start justify-between gap-3">
-				<dt class="font-semibold text-slate-700">Backup power</dt>
-				<dd>
-					<Badge variant="outline" class={backupPowerBadgeClass}>
-						<BatteryChargingIcon class="size-3.5" aria-hidden="true" />
-						{backupPower}
-					</Badge>
-				</dd>
-			</div>
-			<div class="flex items-start justify-between gap-3">
-				<dt class="font-semibold text-slate-700">Available hours</dt>
-				<dd class="text-right">
-					<Badge variant="outline" class={availableHoursBadgeClass}>
-						{availableHoursSummary.statusLabel}
-					</Badge>
+			<div class="flex items-start gap-3">
+				<div
+					class="mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600"
+				>
+					<Clock3Icon class="size-5" aria-hidden="true" />
+				</div>
+				<div class="min-w-0">
+					<p class="text-sm font-medium text-slate-500">Location hours</p>
 					{#if availableHoursSummary.scheduleLines.length > 0}
 						<ul
-							class="mt-1 space-y-0.5 text-xs text-slate-600"
+							class="mt-1 space-y-0.5 text-base leading-snug text-slate-900"
 							data-testid="shelter-detail-hours-lines"
 						>
 							{#each availableHoursSummary.scheduleLines as line (line)}
@@ -143,22 +146,69 @@
 							{/each}
 						</ul>
 					{/if}
-				</dd>
+				</div>
 			</div>
-			<div class="flex items-start justify-between gap-3">
-				<dt class="font-semibold text-slate-700">Capacity</dt>
-				<dd class="text-right text-slate-900">{capacity}</dd>
+
+			<div class="flex items-start gap-3">
+				<div
+					class="mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+				>
+					<UsersIcon class="size-5" aria-hidden="true" />
+				</div>
+				<div class="min-w-0">
+					<p class="text-sm font-medium text-slate-500">Capacity</p>
+					<p class="text-base leading-snug text-slate-900">{capacity}</p>
+				</div>
 			</div>
-		</dl>
+		</div>
 	</div>
 
-	<div class="mt-4 border-t border-slate-200 pt-4" data-testid="shelter-detail-operational">
-		<h2 class="text-xs font-bold tracking-wide text-slate-500 uppercase">Operational</h2>
-		<dl class="mt-2 space-y-2 text-sm">
-			<div class="space-y-1">
-				<dt class="font-semibold text-slate-700">Special instructions</dt>
-				<dd class="text-slate-900">{specialInstructions}</dd>
+	<div class="mt-5 border-t border-slate-200 pt-5" data-testid="shelter-detail-operational">
+		<div class="flex items-start gap-3">
+			<div
+				class="mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+			>
+				<InfoIcon class="size-5" aria-hidden="true" />
 			</div>
-		</dl>
+			<div class="min-w-0">
+				<p class="text-sm font-medium text-slate-500">Special instructions</p>
+				<p class="text-base leading-snug text-slate-900">{specialInstructions}</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="mt-5 border-t border-slate-200 pt-5" data-testid="shelter-detail-accessibility">
+		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+			<div class="flex flex-col items-center gap-2 text-center">
+				<div
+					class={`flex size-[4.5rem] items-center justify-center rounded-full border ${petsPillClass}`}
+				>
+					<PawPrintIcon class="size-8" aria-hidden="true" />
+				</div>
+				<p class="text-xs font-semibold tracking-wide text-slate-700 uppercase">
+					Pets {petsAllowed}
+				</p>
+			</div>
+			<div class="flex flex-col items-center gap-2 text-center">
+				<div
+					class={`flex size-[4.5rem] items-center justify-center rounded-full border ${accessibilityPillClass}`}
+				>
+					<AccessibilityIcon class="size-8" aria-hidden="true" />
+				</div>
+				<p class="text-xs font-semibold tracking-wide text-slate-700 uppercase">
+					Access {wheelchairAccess}
+				</p>
+			</div>
+			<div class="flex flex-col items-center gap-2 text-center">
+				<div
+					class={`flex size-[4.5rem] items-center justify-center rounded-full border ${backupPowerPillClass}`}
+				>
+					<BatteryChargingIcon class="size-8" aria-hidden="true" />
+				</div>
+				<p class="text-xs font-semibold tracking-wide text-slate-700 uppercase">
+					Backup power {backupPower}
+				</p>
+			</div>
+		</div>
 	</div>
 </div>
