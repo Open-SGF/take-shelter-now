@@ -52,6 +52,9 @@
 	);
 </script>
 
+<!-- eslint-disable-next-line svelte/no-at-html-tags -- Version is a build-time constant, not user input -->
+{@html `<!-- Version: ${__APP_VERSION__} -->`}
+
 <AppShell>
 	{#snippet map()}
 		<Map
