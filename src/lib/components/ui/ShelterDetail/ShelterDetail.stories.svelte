@@ -97,7 +97,7 @@
 		await expect(canvas.getByTestId('shelter-detail-address')).toHaveTextContent(
 			'Address not listed',
 		);
-		await expect(canvas.getByText('Category not listed')).toBeInTheDocument();
+		await expect(canvas.getByText('Other')).toBeInTheDocument();
 		await expect(canvas.queryByTestId('shelter-detail-hours-lines')).not.toBeInTheDocument();
 		await expect(canvas.getByText('No special instructions provided.')).toBeInTheDocument();
 		await expect(canvas.getByText('Last updated: Unknown')).toBeInTheDocument();
