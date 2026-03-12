@@ -3,7 +3,7 @@
 	import { ShelterCategoryBadge } from './index';
 
 	const { Story } = defineMeta({
-		title: 'UI/ShelterCategoryBadge',
+		title: 'Shelters/ShelterCategoryBadge',
 		component: ShelterCategoryBadge,
 		args: {
 			category: 'school',

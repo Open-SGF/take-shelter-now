@@ -7,7 +7,7 @@
 	import PawPrintIcon from '@lucide/svelte/icons/paw-print';
 	import UsersIcon from '@lucide/svelte/icons/users';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ShelterCategoryBadge } from '$lib/components/ui/ShelterCategoryBadge';
+	import { ShelterCategoryBadge } from '$lib/components/shelters';
 	import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
 	import {
 		formatLastVerifiedDate,

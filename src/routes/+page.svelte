@@ -1,6 +1,5 @@
 <script lang="ts">
-	import GetLocation from '$lib/components/ui/GetLocation/GetLocation.svelte';
-	import ShelterList from '$lib/components/ui/ShelterList/ShelterList.svelte';
+	import { GetLocation, ShelterList } from '$lib/components/shelters';
 	import { getAppStateContext } from '$lib/state/app-state-context';
 
 	const appState = getAppStateContext();

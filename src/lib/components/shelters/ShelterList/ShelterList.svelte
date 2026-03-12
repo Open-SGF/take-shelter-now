@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ShelterListItem } from '$lib/components/ui/ShelterListItem';
+	import { ShelterListItem } from '$lib/components/shelters';
 	import type { AppState } from '$lib/state/app-state.svelte';
 	import { getAppStateContext } from '$lib/state/app-state-context';
 

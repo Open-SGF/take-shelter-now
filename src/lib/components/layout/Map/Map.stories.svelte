@@ -31,7 +31,7 @@
 	];
 
 	const { Story } = defineMeta({
-		title: 'UI/Map',
+		title: 'Layout/Map',
 		component: Map,
 		args: {
 			defaultCenter: springfieldCenter,

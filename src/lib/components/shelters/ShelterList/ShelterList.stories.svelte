@@ -43,7 +43,7 @@
 	};
 
 	const { Story } = defineMeta({
-		title: 'Composite/ShelterList',
+		title: 'Shelters/ShelterList',
 		component: ShelterList,
 		args: {
 			appState: createStoryState('ready', readyShelters),

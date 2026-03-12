@@ -3,7 +3,7 @@
 	import Nav from './Nav.svelte';
 
 	const { Story } = defineMeta({
-		title: 'UI/Nav',
+		title: 'Layout/Nav',
 		component: Nav,
 	});
 </script>

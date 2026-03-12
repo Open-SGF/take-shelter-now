@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { MediaQuery } from 'svelte/reactivity';
 	import type { Snippet } from 'svelte';
-	import { Nav } from '$lib/components/ui/Nav';
-	import { Sidebar } from '$lib/components/ui/Sidebar';
-	import { Sheet } from '$lib/components/ui/Sheet';
+	import { Nav, Sidebar, Sheet } from '$lib/components/layout';
 
 	type AppShellProps = {
 		map?: Snippet;

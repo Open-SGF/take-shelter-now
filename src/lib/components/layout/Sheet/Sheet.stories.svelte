@@ -5,7 +5,7 @@
 	import Sheet from './Sheet.svelte';
 
 	const { Story } = defineMeta({
-		title: 'UI/Sheet',
+		title: 'Layout/Sheet',
 		component: Sheet,
 		args: {
 			snapPoints: [0.4, 0.8],
