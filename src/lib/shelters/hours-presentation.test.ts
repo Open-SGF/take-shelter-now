@@ -102,6 +102,6 @@ describe('hours presentation', () => {
 
 		expect(summary.status).toBe('open');
 		expect(summary.statusLabel).toBe('Open now');
-		expect(summary.scheduleLines).toEqual(['Mon-Sun: Open 24 hours']);
+		expect(summary.scheduleLines).toEqual(['Open 24/7']);
 	});
 });

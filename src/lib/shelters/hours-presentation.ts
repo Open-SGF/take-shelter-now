@@ -192,6 +192,14 @@ const formatDayRange = (startDay: number, endDay: number) => {
 };
 
 export const formatLocalScheduleLines = (intervals: ShelterHoursInterval[]): string[] => {
+	if (
+		intervals.length === 1 &&
+		intervals[0].startMinute === 0 &&
+		intervals[0].endMinute === MINUTES_PER_WEEK
+	) {
+		return ['Open 24/7'];
+	}
+
 	const days = toDailyWindows(intervals);
 	const lines: string[] = [];
 
