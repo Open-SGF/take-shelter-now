@@ -21,7 +21,6 @@ describe('/shelters/[slug]/+page.svelte', () => {
 		render(Page, {
 			props: {
 				data: {
-					shelters: [],
 					shelter: baseShelter,
 				},
 			},
@@ -36,7 +35,6 @@ describe('/shelters/[slug]/+page.svelte', () => {
 		render(Page, {
 			props: {
 				data: {
-					shelters: [],
 					shelter: baseShelter,
 				},
 			},
