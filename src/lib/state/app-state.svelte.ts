@@ -11,6 +11,12 @@ export type ShelterDataState =
 
 export type MapProvider = 'apple' | 'google';
 
+export type InitialAppState = {
+	shelters?: Shelter[];
+	location?: GeoPoint | null;
+	preferredMapProvider?: MapProvider | null;
+};
+
 const MAP_PROVIDER_STORAGE_KEY = 'take-shelter-map-provider';
 
 export type AppState = {
@@ -52,12 +58,15 @@ const writeMapProviderToStorage = (provider: MapProvider | null): void => {
 	}
 };
 
-export const createAppState = (initialShelters: Shelter[]): AppState => {
-	let location = $state<GeoPoint | null>(null);
+export const createAppState = (initial?: InitialAppState): AppState => {
+	const shelters = initial?.shelters ?? [];
+	let location = $state<GeoPoint | null>(initial?.location ?? null);
 	let shelterDataState = $state<ShelterDataState>(
-		initialShelters.length > 0 ? { kind: 'ready', shelters: initialShelters } : { kind: 'loading' },
+		shelters.length > 0 ? { kind: 'ready', shelters } : { kind: 'loading' },
 	);
-	let preferredMapProvider = $state<MapProvider | null>(readMapProviderFromStorage());
+	let preferredMapProvider = $state<MapProvider | null>(
+		initial?.preferredMapProvider ?? readMapProviderFromStorage(),
+	);
 
 	const setLocation = (nextLocation: GeoPoint | null) => {
 		location = nextLocation;

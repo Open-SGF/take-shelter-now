@@ -21,9 +21,9 @@ const buildShelter = (
 
 describe('createAppState', () => {
 	test('returns shelters with zero distances when no location is available', () => {
-		const appState = createAppState([
-			buildShelter({ name: 'One', slug: 'one', latitude: 37.2, longitude: -93.2 }),
-		]);
+		const appState = createAppState({
+			shelters: [buildShelter({ name: 'One', slug: 'one', latitude: 37.2, longitude: -93.2 })],
+		});
 
 		const result = appState.sheltersWithDistance;
 
@@ -33,10 +33,12 @@ describe('createAppState', () => {
 	});
 
 	test('sorts shelters by computed distance when location is available', () => {
-		const appState = createAppState([
-			buildShelter({ name: 'Far', slug: 'far', latitude: 37.4, longitude: -93.5 }),
-			buildShelter({ name: 'Near', slug: 'near', latitude: 37.21, longitude: -93.29 }),
-		]);
+		const appState = createAppState({
+			shelters: [
+				buildShelter({ name: 'Far', slug: 'far', latitude: 37.4, longitude: -93.5 }),
+				buildShelter({ name: 'Near', slug: 'near', latitude: 37.21, longitude: -93.29 }),
+			],
+		});
 		appState.setLocation({ latitude: 37.208957, longitude: -93.292299 });
 
 		const result = appState.sheltersWithDistance;
