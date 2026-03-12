@@ -52,7 +52,6 @@ export const shiftIntervalsToLocal = (
 
 	for (const interval of intervals) {
 		const shiftedStart = interval.startMinute + offsetDeltaMinutes;
-		const shiftedEnd = interval.endMinute + offsetDeltaMinutes;
 		const duration = interval.endMinute - interval.startMinute;
 
 		if (duration >= MINUTES_PER_WEEK) {

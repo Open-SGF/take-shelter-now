@@ -1,3 +1,1 @@
-import ShelterDetail from './ShelterDetail.svelte';
-
-export { ShelterDetail };
+export { default as ShelterDetail } from './ShelterDetail.svelte';

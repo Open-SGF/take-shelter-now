@@ -37,10 +37,10 @@ describe('shelter presentation', () => {
 	});
 
 	test('normalizes shelter category to known values', () => {
-		expect(normalizeShelterCategory('school')).toBe('School');
-		expect(normalizeShelterCategory('Church')).toBe('Church');
-		expect(normalizeShelterCategory(' Community Center ')).toBe('Other');
-		expect(normalizeShelterCategory(undefined)).toBe('Other');
+		expect(normalizeShelterCategory('school')).toBe('school');
+		expect(normalizeShelterCategory('Church')).toBe('church');
+		expect(normalizeShelterCategory(' Community Center ')).toBe('other');
+		expect(normalizeShelterCategory(undefined)).toBe('other');
 	});
 
 	test('returns only available amenity flags', () => {
@@ -72,8 +72,10 @@ describe('shelter presentation', () => {
 	});
 
 	test('formats detail values with clear fallbacks', () => {
-		expect(formatShelterCategory(undefined)).toBe('Category not listed');
-		expect(formatShelterCategory('Church')).toBe('Church');
+		expect(formatShelterCategory('school')).toBe('School');
+		expect(formatShelterCategory('church')).toBe('Church');
+		expect(formatShelterCategory('other')).toBe('Other');
+		expect(formatShelterCategory(undefined)).toBe('Other');
 
 		expect(
 			formatShelterBoolean(undefined, {

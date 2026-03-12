@@ -17,7 +17,7 @@
 		zip: '65802',
 		latitude: 37.208111,
 		longitude: -93.291111,
-		category: 'School',
+		category: 'school',
 		petFriendly: true,
 		hasBackupPower: true,
 		accessibility: true,

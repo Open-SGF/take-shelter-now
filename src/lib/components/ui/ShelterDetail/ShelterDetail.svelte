@@ -1,15 +1,13 @@
 <script lang="ts">
 	import AccessibilityIcon from '@lucide/svelte/icons/accessibility';
 	import BatteryChargingIcon from '@lucide/svelte/icons/battery-charging';
-	import Building2Icon from '@lucide/svelte/icons/building-2';
-	import ChurchIcon from '@lucide/svelte/icons/church';
 	import Clock3Icon from '@lucide/svelte/icons/clock-3';
 	import InfoIcon from '@lucide/svelte/icons/info';
 	import MapPinIcon from '@lucide/svelte/icons/map-pin';
 	import PawPrintIcon from '@lucide/svelte/icons/paw-print';
-	import SchoolIcon from '@lucide/svelte/icons/school';
 	import UsersIcon from '@lucide/svelte/icons/users';
 	import { Badge } from '$lib/components/ui/badge';
+	import { ShelterCategoryBadge } from '$lib/components/ui/ShelterCategoryBadge';
 	import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
 	import {
 		formatLastVerifiedDate,
@@ -17,7 +15,6 @@
 		formatShelterBoolean,
 		formatShelterCapacity,
 		formatSpecialInstructions,
-		normalizeShelterCategory,
 	} from '$lib/shelters/presentation';
 	import type { Shelter } from '$lib/shelters/types';
 
@@ -26,12 +23,6 @@
 	};
 
 	let { shelter }: ShelterDetailProps = $props();
-
-	const categoryMeta = {
-		School: { icon: SchoolIcon },
-		Church: { icon: ChurchIcon },
-		Other: { icon: Building2Icon },
-	} as const;
 
 	const positiveBadgeClass =
 		'h-5 gap-1 border-emerald-200 bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-800';
@@ -43,10 +34,6 @@
 	const neutralPillClass = 'border-slate-200 bg-slate-100 text-slate-600';
 
 	let fullAddress = $derived(formatShelterAddress(shelter));
-	let hasCategory = $derived((shelter.category ?? '') !== '');
-	let normalizedCategory = $derived(normalizeShelterCategory(shelter.category));
-	let categoryBadgeLabel = $derived(hasCategory ? normalizedCategory : 'Category not listed');
-	let CategoryIcon = $derived(categoryMeta[normalizedCategory].icon);
 	let petsAllowed = $derived(
 		formatShelterBoolean(shelter.petFriendly, {
 			yes: 'Allowed',
@@ -94,16 +81,7 @@
 		{shelter.name}
 	</h1>
 	<div class="mt-2 flex flex-wrap items-center gap-2">
-		<Badge
-			variant="secondary"
-			class="h-5 gap-1 bg-slate-100 px-2 text-[11px] font-semibold text-slate-700"
-			data-testid="shelter-detail-category"
-		>
-			{#if hasCategory}
-				<CategoryIcon class="size-3.5" aria-hidden="true" />
-			{/if}
-			{categoryBadgeLabel}
-		</Badge>
+		<ShelterCategoryBadge category={shelter.category} data-testid="shelter-detail-category" />
 		<Badge variant="outline" class={availableHoursBadgeClass} data-testid="shelter-detail-status">
 			{availableHoursSummary.statusLabel}
 		</Badge>

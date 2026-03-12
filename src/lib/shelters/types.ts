@@ -8,6 +8,8 @@ export type ShelterHours = {
 	intervals: ShelterHoursInterval[];
 };
 
+export type ShelterCategory = 'school' | 'church' | 'other';
+
 export type Shelter = {
 	name: string;
 	slug: string;
@@ -19,7 +21,7 @@ export type Shelter = {
 	latitude: number;
 	longitude: number;
 	capacity?: number;
-	category?: string;
+	category?: ShelterCategory;
 	petFriendly?: boolean;
 	accessibility?: boolean;
 	hasBackupPower?: boolean;

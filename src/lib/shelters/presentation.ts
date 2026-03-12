@@ -1,10 +1,9 @@
-import type { Shelter } from './types';
+import type { Shelter, ShelterCategory } from './types';
+export type { ShelterCategory } from './types';
 
 type ShelterAddress = Pick<Shelter, 'addressLine1' | 'addressLine2' | 'city' | 'state' | 'zip'>;
 
 type ShelterAmenities = Pick<Shelter, 'petFriendly' | 'hasBackupPower' | 'accessibility'>;
-
-export type ShelterCategory = 'School' | 'Church' | 'Other';
 export type ShelterAmenity = 'petsAllowed' | 'backupPower' | 'accessibility';
 
 export const formatShelterAddress = ({
@@ -33,18 +32,18 @@ export const formatShelterAddress = ({
 	return parts.length > 0 ? parts.join(', ') : 'Address not listed';
 };
 
-export const normalizeShelterCategory = (category: Shelter['category']): ShelterCategory => {
+export const normalizeShelterCategory = (category?: string): ShelterCategory => {
 	const normalized = category?.toLowerCase();
 
 	if (normalized === 'school') {
-		return 'School';
+		return normalized;
 	}
 
 	if (normalized === 'church') {
-		return 'Church';
+		return normalized;
 	}
 
-	return 'Other';
+	return 'other';
 };
 
 export const getAvailableAmenities = ({
@@ -69,7 +68,7 @@ export const getAvailableAmenities = ({
 	return amenities;
 };
 
-export const formatShelterDistance = (distanceMiles: number | null | undefined): string | null => {
+export const formatShelterDistance = (distanceMiles?: number | null): string | null => {
 	if (distanceMiles === undefined || distanceMiles === null || Number.isNaN(distanceMiles)) {
 		return null;
 	}
@@ -81,9 +80,14 @@ export const formatShelterDistance = (distanceMiles: number | null | undefined):
 	return `${distanceMiles.toFixed(1)} mi`;
 };
 
-export const formatShelterCategory = (category: Shelter['category']): string => {
-	const normalized = category ?? '';
-	return normalized === '' ? 'Category not listed' : normalized;
+export const formatShelterCategory = (category?: ShelterCategory): string => {
+	const displayMap: Record<ShelterCategory, string> = {
+		school: 'School',
+		church: 'Church',
+		other: 'Other',
+	};
+	const normalized = category ?? 'other';
+	return displayMap[normalized];
 };
 
 export const formatShelterBoolean = (
@@ -101,7 +105,7 @@ export const formatShelterBoolean = (
 	return labels.unknown;
 };
 
-export const formatShelterCapacity = (capacity: number | undefined): string => {
+export const formatShelterCapacity = (capacity?: number): string => {
 	if (capacity === undefined || Number.isNaN(capacity)) {
 		return 'Capacity not listed';
 	}
@@ -113,16 +117,16 @@ export const formatShelterHours = (hasHours: boolean): string => {
 	return hasHours ? 'Available hours listed' : 'Hours not listed';
 };
 
-export const formatVerificationStatus = (lastUpdated: string | undefined): 'Open' | 'Unknown' => {
+export const formatVerificationStatus = (lastUpdated?: string): 'Open' | 'Unknown' => {
 	return (lastUpdated ?? '') === '' ? 'Unknown' : 'Open';
 };
 
-export const formatLastVerifiedDate = (lastUpdated: string | undefined): string => {
+export const formatLastVerifiedDate = (lastUpdated?: string): string => {
 	const date = lastUpdated ?? '';
 	return date === '' ? 'Unknown' : date;
 };
 
-export const formatSpecialInstructions = (instructions: string | undefined): string => {
+export const formatSpecialInstructions = (instructions?: string): string => {
 	const value = instructions ?? '';
 	return value === '' ? 'No special instructions provided.' : value;
 };

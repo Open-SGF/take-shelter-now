@@ -2,6 +2,7 @@ import type { Shelter } from './types';
 import { parse } from 'csv-parse/sync';
 import { parseShelterHours } from './hours';
 import { slugifyShelterName } from './slug';
+import { normalizeShelterCategory } from './presentation';
 
 type CsvRecord = Record<string, string>;
 
@@ -151,7 +152,7 @@ export const mapSheetRowToShelter = (row: CsvRecord): Shelter | null => {
 		latitude: coordinates.latitude,
 		longitude: coordinates.longitude,
 		capacity: toOptionalNumber(row[SHEET_FIELDS.capacity]),
-		category: toOptionalText(row[SHEET_FIELDS.category]),
+		category: normalizeShelterCategory(toOptionalText(row[SHEET_FIELDS.category])),
 		petFriendly: toOptionalBoolean(row[SHEET_FIELDS.petFriendly]),
 		accessibility: toOptionalBoolean(row[SHEET_FIELDS.accessibility]),
 		hasBackupPower: toOptionalBoolean(row[SHEET_FIELDS.hasBackupPower]),

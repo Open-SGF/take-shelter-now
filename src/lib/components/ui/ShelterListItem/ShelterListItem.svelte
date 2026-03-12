@@ -2,17 +2,14 @@
 	import { resolve } from '$app/paths';
 	import AccessibilityIcon from '@lucide/svelte/icons/accessibility';
 	import BatteryChargingIcon from '@lucide/svelte/icons/battery-charging';
-	import Building2Icon from '@lucide/svelte/icons/building-2';
-	import ChurchIcon from '@lucide/svelte/icons/church';
 	import PawPrintIcon from '@lucide/svelte/icons/paw-print';
-	import SchoolIcon from '@lucide/svelte/icons/school';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Item from '$lib/components/ui/item';
+	import { ShelterCategoryBadge } from '$lib/components/ui/ShelterCategoryBadge';
 	import {
 		formatShelterAddress,
 		formatShelterDistance,
 		getAvailableAmenities,
-		normalizeShelterCategory,
 		type ShelterAmenity,
 	} from '$lib/shelters/presentation';
 	import type { Shelter } from '$lib/shelters/types';
@@ -24,21 +21,12 @@
 
 	let { shelter, distanceMiles }: ShelterListItemProps = $props();
 
-	const categoryMeta = {
-		School: { icon: SchoolIcon, label: 'School shelter' },
-		Church: { icon: ChurchIcon, label: 'Church shelter' },
-		Other: { icon: Building2Icon, label: 'Other shelter' },
-	} as const;
-
 	const amenityMeta: Record<ShelterAmenity, { icon: typeof PawPrintIcon; label: string }> = {
 		petsAllowed: { icon: PawPrintIcon, label: 'Pets allowed' },
 		backupPower: { icon: BatteryChargingIcon, label: 'Backup power' },
 		accessibility: { icon: AccessibilityIcon, label: 'Accessible' },
 	};
 
-	let category = $derived(normalizeShelterCategory(shelter.category));
-	let categoryDetails = $derived(categoryMeta[category]);
-	let CategoryIcon = $derived(categoryDetails.icon);
 	let address = $derived(formatShelterAddress(shelter));
 	let amenities = $derived(getAvailableAmenities(shelter));
 	let distanceLabel = $derived(formatShelterDistance(distanceMiles));
@@ -55,14 +43,10 @@
 			<a {...props} href={resolve('/shelters/[slug]', { slug: shelter.slug })}>
 				<Item.Content class="gap-1.5">
 					<div class="flex items-start justify-between gap-3">
-						<Badge
-							variant="secondary"
-							class="h-5 gap-1 bg-slate-100 px-2 text-[11px] font-semibold text-slate-700"
+						<ShelterCategoryBadge
+							category={shelter.category}
 							data-testid="shelter-list-item-category"
-						>
-							<CategoryIcon class="size-3.5" aria-hidden="true" />
-							{category}
-						</Badge>
+						/>
 						<Item.Actions class="shrink-0">
 							{#if distanceLabel}
 								<span
@@ -102,14 +86,10 @@
 			<div {...props}>
 				<Item.Content class="gap-1.5">
 					<div class="flex items-start justify-between gap-3">
-						<Badge
-							variant="secondary"
-							class="h-5 gap-1 bg-slate-100 px-2 text-[11px] font-semibold text-slate-700"
+						<ShelterCategoryBadge
+							category={shelter.category}
 							data-testid="shelter-list-item-category"
-						>
-							<CategoryIcon class="size-3.5" aria-hidden="true" />
-							{category}
-						</Badge>
+						/>
 						<Item.Actions class="shrink-0">
 							{#if distanceLabel}
 								<span
