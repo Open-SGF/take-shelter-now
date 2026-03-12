@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, waitFor, within } from 'storybook/test';
-	import { Map } from '$lib/components/ui/Map';
+	import { Map } from '$lib/components/layout';
 	import AppShell from './AppShell.svelte';
 
 	const shelterMarkers = [

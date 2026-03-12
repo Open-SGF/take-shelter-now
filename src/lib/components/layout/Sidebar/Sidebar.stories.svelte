@@ -4,7 +4,7 @@
 	import Sidebar from './Sidebar.svelte';
 
 	const { Story } = defineMeta({
-		title: 'UI/Sidebar',
+		title: 'Layout/Sidebar',
 		component: Sidebar,
 	});
 </script>

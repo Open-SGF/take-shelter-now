@@ -3,7 +3,7 @@
 	import { AppShell } from '$lib/components/layout';
 	import type { GeoPoint } from '$lib/geo';
 	import type { Snippet } from 'svelte';
-	import { Map, type MapMarker } from '$lib/components/ui/Map';
+	import { Map, type MapMarker } from '$lib/components/layout';
 	import { createAppState } from '$lib/state/app-state.svelte';
 	import { setAppStateContext } from '$lib/state/app-state-context';
 	import type { Shelter } from '$lib/shelters/types';

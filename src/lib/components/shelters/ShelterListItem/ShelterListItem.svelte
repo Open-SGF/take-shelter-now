@@ -5,7 +5,7 @@
 	import PawPrintIcon from '@lucide/svelte/icons/paw-print';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Item from '$lib/components/ui/item';
-	import { ShelterCategoryBadge } from '$lib/components/ui/ShelterCategoryBadge';
+	import { ShelterCategoryBadge } from '$lib/components/shelters';
 	import {
 		formatShelterAddress,
 		formatShelterDistance,

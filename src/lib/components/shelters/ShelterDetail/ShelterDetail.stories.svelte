@@ -54,7 +54,7 @@
 	};
 
 	const { Story } = defineMeta({
-		title: 'Composite/ShelterDetail',
+		title: 'Shelters/ShelterDetail',
 		component: ShelterDetail,
 		args: {
 			shelter: fullDetailsShelter,

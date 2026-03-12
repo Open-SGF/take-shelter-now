@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-	import { ShelterDetail } from '$lib/components/ui/ShelterDetail';
+	import { ShelterDetail } from '$lib/components/shelters';
 	import { Button } from '$lib/components/ui/button';
 
 	let { data } = $props();
