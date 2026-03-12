@@ -53,6 +53,27 @@
 		photoUrls: [],
 	};
 
+	const noDestinationShelter: Shelter = {
+		name: 'Emergency Shelter',
+		slug: 'emergency-shelter',
+		addressLine1: '',
+		addressLine2: '',
+		city: '',
+		state: '',
+		zip: '',
+		latitude: Number.NaN,
+		longitude: Number.NaN,
+		category: 'other',
+		petFriendly: false,
+		hasBackupPower: false,
+		accessibility: false,
+		hours: undefined,
+		capacity: undefined,
+		specialInstructions: undefined,
+		lastUpdated: undefined,
+		photoUrls: [],
+	};
+
 	const { Story } = defineMeta({
 		title: 'Shelters/ShelterDetail',
 		component: ShelterDetail,
@@ -104,5 +125,34 @@
 		await expect(canvas.queryByText(/verification status/i)).not.toBeInTheDocument();
 		await expect(canvas.queryByText(/shelter type/i)).not.toBeInTheDocument();
 		await expect(canvas.queryByText('Gymnasium')).not.toBeInTheDocument();
+	}}
+/>
+
+<Story
+	name="Navigation Actions"
+	template={Template}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const directionsButton = canvas.getByTestId('get-directions-button');
+		await expect(directionsButton).toBeEnabled();
+		await expect(directionsButton).toHaveTextContent('Get Directions');
+
+		const copyButton = canvas.getByTestId('copy-address-button');
+		await expect(copyButton).toBeEnabled();
+		await expect(copyButton).toHaveTextContent('Copy Address');
+	}}
+/>
+
+<Story
+	name="No Valid Destination"
+	args={{ shelter: noDestinationShelter }}
+	template={Template}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const directionsButton = canvas.getByTestId('get-directions-button');
+		await expect(directionsButton).toBeDisabled();
+
+		const copyButton = canvas.getByTestId('copy-address-button');
+		await expect(copyButton).toBeDisabled();
 	}}
 />
