@@ -1,7 +1,14 @@
 import { describe, expect, test } from 'vitest';
 import {
+	formatLastVerifiedDate,
+	formatShelterBoolean,
+	formatShelterCapacity,
+	formatShelterCategory,
 	formatShelterAddress,
 	formatShelterDistance,
+	formatShelterHours,
+	formatSpecialInstructions,
+	formatVerificationStatus,
 	getAvailableAmenities,
 	normalizeShelterCategory,
 } from './presentation';
@@ -20,13 +27,13 @@ describe('shelter presentation', () => {
 
 		expect(
 			formatShelterAddress({
-				addressLine1: '423 East Central',
+				addressLine1: '',
 				addressLine2: '',
-				city: 'Springfield',
-				state: 'MO',
-				zip: '65802',
+				city: '',
+				state: '',
+				zip: '',
 			}),
-		).toBe('423 East Central, Springfield, MO 65802');
+		).toBe('Address not listed');
 	});
 
 	test('normalizes shelter category to known values', () => {
@@ -62,5 +69,32 @@ describe('shelter presentation', () => {
 		expect(formatShelterDistance(Number.NaN)).toBeNull();
 		expect(formatShelterDistance(undefined)).toBeNull();
 		expect(formatShelterDistance(null)).toBeNull();
+	});
+
+	test('formats detail values with clear fallbacks', () => {
+		expect(formatShelterCategory(undefined)).toBe('Category not listed');
+		expect(formatShelterCategory('Church')).toBe('Church');
+
+		expect(
+			formatShelterBoolean(undefined, {
+				yes: 'Yes',
+				no: 'No',
+				unknown: 'Unknown',
+			}),
+		).toBe('Unknown');
+
+		expect(formatShelterCapacity(undefined)).toBe('Capacity not listed');
+		expect(formatShelterCapacity(1200)).toBe('1,200 people');
+		expect(formatShelterHours(false)).toBe('Hours not listed');
+		expect(formatShelterHours(true)).toBe('Available hours listed');
+
+		expect(formatVerificationStatus(undefined)).toBe('Unknown');
+		expect(formatVerificationStatus('11/04/2025')).toBe('Open');
+
+		expect(formatLastVerifiedDate(undefined)).toBe('Unknown');
+		expect(formatLastVerifiedDate('11/04/2025')).toBe('11/04/2025');
+
+		expect(formatSpecialInstructions(undefined)).toBe('No special instructions provided.');
+		expect(formatSpecialInstructions('Use side entrance')).toBe('Use side entrance');
 	});
 });

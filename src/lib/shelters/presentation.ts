@@ -14,12 +14,27 @@ export const formatShelterAddress = ({
 	state,
 	zip,
 }: ShelterAddress): string => {
-	const streetAddress = addressLine2 ? `${addressLine1}, ${addressLine2}` : addressLine1;
-	return `${streetAddress}, ${city}, ${state} ${zip}`;
+	const parts: string[] = [];
+	const streetAddress = [addressLine1, addressLine2].filter((part) => part !== '').join(', ');
+
+	if (streetAddress !== '') {
+		parts.push(streetAddress);
+	}
+
+	if (city !== '') {
+		parts.push(city);
+	}
+
+	const stateZip = [state, zip].filter((part) => part !== '').join(' ');
+	if (stateZip !== '') {
+		parts.push(stateZip);
+	}
+
+	return parts.length > 0 ? parts.join(', ') : 'Address not listed';
 };
 
 export const normalizeShelterCategory = (category: Shelter['category']): ShelterCategory => {
-	const normalized = category?.trim().toLowerCase();
+	const normalized = category?.toLowerCase();
 
 	if (normalized === 'school') {
 		return 'School';
@@ -64,4 +79,50 @@ export const formatShelterDistance = (distanceMiles: number | null | undefined):
 	}
 
 	return `${distanceMiles.toFixed(1)} mi`;
+};
+
+export const formatShelterCategory = (category: Shelter['category']): string => {
+	const normalized = category ?? '';
+	return normalized === '' ? 'Category not listed' : normalized;
+};
+
+export const formatShelterBoolean = (
+	value: boolean | undefined,
+	labels: { yes: string; no: string; unknown: string },
+): string => {
+	if (value === true) {
+		return labels.yes;
+	}
+
+	if (value === false) {
+		return labels.no;
+	}
+
+	return labels.unknown;
+};
+
+export const formatShelterCapacity = (capacity: number | undefined): string => {
+	if (capacity === undefined || Number.isNaN(capacity)) {
+		return 'Capacity not listed';
+	}
+
+	return `${Math.round(capacity).toLocaleString()} people`;
+};
+
+export const formatShelterHours = (hasHours: boolean): string => {
+	return hasHours ? 'Available hours listed' : 'Hours not listed';
+};
+
+export const formatVerificationStatus = (lastUpdated: string | undefined): 'Open' | 'Unknown' => {
+	return (lastUpdated ?? '') === '' ? 'Unknown' : 'Open';
+};
+
+export const formatLastVerifiedDate = (lastUpdated: string | undefined): string => {
+	const date = lastUpdated ?? '';
+	return date === '' ? 'Unknown' : date;
+};
+
+export const formatSpecialInstructions = (instructions: string | undefined): string => {
+	const value = instructions ?? '';
+	return value === '' ? 'No special instructions provided.' : value;
 };
