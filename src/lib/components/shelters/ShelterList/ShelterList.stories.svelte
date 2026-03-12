@@ -29,7 +29,7 @@
 		shelters: Shelter[],
 		errorMessage: string | null = null,
 	) => {
-		const appState = createAppState([]);
+		const appState = createAppState();
 
 		if (status === 'error') {
 			appState.setShelterDataError(errorMessage ?? 'Unable to load shelter data.');

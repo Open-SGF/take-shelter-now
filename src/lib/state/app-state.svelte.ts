@@ -9,21 +9,63 @@ export type ShelterDataState =
 	| { kind: 'ready'; shelters: Shelter[] }
 	| { kind: 'error'; message: string };
 
+export type MapProvider = 'apple' | 'google';
+
+export type InitialAppState = {
+	shelters?: Shelter[];
+	location?: GeoPoint | null;
+	preferredMapProvider?: MapProvider | null;
+};
+
+const MAP_PROVIDER_STORAGE_KEY = 'take-shelter-map-provider';
+
 export type AppState = {
 	readonly location: GeoPoint | null;
 	readonly hasLocation: boolean;
 	readonly sheltersWithDistance: ShelterWithDistance[];
 	readonly shelterDataState: ShelterDataState;
+	readonly preferredMapProvider: MapProvider | null;
 	setLocation: (nextLocation: GeoPoint | null) => void;
 	setShelters: (nextShelters: Shelter[]) => void;
 	setShelterDataError: (errorMessage: string) => void;
 	setShelterDataLoading: () => void;
+	setPreferredMapProvider: (provider: MapProvider | null) => void;
 };
 
-export const createAppState = (initialShelters: Shelter[]): AppState => {
-	let location = $state<GeoPoint | null>(null);
+const readMapProviderFromStorage = (): MapProvider | null => {
+	if (typeof window === 'undefined') return null;
+	try {
+		const saved = localStorage.getItem(MAP_PROVIDER_STORAGE_KEY);
+		if (saved === 'apple' || saved === 'google') {
+			return saved;
+		}
+	} catch {
+		// localStorage not available
+	}
+	return null;
+};
+
+const writeMapProviderToStorage = (provider: MapProvider | null): void => {
+	if (typeof window === 'undefined') return;
+	try {
+		if (provider === null) {
+			localStorage.removeItem(MAP_PROVIDER_STORAGE_KEY);
+		} else {
+			localStorage.setItem(MAP_PROVIDER_STORAGE_KEY, provider);
+		}
+	} catch {
+		// localStorage not available
+	}
+};
+
+export const createAppState = (initial?: InitialAppState): AppState => {
+	const shelters = initial?.shelters ?? [];
+	let location = $state<GeoPoint | null>(initial?.location ?? null);
 	let shelterDataState = $state<ShelterDataState>(
-		initialShelters.length > 0 ? { kind: 'ready', shelters: initialShelters } : { kind: 'loading' },
+		shelters.length > 0 ? { kind: 'ready', shelters } : { kind: 'loading' },
+	);
+	let preferredMapProvider = $state<MapProvider | null>(
+		initial?.preferredMapProvider ?? readMapProviderFromStorage(),
 	);
 
 	const setLocation = (nextLocation: GeoPoint | null) => {
@@ -41,6 +83,11 @@ export const createAppState = (initialShelters: Shelter[]): AppState => {
 
 	const setShelterDataLoading = () => {
 		shelterDataState = { kind: 'loading' };
+	};
+
+	const setPreferredMapProvider = (provider: MapProvider | null) => {
+		preferredMapProvider = provider;
+		writeMapProviderToStorage(provider);
 	};
 
 	const hasLocation = $derived(location !== null);
@@ -79,9 +126,13 @@ export const createAppState = (initialShelters: Shelter[]): AppState => {
 		get shelterDataState() {
 			return shelterDataState;
 		},
+		get preferredMapProvider() {
+			return preferredMapProvider;
+		},
 		setLocation,
 		setShelters,
 		setShelterDataError,
 		setShelterDataLoading,
+		setPreferredMapProvider,
 	};
 };

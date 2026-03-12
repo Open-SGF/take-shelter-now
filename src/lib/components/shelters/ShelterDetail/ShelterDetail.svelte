@@ -17,6 +17,7 @@
 		formatSpecialInstructions,
 	} from '$lib/shelters/presentation';
 	import type { Shelter } from '$lib/shelters/types';
+	import DirectionsAction from './DirectionsAction.svelte';
 
 	type ShelterDetailProps = {
 		shelter: Shelter;
@@ -98,11 +99,12 @@
 				>
 					<MapPinIcon class="size-5" aria-hidden="true" />
 				</div>
-				<div class="min-w-0">
+				<div class="min-w-0 flex-1">
 					<p class="text-sm font-medium text-slate-500">Address</p>
 					<p class="text-base leading-snug text-slate-900" data-testid="shelter-detail-address">
 						{fullAddress}
 					</p>
+					<DirectionsAction {shelter} />
 				</div>
 			</div>
 

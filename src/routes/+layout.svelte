@@ -10,7 +10,7 @@
 
 	let { children }: { children: Snippet } = $props();
 
-	const appState = createAppState([]);
+	const appState = createAppState();
 	setAppStateContext(appState);
 
 	$effect(() => {

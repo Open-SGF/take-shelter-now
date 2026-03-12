@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/svelte';
 import { createAppState } from '$lib/state/app-state.svelte';
 import Page from './+page.svelte';
 
-let appState = createAppState([]);
+let appState = createAppState();
 
 vi.mock('$lib/state/app-state-context', () => ({
 	getAppStateContext: () => appState,
@@ -12,7 +12,7 @@ vi.mock('$lib/state/app-state-context', () => ({
 
 describe('/+page.svelte', () => {
 	beforeEach(() => {
-		appState = createAppState([]);
+		appState = createAppState();
 	});
 
 	test('renders location call-to-action by default', () => {
