@@ -8,13 +8,33 @@
 	import { setAppStateContext } from '$lib/state/app-state-context';
 	import type { Shelter } from '$lib/shelters/types';
 
-	let { data, children }: { data: { shelters: Shelter[] }; children: Snippet } = $props();
+	let { children }: { children: Snippet } = $props();
 
 	const appState = createAppState([]);
 	setAppStateContext(appState);
 
 	$effect(() => {
-		appState.setShelters(data.shelters);
+		const controller = new AbortController();
+
+		appState.setShelterDataLoading();
+
+		fetch('/shelters.json', { signal: controller.signal })
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error(`Failed to fetch shelters: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then((shelters: Shelter[]) => {
+				appState.setShelters(shelters);
+			})
+			.catch((error) => {
+				if (error.name !== 'AbortError') {
+					appState.setShelterDataError(error.message);
+				}
+			});
+
+		return () => controller.abort();
 	});
 
 	const defaultCenter: GeoPoint = {
@@ -23,7 +43,7 @@
 	};
 
 	let markers: MapMarker[] = $derived(
-		data.shelters.map((shelter) => ({
+		appState.sheltersWithDistance.map((shelter) => ({
 			id: shelter.slug,
 			label: shelter.name,
 			latitude: shelter.latitude,
