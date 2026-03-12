@@ -10,7 +10,7 @@
 </script>
 
 {#snippet DefaultTemplate()}
-	<div class="h-dvh w-[360px] bg-slate-50">
+	<div class="h-dvh w-[432px] bg-slate-50">
 		<Sidebar class="h-full">
 			<div class="space-y-4 p-4">
 				<div class="space-y-1">

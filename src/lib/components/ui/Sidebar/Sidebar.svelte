@@ -12,7 +12,7 @@
 
 <aside
 	data-testid="sidebar"
-	class={cn('flex h-full w-[360px] flex-col bg-white shadow-lg', className)}
+	class={cn('flex h-full w-[432px] flex-col bg-white shadow-lg', className)}
 >
 	<div data-testid="sidebar-content" class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
 		{@render children?.()}
