@@ -64,6 +64,10 @@
 	let locationViewportEventCount = $state(0);
 	let locationViewportLastMode = $state<'default' | 'single' | 'bounds' | 'none'>('none');
 
+	let selectionMarkers = $state<StoryMarker[]>([...markers]);
+	let selectionViewportEventCount = $state(0);
+	let selectionViewportLastMode = $state<'default' | 'single' | 'bounds' | 'none'>('none');
+
 	const resetRecenterState = () => {
 		recenterMarkers = [...markers];
 		recenterCurrentLocation = null;
@@ -76,6 +80,23 @@
 		locationCurrentLocation = initialCurrentLocation;
 		locationViewportEventCount = 0;
 		locationViewportLastMode = 'none';
+	};
+
+	const resetSelectionState = () => {
+		selectionMarkers = [...markers];
+		selectionViewportEventCount = 0;
+		selectionViewportLastMode = 'none';
+	};
+
+	const selectMarker = (id: string) => {
+		selectionMarkers = selectionMarkers.map((m) => ({
+			...m,
+			isSelected: m.id === id,
+		}));
+	};
+
+	const deselectAllMarkers = () => {
+		selectionMarkers = selectionMarkers.map((m) => ({ ...m, isSelected: false }));
 	};
 </script>
 
@@ -225,6 +246,67 @@
 	</div>
 {/snippet}
 
+{#snippet SelectionHarnessTemplate()}
+	<div class={mapShellClass}>
+		<div
+			class="absolute top-3 left-3 z-[1000] flex max-w-[20rem] flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
+		>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="reset-harness"
+				onclick={resetSelectionState}
+			>
+				Reset harness
+			</button>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="select-north-marker"
+				onclick={() => selectMarker('north')}
+			>
+				Select north marker
+			</button>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="select-south-marker"
+				onclick={() => selectMarker('south')}
+			>
+				Select south marker
+			</button>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="deselect-all"
+				onclick={deselectAllMarkers}
+			>
+				Deselect all
+			</button>
+			<div class="w-full text-xs text-slate-700">
+				Viewport events: <span data-testid="viewport-event-count"
+					>{selectionViewportEventCount}</span
+				>
+			</div>
+			<div class="w-full text-xs text-slate-700">
+				Last viewport mode: <span data-testid="viewport-last-mode">{selectionViewportLastMode}</span
+				>
+			</div>
+		</div>
+
+		<Map
+			class="h-full w-full"
+			defaultCenter={springfieldCenter}
+			defaultZoom={13}
+			markers={selectionMarkers}
+			onViewportChanged={(detail) => {
+				selectionViewportEventCount += 1;
+				selectionViewportLastMode = detail.mode;
+			}}
+		/>
+	</div>
+{/snippet}
+
 <Story name="Default" template={DefaultTemplate} />
 
 <Story
@@ -368,5 +450,55 @@
 			expect(canvas.queryAllByTestId('map-current-location')).toHaveLength(0);
 		});
 		expect(getEventCount()).toBe(initialEventCount);
+	}}
+/>
+
+<Story
+	name="Fly To Selected Marker"
+	template={SelectionHarnessTemplate}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		await fireEvent.click(canvas.getByTestId('reset-harness'));
+
+		await waitFor(() => {
+			expect(canvas.getAllByTestId('map-marker')).toHaveLength(3);
+		});
+
+		await fireEvent.click(canvas.getByTestId('select-north-marker'));
+
+		await waitFor(() => {
+			expect(canvas.getAllByTestId('map-marker')).toHaveLength(3);
+		});
+	}}
+/>
+
+<Story
+	name="Recenter When Deselected"
+	template={SelectionHarnessTemplate}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const getEventCount = () =>
+			Number(canvas.getByTestId('viewport-event-count').textContent ?? '0');
+
+		await fireEvent.click(canvas.getByTestId('reset-harness'));
+
+		await waitFor(() => {
+			expect(canvas.getAllByTestId('map-marker')).toHaveLength(3);
+			expect(getEventCount()).toBeGreaterThan(0);
+		});
+
+		await fireEvent.click(canvas.getByTestId('select-north-marker'));
+
+		const eventCountAfterSelection = getEventCount();
+
+		await fireEvent.click(canvas.getByTestId('deselect-all'));
+		await waitFor(
+			() => {
+				expect(getEventCount()).toBe(eventCountAfterSelection + 1);
+				expect(canvas.getByTestId('viewport-last-mode')).toHaveTextContent('bounds');
+			},
+			{ timeout: 3000 },
+		);
 	}}
 />
