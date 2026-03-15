@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { isValidCoordinate, isValidPoint, toLatLngTuple } from './geo';
+import { fromGeoJSONPoint, isValidCoordinate, isValidPoint, toLeafletPoint } from './point';
 
-describe('geo', () => {
+describe('point', () => {
 	test('validates finite coordinate values', () => {
 		expect(isValidCoordinate(37.2)).toBe(true);
 		expect(isValidCoordinate(Number.NaN)).toBe(false);
@@ -15,6 +15,10 @@ describe('geo', () => {
 	});
 
 	test('converts geo points to leaflet tuple order', () => {
-		expect(toLatLngTuple({ latitude: 37.2, longitude: -93.2 })).toEqual([37.2, -93.2]);
+		expect(toLeafletPoint({ latitude: 37.2, longitude: -93.2 })).toEqual([37.2, -93.2]);
+	});
+
+	test('converts GeoJSON coordinates to GeoPoint', () => {
+		expect(fromGeoJSONPoint([-93.2, 37.2])).toEqual({ longitude: -93.2, latitude: 37.2 });
 	});
 });

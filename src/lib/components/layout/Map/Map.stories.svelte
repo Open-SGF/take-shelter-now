@@ -3,22 +3,22 @@
 	import type { ComponentProps } from 'svelte';
 	import { expect, fireEvent, fn, waitFor, within } from 'storybook/test';
 	import Map from './Map.svelte';
+	import type { MapMarker } from './types';
 
 	const springfieldCenter = { latitude: 37.208957, longitude: -93.292299 };
 	type MapArgs = ComponentProps<typeof Map>;
-	type StoryMarker = NonNullable<MapArgs['markers']>[number];
 
-	const markers: StoryMarker[] = [
+	const markers: MapMarker[] = [
 		{ id: 'north', label: 'North Point', latitude: 37.2465, longitude: -93.3013 },
 		{ id: 'downtown', label: 'Downtown Point', latitude: 37.2082, longitude: -93.2926 },
 		{ id: 'south', label: 'South Point', latitude: 37.1601, longitude: -93.2719 },
 	];
 
-	const replacementMarkers: StoryMarker[] = [
+	const replacementMarkers: MapMarker[] = [
 		{ id: 'replacement', label: 'Replacement Point', latitude: 37.1981, longitude: -93.3034 },
 	];
 
-	const markersWithInvalidPoints: StoryMarker[] = [
+	const markersWithInvalidPoints: MapMarker[] = [
 		{ id: 'valid-a', label: 'Valid A', latitude: 37.2441, longitude: -93.3371 },
 		{ id: 'invalid-lat', label: 'Invalid Lat', latitude: Number.NaN, longitude: -93.2999 },
 		{ id: 'valid-b', label: 'Valid B', latitude: 37.1855, longitude: -93.2578 },
@@ -34,39 +34,46 @@
 		title: 'Layout/Map',
 		component: Map,
 		args: {
-			defaultCenter: springfieldCenter,
-			defaultZoom: 13,
-			markers: [],
+			viewport: { defaultCenter: springfieldCenter, defaultZoom: 13 },
+			markers: { items: [] },
 		},
 	});
 </script>
 
 <script lang="ts">
+	import type { GeoPoint } from '$lib/geo';
+	import type { MapViewportChangedDetail } from './types';
+
 	const mapShellClass =
 		'relative h-dvh w-full overflow-hidden bg-[linear-gradient(180deg,#f5f7fa_0%,#dde4ea_100%)]';
 
-	const locationHarnessMarkers: StoryMarker[] = [
+	const locationHarnessMarkers: MapMarker[] = [
 		{ id: 'loc-a', label: 'Location A', latitude: 37.214, longitude: -93.302 },
 		{ id: 'loc-b', label: 'Location B', latitude: 37.198, longitude: -93.284 },
 	];
-	const initialCurrentLocation = { latitude: 37.205, longitude: -93.285 };
-	const recenterMovedCurrentLocation = { latitude: 37.214, longitude: -93.279 };
-	const movedCurrentLocationNorthEast = { latitude: 37.235, longitude: -93.252 };
-	const movedCurrentLocationSouthWest = { latitude: 37.178, longitude: -93.328 };
+	const initialCurrentLocation: GeoPoint = { latitude: 37.205, longitude: -93.285 };
+	const recenterMovedCurrentLocation: GeoPoint = { latitude: 37.214, longitude: -93.279 };
+	const movedCurrentLocationNorthEast: GeoPoint = { latitude: 37.235, longitude: -93.252 };
+	const movedCurrentLocationSouthWest: GeoPoint = { latitude: 37.178, longitude: -93.328 };
 
-	let recenterMarkers = $state<StoryMarker[]>([...markers]);
-	let recenterCurrentLocation = $state<MapArgs['currentLocation']>(null);
+	let recenterMarkers = $state<MapMarker[]>([...markers]);
+	let recenterCurrentLocation = $state<GeoPoint | null>(null);
 	let recenterViewportEventCount = $state(0);
 	let recenterViewportLastMode = $state<'default' | 'single' | 'bounds' | 'none'>('none');
 
-	let locationMarkers = $state<StoryMarker[]>([...locationHarnessMarkers]);
-	let locationCurrentLocation = $state<MapArgs['currentLocation']>(initialCurrentLocation);
+	let locationMarkers = $state<MapMarker[]>([...locationHarnessMarkers]);
+	let locationCurrentLocation = $state<GeoPoint | null>(initialCurrentLocation);
 	let locationViewportEventCount = $state(0);
 	let locationViewportLastMode = $state<'default' | 'single' | 'bounds' | 'none'>('none');
 
-	let selectionMarkers = $state<StoryMarker[]>([...markers]);
+	let selectionMarkers = $state<MapMarker[]>([...markers]);
 	let selectionViewportEventCount = $state(0);
 	let selectionViewportLastMode = $state<'default' | 'single' | 'bounds' | 'none'>('none');
+
+	let centerPinEnabled = $state(false);
+	let centerPinLocation = $state<GeoPoint>(springfieldCenter);
+	let centerChangeEventCount = $state(0);
+	let centerChangeLastLocation = $state<GeoPoint | null>(null);
 
 	const resetRecenterState = () => {
 		recenterMarkers = [...markers];
@@ -86,6 +93,13 @@
 		selectionMarkers = [...markers];
 		selectionViewportEventCount = 0;
 		selectionViewportLastMode = 'none';
+	};
+
+	const resetCenterPinState = () => {
+		centerPinEnabled = false;
+		centerPinLocation = springfieldCenter;
+		centerChangeEventCount = 0;
+		centerChangeLastLocation = null;
 	};
 
 	const selectMarker = (id: string) => {
@@ -174,13 +188,14 @@
 
 		<Map
 			class="h-full w-full"
-			defaultCenter={springfieldCenter}
-			defaultZoom={13}
-			markers={recenterMarkers}
+			viewport={{ defaultCenter: springfieldCenter, defaultZoom: 13 }}
+			markers={{ items: recenterMarkers }}
 			currentLocation={recenterCurrentLocation}
-			onViewportChanged={(detail) => {
-				recenterViewportEventCount += 1;
-				recenterViewportLastMode = detail.mode;
+			onViewportChange={{
+				onChanged: (detail: MapViewportChangedDetail) => {
+					recenterViewportEventCount += 1;
+					recenterViewportLastMode = detail.mode;
+				},
 			}}
 		/>
 	</div>
@@ -234,13 +249,14 @@
 
 		<Map
 			class="h-full w-full"
-			defaultCenter={springfieldCenter}
-			defaultZoom={13}
-			markers={locationMarkers}
+			viewport={{ defaultCenter: springfieldCenter, defaultZoom: 13 }}
+			markers={{ items: locationMarkers }}
 			currentLocation={locationCurrentLocation}
-			onViewportChanged={(detail) => {
-				locationViewportEventCount += 1;
-				locationViewportLastMode = detail.mode;
+			onViewportChange={{
+				onChanged: (detail: MapViewportChangedDetail) => {
+					locationViewportEventCount += 1;
+					locationViewportLastMode = detail.mode;
+				},
 			}}
 		/>
 	</div>
@@ -296,12 +312,79 @@
 
 		<Map
 			class="h-full w-full"
-			defaultCenter={springfieldCenter}
-			defaultZoom={13}
-			markers={selectionMarkers}
-			onViewportChanged={(detail) => {
-				selectionViewportEventCount += 1;
-				selectionViewportLastMode = detail.mode;
+			viewport={{ defaultCenter: springfieldCenter, defaultZoom: 13 }}
+			markers={{ items: selectionMarkers }}
+			onViewportChange={{
+				onChanged: (detail: MapViewportChangedDetail) => {
+					selectionViewportEventCount += 1;
+					selectionViewportLastMode = detail.mode;
+				},
+			}}
+		/>
+	</div>
+{/snippet}
+
+{#snippet CenterPinHarnessTemplate()}
+	<div class={mapShellClass}>
+		<div
+			class="absolute top-3 left-3 z-[1000] flex max-w-[20rem] flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
+		>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="reset-harness"
+				onclick={resetCenterPinState}
+			>
+				Reset harness
+			</button>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="enable-center-pin"
+				onclick={() => {
+					centerPinEnabled = true;
+					centerChangeEventCount = 0;
+					centerChangeLastLocation = null;
+				}}
+			>
+				Enable center pin
+			</button>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="disable-center-pin"
+				onclick={() => (centerPinEnabled = false)}
+			>
+				Disable center pin
+			</button>
+			<div class="w-full text-xs text-slate-700">
+				Center pin: <span data-testid="center-pin-status">{centerPinEnabled ? 'on' : 'off'}</span>
+			</div>
+			<div class="w-full text-xs text-slate-700">
+				Change events: <span data-testid="center-change-count">{centerChangeEventCount}</span>
+			</div>
+			{#if centerChangeLastLocation}
+				<div class="w-full text-xs text-slate-700">
+					Last location: <span data-testid="center-last-location">
+						{centerChangeLastLocation.latitude.toFixed(4)}, {centerChangeLastLocation.longitude.toFixed(
+							4,
+						)}
+					</span>
+				</div>
+			{/if}
+		</div>
+
+		<Map
+			class="h-full w-full"
+			viewport={{ defaultCenter: springfieldCenter, defaultZoom: 13 }}
+			markers={{ items: [] }}
+			centerPin={{
+				enabled: centerPinEnabled,
+				location: centerPinLocation,
+				onCenterChange: (location: GeoPoint) => {
+					centerChangeEventCount += 1;
+					centerChangeLastLocation = location;
+				},
 			}}
 		/>
 	</div>
@@ -311,7 +394,7 @@
 
 <Story
 	name="Multiple Markers"
-	args={{ markers: markersWithInvalidPoints }}
+	args={{ markers: { items: markersWithInvalidPoints } }}
 	template={DefaultTemplate}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -325,7 +408,7 @@
 <Story
 	name="With Current Location"
 	args={{
-		markers,
+		markers: { items: markers },
 		currentLocation: { latitude: 37.205, longitude: -93.285 },
 	}}
 	template={DefaultTemplate}
@@ -341,8 +424,7 @@
 <Story
 	name="Marker Tap Callback"
 	args={{
-		markers,
-		onMarkerTap: fn(),
+		markers: { items: markers, onTap: fn() },
 	}}
 	template={DefaultTemplate}
 	play={async ({ canvasElement, args }) => {
@@ -355,8 +437,10 @@
 		await expect(firstMarker).toBeTruthy();
 
 		await fireEvent.click(firstMarker!);
-		await expect(args.onMarkerTap).toHaveBeenCalledTimes(1);
-		await expect(args.onMarkerTap).toHaveBeenCalledWith(expect.objectContaining({ id: 'north' }));
+		await expect(args.markers?.onTap).toHaveBeenCalledTimes(1);
+		await expect(args.markers?.onTap).toHaveBeenCalledWith(
+			expect.objectContaining({ id: 'north' }),
+		);
 	}}
 />
 
@@ -500,5 +584,34 @@
 			},
 			{ timeout: 3000 },
 		);
+	}}
+/>
+
+<Story
+	name="Center Pin Mode"
+	template={CenterPinHarnessTemplate}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		await fireEvent.click(canvas.getByTestId('reset-harness'));
+
+		await waitFor(() => {
+			expect(canvas.getByTestId('center-pin-status')).toHaveTextContent('off');
+			expect(canvas.queryByTestId('center-pin')).not.toBeInTheDocument();
+		});
+
+		await fireEvent.click(canvas.getByTestId('enable-center-pin'));
+
+		await waitFor(() => {
+			expect(canvas.getByTestId('center-pin-status')).toHaveTextContent('on');
+			expect(canvas.getByTestId('center-pin')).toBeInTheDocument();
+		});
+
+		await fireEvent.click(canvas.getByTestId('disable-center-pin'));
+
+		await waitFor(() => {
+			expect(canvas.getByTestId('center-pin-status')).toHaveTextContent('off');
+			expect(canvas.queryByTestId('center-pin')).not.toBeInTheDocument();
+		});
 	}}
 />

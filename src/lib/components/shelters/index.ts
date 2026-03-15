@@ -1,3 +1,4 @@
+export { default as AddressInput } from './AddressInput/AddressInput.svelte';
 export { default as GetLocation } from './GetLocation/GetLocation.svelte';
 export { default as ShelterCategoryBadge } from './ShelterCategoryBadge/ShelterCategoryBadge.svelte';
 export { default as ShelterDetail } from './ShelterDetail/ShelterDetail.svelte';

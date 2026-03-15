@@ -3,8 +3,7 @@
 	import { expect, fireEvent, waitFor, within } from 'storybook/test';
 	import type { ComponentProps } from 'svelte';
 	import type { Shelter } from '$lib/shelters/types';
-	import { createAppState } from '$lib/state/app-state.svelte';
-	import { setAppStateContext } from '$lib/state/app-state-context';
+	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
 	import DirectionsAction from './DirectionsAction.svelte';
 
 	type StoryArgs = ComponentProps<typeof DirectionsAction>;
@@ -74,16 +73,17 @@
 
 	const { Story } = defineMeta({
 		title: 'Shelters/DirectionsAction',
-		component: DirectionsAction,
+		tags: ['autodocs'],
 		args: {
 			shelter: fullShelter,
 		},
+		decorators: [
+			(Story) => {
+				setUserStateContext(createUserState());
+				return Story();
+			},
+		],
 	});
-</script>
-
-<script lang="ts">
-	const appState = createAppState({ preferredMapProvider: null });
-	setAppStateContext(appState);
 </script>
 
 {#snippet Template(args: StoryArgs)}

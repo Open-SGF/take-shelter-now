@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { GetLocation, ShelterList } from '$lib/components/shelters';
-	import { getAppStateContext } from '$lib/state/app-state-context';
+	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 
-	const appState = getAppStateContext();
+	const locationState = getLocationStateContext();
 </script>
 
 <div class="p-4 pt-6">
-	{#if !appState.hasLocation}
+	{#if !locationState.hasLocation}
 		<GetLocation />
 	{:else}
 		<ShelterList />

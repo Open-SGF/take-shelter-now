@@ -69,10 +69,12 @@
 		{#snippet map()}
 			<Map
 				class="h-full w-full"
-				markers={shelterMarkers}
-				defaultZoom={13}
-				onViewportChanged={() => {
-					mapViewportSettledCount += 1;
+				markers={{ items: shelterMarkers }}
+				viewport={{ defaultZoom: 13 }}
+				onViewportChange={{
+					onChanged: () => {
+						mapViewportSettledCount += 1;
+					},
 				}}
 			/>
 		{/snippet}
