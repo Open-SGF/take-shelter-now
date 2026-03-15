@@ -40,7 +40,11 @@
 >
 	{#snippet child({ props })}
 		{#if shelter.slug}
-			<a {...props} href={resolve('/shelters/[slug]', { slug: shelter.slug })}>
+			<a
+				{...props}
+				href={resolve('/shelters/[slug]', { slug: shelter.slug })}
+				style:view-transition-name="shelter-{shelter.slug}"
+			>
 				<Item.Content class="gap-1.5">
 					<div class="flex items-start justify-between gap-3">
 						<ShelterCategoryBadge

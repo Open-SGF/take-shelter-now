@@ -1,5 +1,8 @@
 <script lang="ts">
 	import '../app.css';
+	import { goto, onNavigate } from '$app/navigation';
+	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import { AppShell } from '$lib/components/layout';
 	import type { GeoPoint } from '$lib/geo';
 	import type { Snippet } from 'svelte';
@@ -9,6 +12,16 @@
 	import type { Shelter } from '$lib/shelters/types';
 
 	let { children }: { children: Snippet } = $props();
+
+	onNavigate(() => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(() => {
+				resolve();
+			});
+		});
+	});
 
 	const appState = createAppState();
 	setAppStateContext(appState);
@@ -42,14 +55,21 @@
 		longitude: -93.292299,
 	};
 
+	let selectedShelterSlug = $derived(page.params.slug);
+
 	let markers: MapMarker[] = $derived(
 		appState.sheltersWithDistance.map((shelter) => ({
 			id: shelter.slug,
 			label: shelter.name,
 			latitude: shelter.latitude,
 			longitude: shelter.longitude,
+			isSelected: shelter.slug === selectedShelterSlug,
 		})),
 	);
+
+	function handleMarkerTap(marker: MapMarker) {
+		goto(resolve('/shelters/[slug]', { slug: marker.id }));
+	}
 </script>
 
 <!-- eslint-disable-next-line svelte/no-at-html-tags -- Version is a build-time constant, not user input -->
@@ -63,6 +83,7 @@
 			currentLocation={appState.location}
 			{defaultCenter}
 			defaultZoom={13}
+			onMarkerTap={handleMarkerTap}
 		/>
 	{/snippet}
 
