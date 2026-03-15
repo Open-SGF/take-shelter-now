@@ -56,7 +56,7 @@ export default defineConfig({
 					clearMocks: true,
 					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
 					exclude: ['src/lib/server/**'],
-					setupFiles: ['./vitest-setup-client.ts'],
+					setupFiles: ['./vitest/setup-client.ts'],
 				},
 			},
 			{
@@ -84,7 +84,7 @@ export default defineConfig({
 						instances: [{ browser: 'chromium' }],
 						headless: true,
 					},
-					setupFiles: ['./vitest-setup-storybook.ts'],
+					setupFiles: ['./vitest/setup-storybook.ts'],
 				},
 			},
 		],
