@@ -64,7 +64,9 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (!isOpen || suggestions.length === 0) return;
+		if (!isOpen || suggestions.length === 0) {
+			return;
+		}
 
 		switch (event.key) {
 			case 'ArrowDown':

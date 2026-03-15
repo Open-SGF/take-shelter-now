@@ -31,7 +31,9 @@
 
 	let minHeight = $derived(Math.max(0, collapsedHeight));
 	let normalizedSnapPoints = $derived.by(() => {
-		if (!snapPoints || snapPoints.length === 0) return [];
+		if (!snapPoints || snapPoints.length === 0) {
+			return [];
+		}
 
 		return snapPoints.map((point) => clamp(point, 0, 1)).sort((a, b) => a - b);
 	});
@@ -62,13 +64,17 @@
 	};
 
 	const onPointerMove = (event: PointerEvent) => {
-		if (!isDragging) return;
+		if (!isDragging) {
+			return;
+		}
 		const deltaY = event.clientY - dragStartY;
 		dragHeight = clamp(dragStartHeight - deltaY, minHeight, maxSheetHeight);
 	};
 
 	const endDrag = () => {
-		if (!isDragging) return;
+		if (!isDragging) {
+			return;
+		}
 		isDragging = false;
 		if (dragHeight !== null) {
 			snapIndex = findClosestSnapIndex(dragHeight) - 1;
@@ -89,10 +95,16 @@
 	};
 
 	const onContentScroll = (event: Event) => {
-		if (isDragging) return;
-		if (clampedSnapIndex >= maxExternalSnapIndex) return;
+		if (isDragging) {
+			return;
+		}
+		if (clampedSnapIndex >= maxExternalSnapIndex) {
+			return;
+		}
 		const target = event.currentTarget as HTMLElement | null;
-		if (!target) return;
+		if (!target) {
+			return;
+		}
 		if (target.scrollTop > 0) {
 			snapIndex = maxExternalSnapIndex;
 		}

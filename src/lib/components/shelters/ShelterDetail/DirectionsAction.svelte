@@ -112,7 +112,9 @@
 	}
 
 	async function handleCopyAddress(): Promise<void> {
-		if (!hasAddress) return;
+		if (!hasAddress) {
+			return;
+		}
 
 		try {
 			await navigator.clipboard.writeText(fullAddress);

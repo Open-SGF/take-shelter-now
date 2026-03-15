@@ -38,15 +38,23 @@ function formatAddress(props: {
 		parts.push(props.name);
 	}
 
-	if (props.locality) parts.push(props.locality);
-	if (props.region) parts.push(props.region);
-	if (props.postalcode) parts.push(props.postalcode);
+	if (props.locality) {
+		parts.push(props.locality);
+	}
+	if (props.region) {
+		parts.push(props.region);
+	}
+	if (props.postalcode) {
+		parts.push(props.postalcode);
+	}
 
 	return parts.join(', ');
 }
 
 export async function searchAddresses(query: string) {
-	if (query.length < 3) return [];
+	if (query.length < 3) {
+		return [];
+	}
 
 	try {
 		const response = await geocodingApi.autocomplete({
@@ -81,7 +89,9 @@ export async function getPlaceDetails(gid: string) {
 		const response = await geocodingApi.placeDetails({ ids: [gid] });
 
 		const feature = response.features[0];
-		if (!feature?.geometry?.coordinates) return null;
+		if (!feature?.geometry?.coordinates) {
+			return null;
+		}
 
 		return {
 			label: feature.properties?.label ?? '',
@@ -113,7 +123,9 @@ export async function geocodeAddress(address: string) {
 		});
 
 		const feature = response.features[0];
-		if (!feature?.geometry?.coordinates) return null;
+		if (!feature?.geometry?.coordinates) {
+			return null;
+		}
 
 		return {
 			label: feature.properties?.label ?? '',

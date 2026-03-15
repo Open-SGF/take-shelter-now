@@ -6,7 +6,9 @@ export type GeoPoint = {
 export const isValidCoordinate = (value: number) => Number.isFinite(value);
 
 export const isValidPoint = (point: GeoPoint | null | undefined): point is GeoPoint => {
-	if (!point) return false;
+	if (!point) {
+		return false;
+	}
 	return isValidCoordinate(point.latitude) && isValidCoordinate(point.longitude);
 };
 

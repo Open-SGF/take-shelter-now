@@ -46,7 +46,9 @@ export const [getLocationStateContext, setLocationStateContext] = createContext<
 const LOCATION_STORAGE_KEY = 'take-shelter-location';
 
 const readLocationFromStorage = (): StoredLocation | null => {
-	if (typeof window === 'undefined') return null;
+	if (typeof window === 'undefined') {
+		return null;
+	}
 	try {
 		const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
 		if (saved) {
@@ -62,7 +64,9 @@ const readLocationFromStorage = (): StoredLocation | null => {
 };
 
 const writeLocationToStorage = (location: StoredLocation | null): void => {
-	if (typeof window === 'undefined') return;
+	if (typeof window === 'undefined') {
+		return;
+	}
 	try {
 		if (location === null) {
 			localStorage.removeItem(LOCATION_STORAGE_KEY);

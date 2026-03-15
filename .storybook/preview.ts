@@ -5,8 +5,12 @@ import { geocodingHandlers } from './mocks/geocoding';
 import { tileHandlers } from './mocks/tile';
 
 const startStorybookMsw = async (): Promise<void> => {
-	if (typeof window === 'undefined') return;
-	if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+	if (typeof window === 'undefined') {
+		return;
+	}
+	if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+		return;
+	}
 
 	const { setupWorker } = await import('msw/browser');
 

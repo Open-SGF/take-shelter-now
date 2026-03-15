@@ -12,7 +12,9 @@ export const [getUserStateContext, setUserStateContext] = createContext<UserStat
 const MAP_PROVIDER_STORAGE_KEY = 'take-shelter-map-provider';
 
 const readMapProviderFromStorage = (): MapProvider | null => {
-	if (typeof window === 'undefined') return null;
+	if (typeof window === 'undefined') {
+		return null;
+	}
 	try {
 		const saved = localStorage.getItem(MAP_PROVIDER_STORAGE_KEY);
 		if (saved === 'apple' || saved === 'google') {
@@ -25,7 +27,9 @@ const readMapProviderFromStorage = (): MapProvider | null => {
 };
 
 const writeMapProviderToStorage = (provider: MapProvider | null): void => {
-	if (typeof window === 'undefined') return;
+	if (typeof window === 'undefined') {
+		return;
+	}
 	try {
 		if (provider === null) {
 			localStorage.removeItem(MAP_PROVIDER_STORAGE_KEY);

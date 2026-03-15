@@ -26,8 +26,12 @@ const DEFAULT_BOUNDS_OPTIONS: BoundsOptions = {
 };
 
 export const getRecenterMode = (markers: MapMarker[]): RecenterMode => {
-	if (markers.length === 0) return 'default';
-	if (markers.length === 1) return 'single';
+	if (markers.length === 0) {
+		return 'default';
+	}
+	if (markers.length === 1) {
+		return 'single';
+	}
 	return 'bounds';
 };
 

@@ -93,7 +93,9 @@ export class MapController {
 	}
 
 	#clearPendingViewportChangedHandler() {
-		if (!this.map || !this.#pendingViewportChangedHandler) return;
+		if (!this.map || !this.#pendingViewportChangedHandler) {
+			return;
+		}
 
 		this.map.off('moveend', this.#pendingViewportChangedHandler);
 		this.#pendingViewportChangedHandler = null;
@@ -104,14 +106,18 @@ export class MapController {
 		applyViewport: (mapInstance: Leaflet.Map) => void,
 		callbacks?: ViewportCallbacks,
 	) {
-		if (!this.map) return;
+		if (!this.map) {
+			return;
+		}
 
 		callbacks?.onWillChange?.(detail);
 		this.#clearPendingViewportChangedHandler();
 
 		const mapInstance = this.map;
 		const handleViewportChanged = () => {
-			if (this.#pendingViewportChangedHandler !== handleViewportChanged) return;
+			if (this.#pendingViewportChangedHandler !== handleViewportChanged) {
+				return;
+			}
 
 			mapInstance.off('moveend', handleViewportChanged);
 			this.#pendingViewportChangedHandler = null;
@@ -132,7 +138,9 @@ export class MapController {
 		this.#mediaQuery.addEventListener('change', this.#handleMediaQueryChange);
 
 		const [L, basemapStyle] = await Promise.all([loadLeaflet(), loadBasemapStyle()]);
-		if (this.#disposed || !this.#mapElement) return;
+		if (this.#disposed || !this.#mapElement) {
+			return;
+		}
 
 		this.leaflet = L;
 		const center = isValidPoint(config.defaultCenter) ? config.defaultCenter : DEFAULT_MAP_CENTER;
@@ -163,7 +171,9 @@ export class MapController {
 	};
 
 	setupMoveHandler(onCenterChange?: (location: GeoPoint) => void) {
-		if (!this.map || !onCenterChange) return;
+		if (!this.map || !onCenterChange) {
+			return;
+		}
 
 		this.#moveHandler = () => {
 			const center = this.map!.getCenter();
@@ -221,12 +231,16 @@ export class MapController {
 		onTap?: (marker: MapMarker) => void,
 		callbacks?: ViewportCallbacks,
 	) {
-		if (!this.leaflet || !this.#markerLayer) return;
+		if (!this.leaflet || !this.#markerLayer) {
+			return;
+		}
 
 		const validMarkers = filterValidMarkers(markers);
 		const signature = buildMarkerSignature(validMarkers);
 
-		if (signature === this.#lastMarkerSignature) return;
+		if (signature === this.#lastMarkerSignature) {
+			return;
+		}
 		this.#lastMarkerSignature = signature;
 		this.#currentMarkers = validMarkers;
 
@@ -249,10 +263,14 @@ export class MapController {
 	}
 
 	updateCurrentLocation(location: GeoPoint | null | undefined) {
-		if (!this.leaflet || !this.map) return;
+		if (!this.leaflet || !this.map) {
+			return;
+		}
 
 		const signature = buildPointSignature(location);
-		if (signature === this.#lastCurrentLocationSignature) return;
+		if (signature === this.#lastCurrentLocationSignature) {
+			return;
+		}
 		this.#lastCurrentLocationSignature = signature;
 
 		if (this.#currentLocationMarker) {
@@ -260,7 +278,9 @@ export class MapController {
 			this.#currentLocationMarker = null;
 		}
 
-		if (!isValidPoint(location)) return;
+		if (!isValidPoint(location)) {
+			return;
+		}
 
 		this.#currentLocationMarker = this.leaflet
 			.marker(toLeafletPoint(location), {
@@ -271,7 +291,9 @@ export class MapController {
 	}
 
 	handleSelectionChange(selectedMarker: MapMarker | undefined, callbacks?: ViewportCallbacks) {
-		if (!this.isReady || !this.map) return;
+		if (!this.isReady || !this.map) {
+			return;
+		}
 
 		if (selectedMarker && selectedMarker.id !== this.#lastFocusedMarkerId) {
 			this.#lastFocusedMarkerId = selectedMarker.id;
@@ -285,7 +307,9 @@ export class MapController {
 	}
 
 	enterCenterPinMode(location: GeoPoint | undefined) {
-		if (!this.isReady || !this.map) return;
+		if (!this.isReady || !this.map) {
+			return;
+		}
 
 		const isEnteringCenterPinMode = location && !this.#lastCenterPin;
 		this.#lastCenterPin = !!location;
@@ -298,7 +322,9 @@ export class MapController {
 	}
 
 	#recenterToMarkers(markers?: MapMarker[], animate = false, callbacks?: ViewportCallbacks) {
-		if (!this.map) return;
+		if (!this.map) {
+			return;
+		}
 
 		const validMarkers = markers ?? [];
 		const fallbackCenter = DEFAULT_MAP_CENTER;
