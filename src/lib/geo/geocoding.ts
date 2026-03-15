@@ -1,5 +1,5 @@
 import { GeocodingApi } from '@stadiamaps/api';
-import type { GeoPoint } from './point';
+import { fromGeoJSONPoint, type GeoPoint } from './point';
 
 export type GeocodingResult = {
 	label: string;
@@ -43,13 +43,6 @@ function formatAddress(props: {
 	if (props.postalcode) parts.push(props.postalcode);
 
 	return parts.join(', ');
-}
-
-function coordinatesToGeoPoint(coordinates: number[]): GeoPoint {
-	return {
-		longitude: coordinates[0],
-		latitude: coordinates[1],
-	};
 }
 
 export async function searchAddresses(query: string): Promise<AutocompleteSuggestion[]> {
@@ -100,7 +93,7 @@ export async function getPlaceDetails(gid: string): Promise<GeocodingResult | nu
 				region: feature.properties?.regionA,
 				postalcode: feature.properties?.postalcode,
 			}),
-			location: coordinatesToGeoPoint(feature.geometry.coordinates),
+			location: fromGeoJSONPoint(feature.geometry.coordinates),
 		};
 	} catch (error) {
 		console.error('Geocoding place details error:', error);
@@ -132,7 +125,7 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult |
 				region: feature.properties?.regionA,
 				postalcode: feature.properties?.postalcode,
 			}),
-			location: coordinatesToGeoPoint(feature.geometry.coordinates),
+			location: fromGeoJSONPoint(feature.geometry.coordinates),
 		};
 	} catch (error) {
 		console.error('Geocoding search error:', error);

@@ -10,7 +10,12 @@ export const isValidPoint = (point: GeoPoint | null | undefined): point is GeoPo
 	return isValidCoordinate(point.latitude) && isValidCoordinate(point.longitude);
 };
 
-export const toLatLngTuple = (point: GeoPoint): [number, number] => [
+export const toLeafletPoint = (point: GeoPoint): [number, number] => [
 	point.latitude,
 	point.longitude,
 ];
+
+export const fromGeoJSONPoint = (coordinates: number[]): GeoPoint => ({
+	longitude: coordinates[0],
+	latitude: coordinates[1],
+});

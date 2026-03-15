@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import type * as Leaflet from 'leaflet';
 	import type {} from '@maplibre/maplibre-gl-leaflet';
-	import { isValidPoint, toLatLngTuple, type GeoPoint } from '$lib/geo';
+	import { isValidPoint, toLeafletPoint, type GeoPoint } from '$lib/geo';
 	import { buildMarkerSignature, buildPointSignature, filterValidMarkers } from './markers';
 	import { createRecenterPlan } from './viewport';
 	import { loadBasemapStyle, loadLeaflet } from './leaflet-loader';
@@ -195,12 +195,12 @@
 			runViewportUpdate(detail, (mapInstance) => {
 				if (animate) {
 					mapInstance.flyToBounds(
-						plan.bounds.map((marker) => toLatLngTuple(marker)),
+						plan.bounds.map((marker) => toLeafletPoint(marker)),
 						{ duration: flyToDuration, ...plan.options },
 					);
 				} else {
 					mapInstance.fitBounds(
-						plan.bounds.map((marker) => toLatLngTuple(marker)),
+						plan.bounds.map((marker) => toLeafletPoint(marker)),
 						plan.options,
 					);
 				}
@@ -215,11 +215,11 @@
 
 		runViewportUpdate(detail, (mapInstance) => {
 			if (animate) {
-				mapInstance.flyTo(toLatLngTuple(plan.center), plan.zoom, {
+				mapInstance.flyTo(toLeafletPoint(plan.center), plan.zoom, {
 					duration: flyToDuration,
 				});
 			} else {
-				mapInstance.setView(toLatLngTuple(plan.center), plan.zoom);
+				mapInstance.setView(toLeafletPoint(plan.center), plan.zoom);
 			}
 		});
 	};
@@ -231,7 +231,7 @@
 
 		for (const marker of validMarkers) {
 			const markerInstance = leaflet
-				.marker(toLatLngTuple(marker), {
+				.marker(toLeafletPoint(marker), {
 					icon: createMarkerIcon(leaflet, marker.isSelected === true),
 					title: marker.label ?? marker.id,
 				})
@@ -254,7 +254,7 @@
 		if (!isValidPoint(currentLocation)) return;
 
 		currentLocationMarker = leaflet
-			.marker(toLatLngTuple(currentLocation), {
+			.marker(toLeafletPoint(currentLocation), {
 				icon: createCurrentLocationIcon(leaflet, prefersReducedMotion),
 				interactive: false,
 			})
@@ -272,7 +272,7 @@
 		if (!isValidPoint(draggableLocation)) return;
 
 		draggableMarker = leaflet
-			.marker(toLatLngTuple(draggableLocation), {
+			.marker(toLeafletPoint(draggableLocation), {
 				icon: createDraggableIcon(leaflet),
 				draggable: true,
 				autoPan: true,
@@ -318,7 +318,7 @@
 
 		if (selectedMarker && selectedMarker.id !== lastFocusedMarkerId) {
 			lastFocusedMarkerId = selectedMarker.id;
-			map.flyTo(toLatLngTuple(selectedMarker), SELECTED_MARKER_ZOOM, {
+			map.flyTo(toLeafletPoint(selectedMarker), SELECTED_MARKER_ZOOM, {
 				duration: flyToDuration,
 			});
 		} else if (!selectedMarker && lastFocusedMarkerId !== null) {
@@ -346,7 +346,7 @@
 			leaflet = L;
 			const center = isValidPoint(defaultCenter) ? defaultCenter : DEFAULT_MAP_CENTER;
 			const nextMap = L.map(mapElement, {
-				center: toLatLngTuple(center),
+				center: toLeafletPoint(center),
 				zoom: defaultZoom,
 				minZoom,
 				maxZoom,
