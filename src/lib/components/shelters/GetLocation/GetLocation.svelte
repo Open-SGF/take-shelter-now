@@ -109,7 +109,7 @@
 			</div>
 
 			<p class="text-sm text-slate-600">
-				Drag the pin on the map to adjust your location, then confirm.
+				Drag the map to position the pin at your location, then confirm.
 			</p>
 
 			<div class="flex gap-3">

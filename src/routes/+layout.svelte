@@ -81,13 +81,24 @@
 		}));
 	});
 
-	let draggableLocation = $derived(locationState.pendingLocation?.location ?? null);
+	let centerPinLocation = $state<GeoPoint | null>(null);
+	let hadPendingLocation = $state(false);
+
+	$effect(() => {
+		const hasPendingLocation = !!locationState.pendingLocation;
+
+		if (hasPendingLocation && !hadPendingLocation) {
+			centerPinLocation = locationState.pendingLocation!.location;
+		}
+
+		hadPendingLocation = hasPendingLocation;
+	});
 
 	function handleMarkerTap(marker: MapMarker) {
 		goto(resolve('/shelters/[slug]', { slug: marker.id }));
 	}
 
-	function handleLocationDrag(location: GeoPoint) {
+	function handleCenterChange(location: GeoPoint) {
 		if (locationState.pendingLocation) {
 			locationState.setPendingLocation({
 				...locationState.pendingLocation,
@@ -106,11 +117,12 @@
 			class="h-full w-full"
 			{markers}
 			currentLocation={locationState.location}
-			{draggableLocation}
+			centerPin={!!locationState.pendingLocation}
+			centerPinLocation={centerPinLocation ?? undefined}
 			{defaultCenter}
 			defaultZoom={13}
 			onMarkerTap={handleMarkerTap}
-			onLocationDrag={handleLocationDrag}
+			onCenterChange={handleCenterChange}
 		/>
 	{/snippet}
 
