@@ -27,7 +27,7 @@ function formatAddress(props: {
 	locality?: string;
 	region?: string;
 	postalcode?: string;
-}): string {
+}) {
 	const parts: string[] = [];
 
 	if (props.housenumber && props.street) {
@@ -45,7 +45,7 @@ function formatAddress(props: {
 	return parts.join(', ');
 }
 
-export async function searchAddresses(query: string): Promise<AutocompleteSuggestion[]> {
+export async function searchAddresses(query: string) {
 	if (query.length < 3) return [];
 
 	try {
@@ -76,7 +76,7 @@ export async function searchAddresses(query: string): Promise<AutocompleteSugges
 	}
 }
 
-export async function getPlaceDetails(gid: string): Promise<GeocodingResult | null> {
+export async function getPlaceDetails(gid: string){
 	try {
 		const response = await geocodingApi.placeDetails({ ids: [gid] });
 
@@ -101,7 +101,7 @@ export async function getPlaceDetails(gid: string): Promise<GeocodingResult | nu
 	}
 }
 
-export async function geocodeAddress(address: string): Promise<GeocodingResult | null> {
+export async function geocodeAddress(address: string) {
 	try {
 		const response = await geocodingApi.search({
 			text: address,
