@@ -54,9 +54,16 @@
 	let validMarkers = $derived(filterValidMarkers(markers));
 	let markerSignature = $derived(buildMarkerSignature(validMarkers));
 	let currentLocationSignature = $derived(buildPointSignature(currentLocation));
+	let selectedMarker = $derived(validMarkers.find((m) => m.isSelected === true));
+	let lastFocusedMarkerId: string | null = null;
 
-	const createMarkerIcon = (L: typeof Leaflet): Leaflet.DivIcon =>
-		L.divIcon({
+	const SELECTED_MARKER_ZOOM = 17;
+	const FLY_TO_DURATION = 0.75;
+
+	const createMarkerIcon = (L: typeof Leaflet, isSelected = false): Leaflet.DivIcon => {
+		const size = isSelected ? 48 : 36;
+		const iconAnchor: [number, number] = isSelected ? [24, 44] : [18, 33];
+		return L.divIcon({
 			className: 'flex items-center justify-center bg-transparent border-0',
 			html: `
 				<img
@@ -64,12 +71,13 @@
 					src="/icons/map-pin.svg"
 					alt=""
 					aria-hidden="true"
-					class="pointer-events-none block h-[36px] w-[36px]"
+					class="pointer-events-none block h-[${size}px] w-[${size}px]"
 				/>
 			`,
-			iconSize: [36, 36],
-			iconAnchor: [18, 33],
+			iconSize: [size, size],
+			iconAnchor,
 		});
+	};
 
 	const createCurrentLocationIcon = (L: typeof Leaflet): Leaflet.DivIcon =>
 		L.divIcon({
@@ -140,7 +148,7 @@
 		applyViewport(mapInstance);
 	};
 
-	const recenterMapToMarkers = () => {
+	const recenterMapToMarkers = (animate = false) => {
 		if (!map) return;
 
 		const fallbackCenter = isValidPoint(defaultCenter) ? defaultCenter : DEFAULT_MAP_CENTER;
@@ -153,10 +161,17 @@
 			};
 
 			runViewportUpdate(detail, (mapInstance) => {
-				mapInstance.fitBounds(
-					plan.bounds.map((marker) => toLatLngTuple(marker)),
-					plan.options,
-				);
+				if (animate) {
+					mapInstance.flyToBounds(
+						plan.bounds.map((marker) => toLatLngTuple(marker)),
+						{ duration: FLY_TO_DURATION, ...plan.options },
+					);
+				} else {
+					mapInstance.fitBounds(
+						plan.bounds.map((marker) => toLatLngTuple(marker)),
+						plan.options,
+					);
+				}
 			});
 			return;
 		}
@@ -167,7 +182,13 @@
 		};
 
 		runViewportUpdate(detail, (mapInstance) => {
-			mapInstance.setView(toLatLngTuple(plan.center), plan.zoom);
+			if (animate) {
+				mapInstance.flyTo(toLatLngTuple(plan.center), plan.zoom, {
+					duration: FLY_TO_DURATION,
+				});
+			} else {
+				mapInstance.setView(toLatLngTuple(plan.center), plan.zoom);
+			}
 		});
 	};
 
@@ -179,7 +200,7 @@
 		for (const marker of validMarkers) {
 			const markerInstance = leaflet
 				.marker(toLatLngTuple(marker), {
-					icon: createMarkerIcon(leaflet),
+					icon: createMarkerIcon(leaflet, marker.isSelected === true),
 					title: marker.label ?? marker.id,
 				})
 				.addTo(markerLayer);
@@ -223,6 +244,20 @@
 
 		updateCurrentLocationMarker();
 		lastCurrentLocationSignature = currentLocationSignature;
+	});
+
+	$effect(() => {
+		if (!isReady || !map) return;
+
+		if (selectedMarker && selectedMarker.id !== lastFocusedMarkerId) {
+			lastFocusedMarkerId = selectedMarker.id;
+			map.flyTo(toLatLngTuple(selectedMarker), SELECTED_MARKER_ZOOM, {
+				duration: FLY_TO_DURATION,
+			});
+		} else if (!selectedMarker && lastFocusedMarkerId !== null) {
+			lastFocusedMarkerId = null;
+			recenterMapToMarkers(true);
+		}
 	});
 
 	onMount(() => {
