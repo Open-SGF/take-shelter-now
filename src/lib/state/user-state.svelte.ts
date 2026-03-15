@@ -1,4 +1,4 @@
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 
 export type MapProvider = 'apple' | 'google';
 
@@ -7,15 +7,7 @@ export type UserState = {
 	setMapProvider: (provider: MapProvider | null) => void;
 };
 
-const USER_STATE_CONTEXT_KEY = Symbol('user-state');
-
-export const setUserStateContext = (userState: UserState) => {
-	setContext(USER_STATE_CONTEXT_KEY, userState);
-};
-
-export const getUserStateContext = () => {
-	return getContext<UserState>(USER_STATE_CONTEXT_KEY);
-};
+export const [getUserStateContext, setUserStateContext] = createContext<UserState>();
 
 const MAP_PROVIDER_STORAGE_KEY = 'take-shelter-map-provider';
 

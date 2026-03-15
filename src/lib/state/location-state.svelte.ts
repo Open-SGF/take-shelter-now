@@ -1,4 +1,4 @@
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { GeoPoint } from '$lib/geo';
 
 export type LocationMethod = 'geolocation' | 'address';
@@ -41,15 +41,7 @@ export type LocationState = {
 	clearLocation: () => void;
 };
 
-const LOCATION_STATE_CONTEXT_KEY = Symbol('location-state');
-
-export const setLocationStateContext = (locationState: LocationState) => {
-	setContext(LOCATION_STATE_CONTEXT_KEY, locationState);
-};
-
-export const getLocationStateContext = () => {
-	return getContext<LocationState>(LOCATION_STATE_CONTEXT_KEY);
-};
+export const [getLocationStateContext, setLocationStateContext] = createContext<LocationState>();
 
 const LOCATION_STORAGE_KEY = 'take-shelter-location';
 

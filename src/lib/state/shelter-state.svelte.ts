@@ -1,4 +1,4 @@
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { Shelter } from '$lib/shelters/types';
 import { calculateDistance } from '$lib/utils';
 
@@ -20,15 +20,7 @@ export type ShelterState = {
 
 export type LocationGetter = () => { latitude: number; longitude: number } | null;
 
-const SHELTER_STATE_CONTEXT_KEY = Symbol('shelter-state');
-
-export const setShelterStateContext = (shelterState: ShelterState) => {
-	setContext(SHELTER_STATE_CONTEXT_KEY, shelterState);
-};
-
-export const getShelterStateContext = () => {
-	return getContext<ShelterState>(SHELTER_STATE_CONTEXT_KEY);
-};
+export const [getShelterStateContext, setShelterStateContext] = createContext<ShelterState>();
 
 export const createShelterState = (getLocation: LocationGetter): ShelterState => {
 	let dataState = $state<ShelterDataState>({ kind: 'loading' });
