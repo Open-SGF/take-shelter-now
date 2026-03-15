@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { goto } from '$app/navigation';
+	import { goto, onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { AppShell } from '$lib/components/layout';
@@ -12,6 +12,16 @@
 	import type { Shelter } from '$lib/shelters/types';
 
 	let { children }: { children: Snippet } = $props();
+
+	onNavigate(() => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(() => {
+				resolve();
+			});
+		});
+	});
 
 	const appState = createAppState();
 	setAppStateContext(appState);

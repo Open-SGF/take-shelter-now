@@ -21,9 +21,10 @@
 
 	type ShelterDetailProps = {
 		shelter: Shelter;
+		transitionId?: string;
 	};
 
-	let { shelter }: ShelterDetailProps = $props();
+	let { shelter, transitionId }: ShelterDetailProps = $props();
 
 	const positiveBadgeClass =
 		'h-5 gap-1 border-emerald-200 bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-800';
@@ -77,7 +78,11 @@
 	);
 </script>
 
-<div class="w-full rounded-2xl p-5" data-testid="shelter-detail-card">
+<div
+	class="w-full rounded-2xl p-5"
+	data-testid="shelter-detail-card"
+	style:view-transition-name={transitionId}
+>
 	<h1 class="text-2xl leading-tight font-black sm:text-3xl" data-testid="shelter-detail-name">
 		{shelter.name}
 	</h1>

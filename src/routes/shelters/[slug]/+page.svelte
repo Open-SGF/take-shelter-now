@@ -19,5 +19,5 @@
 		Back to list
 	</Button>
 
-	<ShelterDetail shelter={data.shelter} />
+	<ShelterDetail shelter={data.shelter} transitionId="shelter-{data.shelter.slug}" />
 </article>
