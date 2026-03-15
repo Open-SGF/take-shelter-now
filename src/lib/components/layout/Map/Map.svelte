@@ -17,11 +17,13 @@
 	type MapProps = {
 		markers?: MapMarker[];
 		currentLocation?: GeoPoint | null;
+		draggableLocation?: GeoPoint | null;
 		defaultCenter?: GeoPoint;
 		defaultZoom?: number;
 		minZoom?: number;
 		maxZoom?: number;
 		onMarkerTap?: (marker: MapMarker) => void;
+		onLocationDrag?: (location: GeoPoint) => void;
 		onViewportWillChange?: (detail: MapViewportWillChangeDetail) => void;
 		onViewportChanged?: (detail: MapViewportChangedDetail) => void;
 		class?: string;
@@ -30,11 +32,13 @@
 	let {
 		markers = [],
 		currentLocation = null,
+		draggableLocation = null,
 		defaultCenter = DEFAULT_MAP_CENTER,
 		defaultZoom = 13,
 		minZoom = 3,
 		maxZoom = 19,
 		onMarkerTap,
+		onLocationDrag,
 		onViewportWillChange,
 		onViewportChanged,
 		class: className,
@@ -46,14 +50,17 @@
 	let basemapLayer: Leaflet.Layer | null = null;
 	let markerLayer: Leaflet.LayerGroup | null = null;
 	let currentLocationMarker: Leaflet.Marker | null = null;
+	let draggableMarker: Leaflet.Marker | null = null;
 	let pendingViewportChangedHandler: (() => void) | null = null;
 	let lastMarkerSignature = '';
 	let lastCurrentLocationSignature = '';
+	let lastDraggableLocationSignature = '';
 	let isReady = $state(false);
 
 	let validMarkers = $derived(filterValidMarkers(markers));
 	let markerSignature = $derived(buildMarkerSignature(validMarkers));
 	let currentLocationSignature = $derived(buildPointSignature(currentLocation));
+	let draggableLocationSignature = $derived(buildPointSignature(draggableLocation));
 	let selectedMarker = $derived(validMarkers.find((m) => m.isSelected === true));
 	let lastFocusedMarkerId: string | null = null;
 	let prefersReducedMotion = $state(false);
@@ -109,6 +116,29 @@
 			iconSize: [42, 42],
 			iconAnchor: [21, 21],
 		});
+
+	const createDraggableIcon = (L: typeof Leaflet): Leaflet.DivIcon => {
+		const size = 48;
+		return L.divIcon({
+			className: 'flex items-center justify-center bg-transparent border-0',
+			html: `
+				<div
+					data-testid="map-draggable-marker"
+					class="pointer-events-none relative"
+					aria-hidden="true"
+				>
+					<img
+						src="/icons/map-pin.svg"
+						alt=""
+						class="block h-[${size}px] w-[${size}px] drop-shadow-lg"
+					/>
+					<div class="absolute -bottom-1 left-1/2 h-2 w-4 -translate-x-1/2 rounded-full bg-black/30 blur-sm"></div>
+				</div>
+			`,
+			iconSize: [size, size],
+			iconAnchor: [24, 44],
+		});
+	};
 
 	const createBasemapLayer = (
 		L: typeof Leaflet,
@@ -231,6 +261,33 @@
 			.addTo(map);
 	};
 
+	const updateDraggableMarker = () => {
+		if (!leaflet || !map) return;
+
+		if (draggableMarker) {
+			draggableMarker.remove();
+			draggableMarker = null;
+		}
+
+		if (!isValidPoint(draggableLocation)) return;
+
+		draggableMarker = leaflet
+			.marker(toLatLngTuple(draggableLocation), {
+				icon: createDraggableIcon(leaflet),
+				draggable: true,
+				autoPan: true,
+			})
+			.addTo(map);
+
+		draggableMarker.on('drag', (e) => {
+			const pos = e.target.getLatLng();
+			onLocationDrag?.({
+				latitude: pos.lat,
+				longitude: pos.lng,
+			});
+		});
+	};
+
 	$effect(() => {
 		if (!isReady || !map || !leaflet || !markerLayer) return;
 		if (markerSignature === lastMarkerSignature) return;
@@ -246,6 +303,14 @@
 
 		updateCurrentLocationMarker();
 		lastCurrentLocationSignature = currentLocationSignature;
+	});
+
+	$effect(() => {
+		if (!isReady || !map || !leaflet) return;
+		if (draggableLocationSignature === lastDraggableLocationSignature) return;
+
+		updateDraggableMarker();
+		lastDraggableLocationSignature = draggableLocationSignature;
 	});
 
 	$effect(() => {
@@ -308,6 +373,11 @@
 			disposed = true;
 			mediaQuery.removeEventListener('change', handleMediaQueryChange);
 			clearPendingViewportChangedHandler();
+
+			if (draggableMarker) {
+				draggableMarker.remove();
+				draggableMarker = null;
+			}
 
 			if (currentLocationMarker) {
 				currentLocationMarker.remove();
