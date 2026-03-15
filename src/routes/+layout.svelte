@@ -115,14 +115,14 @@
 	{#snippet map()}
 		<Map
 			class="h-full w-full"
-			{markers}
+			viewport={{ defaultCenter, defaultZoom: 13 }}
+			markers={{ items: markers, onTap: handleMarkerTap }}
 			currentLocation={locationState.location}
-			centerPin={!!locationState.pendingLocation}
-			centerPinLocation={centerPinLocation ?? undefined}
-			{defaultCenter}
-			defaultZoom={13}
-			onMarkerTap={handleMarkerTap}
-			onCenterChange={handleCenterChange}
+			centerPin={{
+				enabled: !!locationState.pendingLocation,
+				location: centerPinLocation ?? undefined,
+				onCenterChange: handleCenterChange,
+			}}
 		/>
 	{/snippet}
 
