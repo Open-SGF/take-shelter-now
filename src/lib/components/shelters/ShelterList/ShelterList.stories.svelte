@@ -56,7 +56,7 @@
 </script>
 
 {#snippet StoryTemplate()}
-	<div class="h-dvh w-full max-w-md bg-slate-100">
+	<div class="h-dvh w-full bg-slate-100">
 		<ShelterList />
 	</div>
 {/snippet}

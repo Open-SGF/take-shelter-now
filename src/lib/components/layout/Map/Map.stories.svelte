@@ -68,6 +68,11 @@
 	let selectionViewportEventCount = $state(0);
 	let selectionViewportLastMode = $state<'default' | 'single' | 'bounds' | 'none'>('none');
 
+	let centerPinEnabled = $state(false);
+	let centerPinLocation = $state<MapArgs['centerPinLocation']>(springfieldCenter);
+	let centerChangeEventCount = $state(0);
+	let centerChangeLastLocation = $state<NonNullable<MapArgs['centerPinLocation']> | null>(null);
+
 	const resetRecenterState = () => {
 		recenterMarkers = [...markers];
 		recenterCurrentLocation = null;
@@ -86,6 +91,13 @@
 		selectionMarkers = [...markers];
 		selectionViewportEventCount = 0;
 		selectionViewportLastMode = 'none';
+	};
+
+	const resetCenterPinState = () => {
+		centerPinEnabled = false;
+		centerPinLocation = springfieldCenter;
+		centerChangeEventCount = 0;
+		centerChangeLastLocation = null;
 	};
 
 	const selectMarker = (id: string) => {
@@ -307,6 +319,71 @@
 	</div>
 {/snippet}
 
+{#snippet CenterPinHarnessTemplate()}
+	<div class={mapShellClass}>
+		<div
+			class="absolute top-3 left-3 z-[1000] flex max-w-[20rem] flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
+		>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="reset-harness"
+				onclick={resetCenterPinState}
+			>
+				Reset harness
+			</button>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="enable-center-pin"
+				onclick={() => {
+					centerPinEnabled = true;
+					centerChangeEventCount = 0;
+					centerChangeLastLocation = null;
+				}}
+			>
+				Enable center pin
+			</button>
+			<button
+				type="button"
+				class="rounded border border-slate-300 bg-white px-2 py-1 text-xs"
+				data-testid="disable-center-pin"
+				onclick={() => (centerPinEnabled = false)}
+			>
+				Disable center pin
+			</button>
+			<div class="w-full text-xs text-slate-700">
+				Center pin: <span data-testid="center-pin-status">{centerPinEnabled ? 'on' : 'off'}</span>
+			</div>
+			<div class="w-full text-xs text-slate-700">
+				Change events: <span data-testid="center-change-count">{centerChangeEventCount}</span>
+			</div>
+			{#if centerChangeLastLocation}
+				<div class="w-full text-xs text-slate-700">
+					Last location: <span data-testid="center-last-location">
+						{centerChangeLastLocation.latitude.toFixed(4)}, {centerChangeLastLocation.longitude.toFixed(
+							4,
+						)}
+					</span>
+				</div>
+			{/if}
+		</div>
+
+		<Map
+			class="h-full w-full"
+			defaultCenter={springfieldCenter}
+			defaultZoom={13}
+			markers={[]}
+			centerPin={centerPinEnabled}
+			{centerPinLocation}
+			onCenterChange={(location) => {
+				centerChangeEventCount += 1;
+				centerChangeLastLocation = location;
+			}}
+		/>
+	</div>
+{/snippet}
+
 <Story name="Default" template={DefaultTemplate} />
 
 <Story
@@ -500,5 +577,34 @@
 			},
 			{ timeout: 3000 },
 		);
+	}}
+/>
+
+<Story
+	name="Center Pin Mode"
+	template={CenterPinHarnessTemplate}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		await fireEvent.click(canvas.getByTestId('reset-harness'));
+
+		await waitFor(() => {
+			expect(canvas.getByTestId('center-pin-status')).toHaveTextContent('off');
+			expect(canvas.queryByTestId('center-pin')).not.toBeInTheDocument();
+		});
+
+		await fireEvent.click(canvas.getByTestId('enable-center-pin'));
+
+		await waitFor(() => {
+			expect(canvas.getByTestId('center-pin-status')).toHaveTextContent('on');
+			expect(canvas.getByTestId('center-pin')).toBeInTheDocument();
+		});
+
+		await fireEvent.click(canvas.getByTestId('disable-center-pin'));
+
+		await waitFor(() => {
+			expect(canvas.getByTestId('center-pin-status')).toHaveTextContent('off');
+			expect(canvas.queryByTestId('center-pin')).not.toBeInTheDocument();
+		});
 	}}
 />

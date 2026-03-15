@@ -1,4 +1,5 @@
 import { fromGeojsonVt } from 'vt-pbf';
+import { HttpResponse, http, type RequestHandler } from 'msw';
 
 const TILE_EXTENT = 4096;
 
@@ -49,7 +50,7 @@ const createWaterNameLayer = (label: string): GeojsonVtTile => {
 	};
 };
 
-export const createMockTile = (label: string): Uint8Array => {
+const createMockTile = (label: string): Uint8Array => {
 	const layerMap = {
 		water: createWaterLayer(),
 		water_name: createWaterNameLayer(label),
@@ -60,3 +61,20 @@ export const createMockTile = (label: string): Uint8Array => {
 		extent: TILE_EXTENT,
 	});
 };
+
+export const tileHandlers: RequestHandler[] = [
+	http.get('https://tiles.stadiamaps.com/data/openmaptiles/:z/:x/:y.pbf', ({ params }) => {
+		const z = String(params.z ?? '0');
+		const x = String(params.x ?? '0');
+		const y = String(params.y ?? '0');
+		const tile = createMockTile(`TEST ${z}/${x}/${y}`);
+		const tileBuffer = tile.buffer.slice(tile.byteOffset, tile.byteOffset + tile.byteLength);
+
+		return HttpResponse.arrayBuffer(tileBuffer, {
+			headers: {
+				'Content-Type': 'application/vnd.mapbox-vector-tile',
+				'Cache-Control': 'public, max-age=3600',
+			},
+		});
+	}),
+];
