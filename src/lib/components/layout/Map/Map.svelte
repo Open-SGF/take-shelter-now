@@ -56,9 +56,11 @@
 	let currentLocationSignature = $derived(buildPointSignature(currentLocation));
 	let selectedMarker = $derived(validMarkers.find((m) => m.isSelected === true));
 	let lastFocusedMarkerId: string | null = null;
+	let prefersReducedMotion = $state(false);
 
 	const SELECTED_MARKER_ZOOM = 17;
-	const FLY_TO_DURATION = 0.75;
+	const BASE_FLY_TO_DURATION = 0.75;
+	let flyToDuration = $derived(prefersReducedMotion ? 0 : BASE_FLY_TO_DURATION);
 
 	const createMarkerIcon = (L: typeof Leaflet, isSelected = false): Leaflet.DivIcon => {
 		const size = isSelected ? 48 : 36;
@@ -79,7 +81,7 @@
 		});
 	};
 
-	const createCurrentLocationIcon = (L: typeof Leaflet): Leaflet.DivIcon =>
+	const createCurrentLocationIcon = (L: typeof Leaflet, reducedMotion = false): Leaflet.DivIcon =>
 		L.divIcon({
 			className: 'relative bg-transparent border-0',
 			html: `
@@ -92,7 +94,7 @@
 						class="
 							absolute left-1/2 top-1/2 block h-[28px] w-[28px]
 							-translate-x-1/2 -translate-y-1/2 rounded-full border-2
-							border-sky-600/55 animate-ping
+							border-sky-600/55 ${reducedMotion ? '' : 'animate-ping'}
 						"
 					></span>
 					<span
@@ -164,7 +166,7 @@
 				if (animate) {
 					mapInstance.flyToBounds(
 						plan.bounds.map((marker) => toLatLngTuple(marker)),
-						{ duration: FLY_TO_DURATION, ...plan.options },
+						{ duration: flyToDuration, ...plan.options },
 					);
 				} else {
 					mapInstance.fitBounds(
@@ -184,7 +186,7 @@
 		runViewportUpdate(detail, (mapInstance) => {
 			if (animate) {
 				mapInstance.flyTo(toLatLngTuple(plan.center), plan.zoom, {
-					duration: FLY_TO_DURATION,
+					duration: flyToDuration,
 				});
 			} else {
 				mapInstance.setView(toLatLngTuple(plan.center), plan.zoom);
@@ -223,7 +225,7 @@
 
 		currentLocationMarker = leaflet
 			.marker(toLatLngTuple(currentLocation), {
-				icon: createCurrentLocationIcon(leaflet),
+				icon: createCurrentLocationIcon(leaflet, prefersReducedMotion),
 				interactive: false,
 			})
 			.addTo(map);
@@ -252,7 +254,7 @@
 		if (selectedMarker && selectedMarker.id !== lastFocusedMarkerId) {
 			lastFocusedMarkerId = selectedMarker.id;
 			map.flyTo(toLatLngTuple(selectedMarker), SELECTED_MARKER_ZOOM, {
-				duration: FLY_TO_DURATION,
+				duration: flyToDuration,
 			});
 		} else if (!selectedMarker && lastFocusedMarkerId !== null) {
 			lastFocusedMarkerId = null;
@@ -262,6 +264,15 @@
 
 	onMount(() => {
 		let disposed = false;
+
+		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+		prefersReducedMotion = mediaQuery.matches;
+
+		const handleMediaQueryChange = (e: MediaQueryListEvent) => {
+			prefersReducedMotion = e.matches;
+		};
+
+		mediaQuery.addEventListener('change', handleMediaQueryChange);
 
 		const initializeMap = async () => {
 			const [L, basemapStyle] = await Promise.all([loadLeaflet(), loadBasemapStyle()]);
@@ -295,6 +306,7 @@
 
 		return () => {
 			disposed = true;
+			mediaQuery.removeEventListener('change', handleMediaQueryChange);
 			clearPendingViewportChangedHandler();
 
 			if (currentLocationMarker) {
@@ -323,4 +335,9 @@
 	});
 </script>
 
-<div data-testid="map" class={cn('h-full w-full', className)} bind:this={mapElement}></div>
+<div
+	data-testid="map"
+	class={cn('h-full w-full', className)}
+	bind:this={mapElement}
+	style:view-transition-name="none"
+></div>
