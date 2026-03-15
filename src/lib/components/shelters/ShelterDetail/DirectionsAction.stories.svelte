@@ -77,18 +77,16 @@
 		args: {
 			shelter: fullShelter,
 		},
-		render: (args: StoryArgs) => {
-			setUserStateContext(createUserState());
-			return {
-				component: DirectionsAction,
-				props: args,
-			};
-		},
+		decorators: [
+			(Story) => {
+				setUserStateContext(createUserState());
+				return Story();
+			},
+		],
 	});
 </script>
 
 {#snippet Template(args: StoryArgs)}
-	{@const _ = setUserStateContext(createUserState())}
 	<div class="w-full bg-slate-100 p-4">
 		<DirectionsAction {...args} />
 	</div>

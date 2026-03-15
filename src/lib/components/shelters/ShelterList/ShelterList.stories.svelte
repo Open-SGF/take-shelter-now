@@ -6,7 +6,6 @@
 		createShelterState,
 		setShelterStateContext,
 		type ShelterDataState,
-		type ShelterState,
 	} from '$lib/state/shelter-state.svelte';
 	import type { Shelter } from '$lib/shelters/types';
 
@@ -45,22 +44,18 @@
 		return shelterState;
 	};
 
-	type StoryArgs = { state: ShelterState };
-
 	const { Story } = defineMeta({
 		title: 'Shelters/ShelterList',
-		tags: ['autodocs'],
-		render: (args: StoryArgs) => {
-			setShelterStateContext(args.state);
-			return {
-				component: ShelterList,
-			};
-		},
+		decorators: [
+			(Story, context) => {
+				setShelterStateContext(context.args.state);
+				return Story();
+			},
+		],
 	});
 </script>
 
-{#snippet StoryTemplate(args: StoryArgs)}
-	{@const _ = setShelterStateContext(args.state)}
+{#snippet StoryTemplate()}
 	<div class="h-dvh w-full max-w-md bg-slate-100">
 		<ShelterList />
 	</div>

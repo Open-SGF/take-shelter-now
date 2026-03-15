@@ -76,7 +76,7 @@ export async function searchAddresses(query: string) {
 	}
 }
 
-export async function getPlaceDetails(gid: string){
+export async function getPlaceDetails(gid: string) {
 	try {
 		const response = await geocodingApi.placeDetails({ ids: [gid] });
 

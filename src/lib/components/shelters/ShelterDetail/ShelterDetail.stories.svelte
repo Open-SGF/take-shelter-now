@@ -81,18 +81,16 @@
 		args: {
 			shelter: fullDetailsShelter,
 		},
-		render: (args: StoryArgs) => {
-			setUserStateContext(createUserState());
-			return {
-				component: ShelterDetail,
-				props: args,
-			};
-		},
+		decorators: [
+			(Story) => {
+				setUserStateContext(createUserState());
+				return Story();
+			},
+		],
 	});
 </script>
 
 {#snippet Template(args: StoryArgs)}
-	{@const _ = setUserStateContext(createUserState())}
 	<div class="w-full bg-slate-100 p-4">
 		<ShelterDetail {...args} />
 	</div>
