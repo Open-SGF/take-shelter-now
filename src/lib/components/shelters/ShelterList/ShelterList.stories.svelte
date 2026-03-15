@@ -1,13 +1,16 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import type { ComponentProps } from 'svelte';
 	import { expect, within } from 'storybook/test';
 	import ShelterList from './ShelterList.svelte';
-	import { createAppState } from '$lib/state/app-state.svelte';
+	import {
+		createShelterState,
+		setShelterStateContext,
+		type ShelterDataState,
+		type ShelterState,
+	} from '$lib/state/shelter-state.svelte';
 	import type { Shelter } from '$lib/shelters/types';
 
-	type StoryArgs = ComponentProps<typeof ShelterList>;
-	type ShelterDataStatus = ReturnType<typeof createAppState>['shelterDataState']['kind'];
+	type ShelterDataStatus = ShelterDataState['kind'];
 
 	const buildShelter = (index: number): Shelter => ({
 		name: `Shelter ${index + 1}`,
@@ -29,38 +32,44 @@
 		shelters: Shelter[],
 		errorMessage: string | null = null,
 	) => {
-		const appState = createAppState();
+		const shelterState = createShelterState(() => null);
 
 		if (status === 'error') {
-			appState.setShelterDataError(errorMessage ?? 'Unable to load shelter data.');
+			shelterState.setError(errorMessage ?? 'Unable to load shelter data.');
 		} else if (status === 'loading') {
-			appState.setShelterDataLoading();
+			shelterState.setLoading();
 		} else {
-			appState.setShelters(shelters);
+			shelterState.setShelters(shelters);
 		}
 
-		return appState;
+		return shelterState;
 	};
+
+	type StoryArgs = { state: ShelterState };
 
 	const { Story } = defineMeta({
 		title: 'Shelters/ShelterList',
-		component: ShelterList,
-		args: {
-			appState: createStoryState('ready', readyShelters),
+		tags: ['autodocs'],
+		render: (args: StoryArgs) => {
+			setShelterStateContext(args.state);
+			return {
+				component: ShelterList,
+			};
 		},
 	});
 </script>
 
-{#snippet Template(args: StoryArgs)}
+{#snippet StoryTemplate(args: StoryArgs)}
+	{@const _ = setShelterStateContext(args.state)}
 	<div class="h-dvh w-full max-w-md bg-slate-100">
-		<ShelterList {...args} />
+		<ShelterList />
 	</div>
 {/snippet}
 
 <Story
 	name="Loading"
-	args={{ appState: createStoryState('loading', []) }}
-	template={Template}
+	template={StoryTemplate}
+	args={{ state: createStoryState('loading', []) }}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByTestId('shelter-list-loading')).toBeInTheDocument();
@@ -70,8 +79,8 @@
 
 <Story
 	name="Empty"
-	args={{ appState: createStoryState('empty', []) }}
-	template={Template}
+	template={StoryTemplate}
+	args={{ state: createStoryState('empty', []) }}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByTestId('shelter-list-empty')).toBeInTheDocument();
@@ -81,10 +90,8 @@
 
 <Story
 	name="Error"
-	args={{
-		appState: createStoryState('error', [], 'Shelter data could not be parsed for display.'),
-	}}
-	template={Template}
+	template={StoryTemplate}
+	args={{ state: createStoryState('error', [], 'Shelter data could not be parsed for display.') }}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByTestId('shelter-list-error')).toBeInTheDocument();
@@ -96,8 +103,8 @@
 
 <Story
 	name="Ready"
-	args={{ appState: createStoryState('ready', readyShelters) }}
-	template={Template}
+	template={StoryTemplate}
+	args={{ state: createStoryState('ready', readyShelters) }}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByTestId('shelter-list-ready')).toBeInTheDocument();

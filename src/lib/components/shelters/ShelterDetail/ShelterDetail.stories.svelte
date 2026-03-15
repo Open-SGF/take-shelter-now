@@ -3,6 +3,7 @@
 	import { expect, within } from 'storybook/test';
 	import type { ComponentProps } from 'svelte';
 	import type { Shelter } from '$lib/shelters/types';
+	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
 	import ShelterDetail from './ShelterDetail.svelte';
 
 	type StoryArgs = ComponentProps<typeof ShelterDetail>;
@@ -76,14 +77,22 @@
 
 	const { Story } = defineMeta({
 		title: 'Shelters/ShelterDetail',
-		component: ShelterDetail,
+		tags: ['autodocs'],
 		args: {
 			shelter: fullDetailsShelter,
+		},
+		render: (args: StoryArgs) => {
+			setUserStateContext(createUserState());
+			return {
+				component: ShelterDetail,
+				props: args,
+			};
 		},
 	});
 </script>
 
 {#snippet Template(args: StoryArgs)}
+	{@const _ = setUserStateContext(createUserState())}
 	<div class="w-full bg-slate-100 p-4">
 		<ShelterDetail {...args} />
 	</div>
