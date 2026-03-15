@@ -1,5 +1,5 @@
 import { GeocodingApi } from '@stadiamaps/api';
-import type { GeoPoint } from '$lib/geo';
+import type { GeoPoint } from './point';
 
 export type GeocodingResult = {
 	label: string;

@@ -1,17 +1,12 @@
 <script lang="ts">
 	import { ShelterListItem } from '$lib/components/shelters';
-	import type { AppState } from '$lib/state/app-state.svelte';
-	import { getAppStateContext } from '$lib/state/app-state-context';
+	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
 
-	type ShelterListProps = {
-		appState?: AppState;
-	};
-
-	let { appState = getAppStateContext() }: ShelterListProps = $props();
+	const shelterState = getShelterStateContext();
 </script>
 
 <div class="pb-32" id="shelter_list" data-testid="shelter-list">
-	{#if appState.shelterDataState.kind === 'loading'}
+	{#if shelterState.dataState.kind === 'loading'}
 		<div class="space-y-3" data-testid="shelter-list-loading">
 			<p class="text-sm text-slate-600">Loading nearby shelters...</p>
 			{#each Array.from({ length: 3 }, (_, index) => index) as index (index)}
@@ -22,15 +17,15 @@
 				</div>
 			{/each}
 		</div>
-	{:else if appState.shelterDataState.kind === 'error'}
+	{:else if shelterState.dataState.kind === 'error'}
 		<div
 			class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-900"
 			data-testid="shelter-list-error"
 		>
 			<p class="text-sm font-semibold">Unable to load shelters.</p>
-			<p class="mt-1 text-sm">{appState.shelterDataState.message}</p>
+			<p class="mt-1 text-sm">{shelterState.dataState.message}</p>
 		</div>
-	{:else if appState.shelterDataState.kind === 'empty'}
+	{:else if shelterState.dataState.kind === 'empty'}
 		<div
 			class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-800"
 			data-testid="shelter-list-empty"
@@ -40,7 +35,7 @@
 		</div>
 	{:else}
 		<div class="space-y-3" data-testid="shelter-list-ready">
-			{#each appState.sheltersWithDistance as shelter (shelter.slug)}
+			{#each shelterState.sheltersWithDistance as shelter (shelter.slug)}
 				<ShelterListItem {shelter} distanceMiles={shelter.distance} />
 			{/each}
 		</div>

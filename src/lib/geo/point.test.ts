@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { isValidCoordinate, isValidPoint, toLatLngTuple } from './geo';
+import { isValidCoordinate, isValidPoint, toLatLngTuple } from './point';
 
-describe('geo', () => {
+describe('point', () => {
 	test('validates finite coordinate values', () => {
 		expect(isValidCoordinate(37.2)).toBe(true);
 		expect(isValidCoordinate(Number.NaN)).toBe(false);

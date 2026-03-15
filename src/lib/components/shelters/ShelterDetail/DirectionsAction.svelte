@@ -5,7 +5,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Dialog, DialogContent } from '$lib/components/ui/dialog';
 	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { getAppStateContext, type MapProvider } from '$lib/state/app-state-context';
+	import { getUserStateContext } from '$lib/state/user-state.svelte';
+	import type { MapProvider } from '$lib/state/user-state.svelte';
 	import { formatShelterAddress } from '$lib/shelters/presentation';
 	import { isValidPoint } from '$lib/geo';
 	import type { Shelter } from '$lib/shelters/types';
@@ -17,7 +18,7 @@
 	const LONG_PRESS_DURATION = 500;
 
 	let { shelter }: DirectionsActionProps = $props();
-	const appState = getAppStateContext();
+	const userState = getUserStateContext();
 
 	let dialogOpen = $state(false);
 	let rememberChoice = $state(true);
@@ -66,9 +67,9 @@
 
 	function handleProviderSelect(provider: MapProvider): void {
 		if (rememberChoice) {
-			appState.setPreferredMapProvider(provider);
+			userState.setMapProvider(provider);
 		} else {
-			appState.setPreferredMapProvider(null);
+			userState.setMapProvider(null);
 		}
 		launchProvider(provider);
 		dialogOpen = false;
@@ -80,7 +81,7 @@
 			return;
 		}
 
-		const saved = appState.preferredMapProvider;
+		const saved = userState.mapProvider;
 		if (saved) {
 			launchProvider(saved);
 		} else {
@@ -208,7 +209,7 @@
 				<span>Remember my choice</span>
 			</label>
 
-			{#if appState.preferredMapProvider}
+			{#if userState.mapProvider}
 				<p class="text-xs text-slate-400">
 					Long-press "Get Directions" to change your saved preference.
 				</p>
