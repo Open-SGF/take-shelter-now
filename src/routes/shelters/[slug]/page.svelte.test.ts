@@ -1,6 +1,7 @@
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import '@testing-library/jest-dom/vitest';
+import { createUserState, setUserStateContext, type UserState } from '$lib/state/user-state.svelte';
 import Page from './+page.svelte';
 
 const baseShelter = {
@@ -17,12 +18,21 @@ const baseShelter = {
 };
 
 describe('/shelters/[slug]/+page.svelte', () => {
+	let userState: UserState;
+
+	beforeEach(() => {
+		userState = createUserState();
+	});
+
 	test('renders page-level back link to list route', () => {
-		render(Page, {
-			props: {
-				data: {
-					shelter: baseShelter,
-				},
+		const Wrapper = (...args: Parameters<typeof Page>) => {
+			setUserStateContext(userState);
+			return Page(...args);
+		};
+
+		render(Wrapper, {
+			data: {
+				shelter: baseShelter,
 			},
 		});
 
@@ -32,11 +42,14 @@ describe('/shelters/[slug]/+page.svelte', () => {
 	});
 
 	test('renders ShelterDetail content from route data', () => {
-		render(Page, {
-			props: {
-				data: {
-					shelter: baseShelter,
-				},
+		const Wrapper = (...args: Parameters<typeof Page>) => {
+			setUserStateContext(userState);
+			return Page(...args);
+		};
+
+		render(Wrapper, {
+			data: {
+				shelter: baseShelter,
 			},
 		});
 
