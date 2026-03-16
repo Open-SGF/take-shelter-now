@@ -1,11 +1,104 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import { expect, within, waitFor } from 'storybook/test';
+	import { userEvent } from 'storybook/test';
 	import Nav from './Nav.svelte';
+	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
+	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
+	import { storage } from '$lib/storage';
+
+	const createStoryState = (options?: {
+		hasLocation?: boolean;
+		mapProvider?: 'apple' | 'google' | null;
+	}) => {
+		storage.clear();
+		const locationState = createLocationState();
+		const userState = createUserState();
+
+		if (options?.hasLocation) {
+			locationState.setReady(
+				{ latitude: 37.208957, longitude: -93.292299 },
+				'address',
+				'123 Main St, Springfield, MO',
+			);
+		}
+
+		if (options?.mapProvider) {
+			userState.setMapProvider(options.mapProvider);
+		}
+
+		return { locationState, userState };
+	};
 
 	const { Story } = defineMeta({
 		title: 'Layout/Nav',
 		component: Nav,
+		decorators: [
+			(Story, context) => {
+				const { locationState, userState } = context.args.state;
+				setLocationStateContext(locationState);
+				setUserStateContext(userState);
+				return Story();
+			},
+		],
 	});
 </script>
 
-<Story name="Default" />
+{#snippet StoryShell()}
+	<Nav />
+{/snippet}
+
+<Story
+	name="No Location"
+	template={StoryShell}
+	args={{ state: createStoryState() }}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.queryByTestId('nav-menu-trigger')).not.toBeInTheDocument();
+	}}
+/>
+
+<Story
+	name="With Location"
+	template={StoryShell}
+	args={{ state: createStoryState({ hasLocation: true }) }}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));
+		const bodyCanvas = within(document.body);
+		await waitFor(() => {
+			expect(bodyCanvas.getByTestId('nav-menu-edit-location')).toBeInTheDocument();
+			expect(bodyCanvas.queryByTestId('nav-menu-reset-directions')).not.toBeInTheDocument();
+		});
+	}}
+/>
+
+<Story
+	name="With Map Provider"
+	template={StoryShell}
+	args={{ state: createStoryState({ mapProvider: 'apple' }) }}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));
+		const bodyCanvas = within(document.body);
+		await waitFor(() => {
+			expect(bodyCanvas.queryByTestId('nav-menu-edit-location')).not.toBeInTheDocument();
+			expect(bodyCanvas.getByTestId('nav-menu-reset-directions')).toBeInTheDocument();
+		});
+	}}
+/>
+
+<Story
+	name="With Location And Map Provider"
+	template={StoryShell}
+	args={{ state: createStoryState({ hasLocation: true, mapProvider: 'google' }) }}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));
+		const bodyCanvas = within(document.body);
+		await waitFor(() => {
+			expect(bodyCanvas.getByTestId('nav-menu-edit-location')).toBeInTheDocument();
+			expect(bodyCanvas.getByTestId('nav-menu-reset-directions')).toBeInTheDocument();
+		});
+	}}
+/>
