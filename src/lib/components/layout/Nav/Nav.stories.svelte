@@ -4,44 +4,12 @@
 	import { userEvent } from 'storybook/test';
 	import Nav from './Nav.svelte';
 	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
-	import {
-		createUserState,
-		setUserStateContext,
-		type DirectionsApp,
-	} from '$lib/state/user-state.svelte';
+	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
 	import { storage } from '$lib/storage';
-
-	const createStoryState = (options?: { hasLocation?: boolean; directionsApp?: DirectionsApp }) => {
-		storage.clear();
-		const locationState = createLocationState();
-		const userState = createUserState();
-
-		if (options?.hasLocation) {
-			locationState.setReady(
-				{ latitude: 37.208957, longitude: -93.292299 },
-				'address',
-				'123 Main St, Springfield, MO',
-			);
-		}
-
-		if (options?.directionsApp) {
-			userState.setDirectionsApp(options.directionsApp);
-		}
-
-		return { locationState, userState };
-	};
 
 	const { Story } = defineMeta({
 		title: 'Layout/Nav',
 		component: Nav,
-		decorators: [
-			(Story, context) => {
-				const { locationState, userState } = context.args.state;
-				setLocationStateContext(locationState);
-				setUserStateContext(userState);
-				return Story();
-			},
-		],
 	});
 </script>
 
@@ -52,7 +20,16 @@
 <Story
 	name="No Location"
 	template={StoryShell}
-	args={{ state: createStoryState() }}
+	decorators={[
+		(Story) => {
+			storage.clear();
+			const locationState = createLocationState();
+			const userState = createUserState();
+			setLocationStateContext(locationState);
+			setUserStateContext(userState);
+			return Story();
+		},
+	]}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.queryByTestId('nav-menu-trigger')).not.toBeInTheDocument();
@@ -62,7 +39,21 @@
 <Story
 	name="With Location"
 	template={StoryShell}
-	args={{ state: createStoryState({ hasLocation: true }) }}
+	decorators={[
+		(Story) => {
+			storage.clear();
+			const locationState = createLocationState();
+			const userState = createUserState();
+			locationState.setReady(
+				{ latitude: 37.208957, longitude: -93.292299 },
+				'address',
+				'123 Main St, Springfield, MO',
+			);
+			setLocationStateContext(locationState);
+			setUserStateContext(userState);
+			return Story();
+		},
+	]}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));
@@ -77,7 +68,17 @@
 <Story
 	name="With Directions App"
 	template={StoryShell}
-	args={{ state: createStoryState({ directionsApp: 'apple' }) }}
+	decorators={[
+		(Story) => {
+			storage.clear();
+			const locationState = createLocationState();
+			const userState = createUserState();
+			userState.setDirectionsApp('apple');
+			setLocationStateContext(locationState);
+			setUserStateContext(userState);
+			return Story();
+		},
+	]}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));
@@ -92,7 +93,22 @@
 <Story
 	name="With Location And Directions App"
 	template={StoryShell}
-	args={{ state: createStoryState({ hasLocation: true, directionsApp: 'google' }) }}
+	decorators={[
+		(Story) => {
+			storage.clear();
+			const locationState = createLocationState();
+			const userState = createUserState();
+			locationState.setReady(
+				{ latitude: 37.208957, longitude: -93.292299 },
+				'address',
+				'123 Main St, Springfield, MO',
+			);
+			userState.setDirectionsApp('google');
+			setLocationStateContext(locationState);
+			setUserStateContext(userState);
+			return Story();
+		},
+	]}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));

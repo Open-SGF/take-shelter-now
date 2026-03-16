@@ -29,6 +29,7 @@ export type LocationState = {
 	readonly status: LocationStatus;
 	readonly pendingLocation: PendingLocation | null;
 	readonly hasLocation: boolean;
+	readonly isGeolocationSupported: boolean;
 	setLocation: (location: StoredLocation | null) => void;
 	setLoading: (method: LocationMethod) => void;
 	setReady: (location: GeoPoint, method: LocationMethod, address?: string) => void;
@@ -40,6 +41,7 @@ export type LocationState = {
 	setPendingLocation: (pending: PendingLocation | null) => void;
 	confirmPendingLocation: () => void;
 	clearLocation: () => void;
+	requestGeolocation: (onSuccess?: () => void) => void;
 };
 
 export const [getLocationStateContext, setLocationStateContext] = createContext<LocationState>();
@@ -66,6 +68,35 @@ export const createLocationState = (): LocationState => {
 	let location = $state<StoredLocation | null>(readLocationFromStorage());
 	let status = $state<LocationStatus>({ kind: 'idle' });
 	let pendingLocation = $state<PendingLocation | null>(null);
+	let watchId: number | null = null;
+
+	const stopWatching = () => {
+		if (watchId !== null && navigator.geolocation) {
+			navigator.geolocation.clearWatch(watchId);
+			watchId = null;
+		}
+	};
+
+	const startWatching = () => {
+		if (!navigator.geolocation) {
+			return;
+		}
+
+		watchId = navigator.geolocation.watchPosition(
+			(position) => {
+				const newLocation: StoredLocation = {
+					latitude: position.coords.latitude,
+					longitude: position.coords.longitude,
+				};
+				location = newLocation;
+				writeLocationToStorage(newLocation);
+			},
+			() => {
+				stopWatching();
+			},
+			{ enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
+		);
+	};
 
 	const setLocation = (nextLocation: StoredLocation | null) => {
 		location = nextLocation;
@@ -80,6 +111,10 @@ export const createLocationState = (): LocationState => {
 	};
 
 	const setReady = (loc: GeoPoint, method: LocationMethod, address?: string) => {
+		if (method === 'address') {
+			stopWatching();
+		}
+
 		const stored: StoredLocation = { ...loc, address };
 		location = stored;
 		writeLocationToStorage(stored);
@@ -116,13 +151,60 @@ export const createLocationState = (): LocationState => {
 	};
 
 	const clearLocation = () => {
+		stopWatching();
 		location = null;
 		writeLocationToStorage(null);
 		status = { kind: 'idle' };
 		pendingLocation = null;
 	};
 
+	const requestGeolocation = (onSuccess?: () => void) => {
+		if (!navigator.geolocation) {
+			setError('Geolocation is not supported by your browser.');
+			return;
+		}
+
+		setLoading('geolocation');
+
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				setReady(
+					{
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude,
+					},
+					'geolocation',
+				);
+				startWatching();
+				onSuccess?.();
+			},
+			(error) => {
+				const messages: Record<number, string> = {
+					[GeolocationPositionError.PERMISSION_DENIED]:
+						'Location permission denied. Please enter your address manually.',
+					[GeolocationPositionError.POSITION_UNAVAILABLE]:
+						'Unable to determine your location. Please enter your address.',
+					[GeolocationPositionError.TIMEOUT]:
+						'Location request timed out. Please try again or enter your address.',
+				};
+
+				const code =
+					error.code === GeolocationPositionError.PERMISSION_DENIED
+						? 'permission_denied'
+						: error.code === GeolocationPositionError.POSITION_UNAVAILABLE
+							? 'position_unavailable'
+							: 'timeout';
+
+				setError(messages[error.code] ?? 'Unable to get location.', code);
+			},
+			{ enableHighAccuracy: true, timeout: 10000 },
+		);
+	};
+
 	const hasLocation = $derived(location !== null);
+	const isGeolocationSupported = $derived(
+		typeof navigator !== 'undefined' && 'geolocation' in navigator,
+	);
 
 	return {
 		get location() {
@@ -137,6 +219,9 @@ export const createLocationState = (): LocationState => {
 		get hasLocation() {
 			return hasLocation;
 		},
+		get isGeolocationSupported() {
+			return isGeolocationSupported;
+		},
 		setLocation,
 		setLoading,
 		setReady,
@@ -145,5 +230,6 @@ export const createLocationState = (): LocationState => {
 		setPendingLocation,
 		confirmPendingLocation,
 		clearLocation,
+		requestGeolocation,
 	};
 };

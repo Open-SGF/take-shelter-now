@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import { cn } from '$lib/utils.js';
 	import MoreVerticalIcon from '@lucide/svelte/icons/more-vertical';
 	import { Popover } from '$lib/components/ui/popover';
@@ -17,11 +18,12 @@
 	const locationState = getLocationStateContext();
 	const userState = getUserStateContext();
 
-	const showEditLocation = $derived(locationState.hasLocation && page.url.pathname !== '/location');
+	const pathname = page.url.pathname;
+	const showEditLocation = $derived(locationState.hasLocation && pathname !== '/location/');
 	const showMenu = $derived(showEditLocation || userState.directionsApp !== undefined);
 
 	function handleEditLocationClick() {
-		goto('/location');
+		goto(resolve('/location/'));
 	}
 </script>
 
