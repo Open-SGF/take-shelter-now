@@ -6,7 +6,7 @@
 	import { Dialog, DialogContent } from '$lib/components/ui/dialog';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { getUserStateContext } from '$lib/state/user-state.svelte';
-	import type { MapProvider } from '$lib/state/user-state.svelte';
+	import type { DirectionsApp } from '$lib/state/user-state.svelte';
 	import { formatShelterAddress } from '$lib/shelters/presentation';
 	import { isValidPoint } from '$lib/geo';
 	import type { Shelter } from '$lib/shelters/types';
@@ -58,20 +58,20 @@
 		return null;
 	}
 
-	function launchProvider(provider: MapProvider): void {
-		const url = provider === 'apple' ? getAppleMapsUrl() : getGoogleMapsUrl();
+	function launchApp(app: DirectionsApp): void {
+		const url = app === 'apple' ? getAppleMapsUrl() : getGoogleMapsUrl();
 		if (url) {
 			window.open(url, '_blank', 'noopener,noreferrer');
 		}
 	}
 
-	function handleProviderSelect(provider: MapProvider): void {
+	function handleProviderSelect(app: DirectionsApp): void {
 		if (rememberChoice) {
-			userState.setMapProvider(provider);
+			userState.setDirectionsApp(app);
 		} else {
-			userState.setMapProvider(null);
+			userState.setDirectionsApp(undefined);
 		}
-		launchProvider(provider);
+		launchApp(app);
 		dialogOpen = false;
 	}
 
@@ -81,9 +81,9 @@
 			return;
 		}
 
-		const saved = userState.mapProvider;
+		const saved = userState.directionsApp;
 		if (saved) {
-			launchProvider(saved);
+			launchApp(saved);
 		} else {
 			dialogOpen = true;
 		}
@@ -211,7 +211,7 @@
 				<span>Remember my choice</span>
 			</label>
 
-			{#if userState.mapProvider}
+			{#if userState.directionsApp}
 				<p class="text-xs text-slate-400">
 					Long-press "Get Directions" to change your saved preference.
 				</p>

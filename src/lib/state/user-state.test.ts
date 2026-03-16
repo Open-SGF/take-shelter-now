@@ -7,36 +7,36 @@ describe('createUserState', () => {
 		storage.clear();
 	});
 
-	test('starts with null map provider when nothing in storage', () => {
+	test('starts with undefined directions app when nothing in storage', () => {
 		const userState = createUserState();
 
-		expect(userState.mapProvider).toBe(null);
+		expect(userState.directionsApp).toBe(undefined);
 	});
 
-	test('reads map provider from storage', () => {
-		storage.set('map-provider', 'apple');
+	test('reads directions app from storage', () => {
+		storage.set('directions-app', 'apple');
 
 		const userState = createUserState();
 
-		expect(userState.mapProvider).toBe('apple');
+		expect(userState.directionsApp).toBe('apple');
 	});
 
-	test('setMapProvider updates state and storage', () => {
+	test('setDirectionsApp updates state and storage', () => {
 		const userState = createUserState();
 
-		userState.setMapProvider('google');
+		userState.setDirectionsApp('google');
 
-		expect(userState.mapProvider).toBe('google');
-		expect(storage.get('map-provider')).toBe('google');
+		expect(userState.directionsApp).toBe('google');
+		expect(storage.get('directions-app')).toBe('google');
 	});
 
-	test('setMapProvider with null clears storage', () => {
-		storage.set('map-provider', 'apple');
+	test('setDirectionsApp with undefined clears storage', () => {
+		storage.set('directions-app', 'apple');
 		const userState = createUserState();
 
-		userState.setMapProvider(null);
+		userState.setDirectionsApp(undefined);
 
-		expect(userState.mapProvider).toBe(null);
-		expect(storage.get('map-provider')).toBe(null);
+		expect(userState.directionsApp).toBe(undefined);
+		expect(storage.get('directions-app')).toBe(null);
 	});
 });
