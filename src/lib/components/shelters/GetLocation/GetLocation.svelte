@@ -80,7 +80,7 @@
 	{#if locationState.status.kind === 'loading'}
 		<div class="flex flex-col items-center justify-center py-8">
 			<div
-				class="h-8 w-8 animate-spin rounded-full border-4 border-sky-500 border-t-transparent"
+				class="border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"
 			></div>
 			<p class="mt-4 text-sm text-slate-600">
 				{locationState.status.method === 'geolocation'
@@ -89,8 +89,8 @@
 			</p>
 		</div>
 	{:else if locationState.status.kind === 'error'}
-		<div class="rounded-lg border border-red-200 bg-red-50 p-4">
-			<p class="text-sm font-medium text-red-800">{locationState.status.message}</p>
+		<div class="border-destructive/50 bg-destructive/10 rounded-lg border p-4">
+			<p class="text-destructive text-sm font-medium">{locationState.status.message}</p>
 			<div class="mt-3 flex gap-2">
 				<Button variant="outline" size="sm" onclick={handleRetry}>Try Again</Button>
 			</div>
@@ -114,18 +114,13 @@
 
 			<div class="flex gap-3">
 				<Button variant="outline" class="flex-1" onclick={handleCancel}>Cancel</Button>
-				<Button class="flex-1 bg-[#0892d2] hover:bg-[#0892d2]/90" onclick={handleConfirmLocation}>
-					Confirm Location
-				</Button>
+				<Button class="flex-1" onclick={handleConfirmLocation}>Confirm Location</Button>
 			</div>
 		</div>
 	{:else}
 		<div class="space-y-4">
 			{#if isGeolocationSupported}
-				<Button
-					onclick={handleGeolocationClick}
-					class="flex h-[58px] w-full items-center justify-center rounded-lg bg-[#0892d2] text-white"
-				>
+				<Button onclick={handleGeolocationClick} size="lg" class="w-full">
 					<img
 						src="https://res.cloudinary.com/du9tnv8ss/image/upload/v1756782708/navigation_bgtfde.png"
 						alt=""
@@ -144,7 +139,9 @@
 				</div>
 			</div>
 
-			<AddressInput onLocationSelect={handleAddressSelect} />
+			<div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+				<AddressInput onLocationSelect={handleAddressSelect} />
+			</div>
 		</div>
 	{/if}
 </div>

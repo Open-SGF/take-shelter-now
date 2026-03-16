@@ -108,7 +108,7 @@
 </script>
 
 <div class={cn('space-y-1.5', className)}>
-	<Label for={inputId}>Address</Label>
+	<Label for={inputId}>Enter an address</Label>
 	<div class="relative">
 		<Input
 			id={inputId}
