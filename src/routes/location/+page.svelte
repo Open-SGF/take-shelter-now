@@ -1,18 +1,33 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+	import { Button } from '$lib/components/ui/button';
 	import { GetLocation } from '$lib/components/shelters';
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 
 	const locationState = getLocationStateContext();
 
-	$effect(() => {
-		if (locationState.hasLocation) {
-			goto(resolve('/'), { replaceState: true });
-		}
-	});
+	const isEditMode = $derived(locationState.hasLocation);
+
+	function handleLocationConfirmed() {
+		goto(resolve('/'), { replaceState: true });
+	}
 </script>
 
-<div class="p-4 pt-6">
-	<GetLocation />
-</div>
+<article class="p-4 pt-6 pb-32">
+	{#if isEditMode}
+		<Button
+			href={resolve('/')}
+			variant="outline"
+			size="sm"
+			class="mb-4 border-slate-300 bg-white text-slate-700"
+			data-testid="location-back"
+		>
+			<ArrowLeftIcon class="size-4" aria-hidden="true" />
+			Back
+		</Button>
+	{/if}
+
+	<GetLocation onLocationConfirmed={handleLocationConfirmed} />
+</article>

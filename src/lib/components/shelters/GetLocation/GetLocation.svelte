@@ -5,6 +5,11 @@
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import type { GeoPoint } from '$lib/geo';
 
+	type GetLocationProps = {
+		onLocationConfirmed?: () => void;
+	};
+
+	let { onLocationConfirmed }: GetLocationProps = $props();
 	const locationState = getLocationStateContext();
 
 	let isGeolocationSupported = $state(false);
@@ -30,6 +35,7 @@
 					},
 					'geolocation',
 				);
+				onLocationConfirmed?.();
 			},
 			(error) => {
 				const messages: Record<number, string> = {
@@ -64,6 +70,7 @@
 
 	function handleConfirmLocation() {
 		locationState.confirmPendingLocation();
+		onLocationConfirmed?.();
 	}
 
 	function handleCancel() {

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { cn } from '$lib/utils.js';
 	import MoreVerticalIcon from '@lucide/svelte/icons/more-vertical';
 	import { Popover } from '$lib/components/ui/popover';
@@ -15,7 +17,12 @@
 	const locationState = getLocationStateContext();
 	const userState = getUserStateContext();
 
-	const showMenu = $derived(locationState.hasLocation || userState.directionsApp !== undefined);
+	const showEditLocation = $derived(locationState.hasLocation && page.url.pathname !== '/location');
+	const showMenu = $derived(showEditLocation || userState.directionsApp !== undefined);
+
+	function handleEditLocationClick() {
+		goto('/location');
+	}
 </script>
 
 <header
@@ -39,11 +46,12 @@
 				<span class="sr-only">Menu</span>
 			</PopoverTrigger>
 			<PopoverContent align="end" class="w-56 p-1">
-				{#if locationState.hasLocation}
+				{#if showEditLocation}
 					<button
 						type="button"
 						class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-slate-100"
 						data-testid="nav-menu-edit-location"
+						onclick={handleEditLocationClick}
 					>
 						Edit Location
 					</button>
