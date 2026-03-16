@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 	import {
 		searchAddresses,
 		getPlaceDetails,
@@ -15,6 +16,9 @@
 	};
 
 	let { onLocationSelect, disabled = false, class: className }: AddressInputProps = $props();
+	const uid = $props.id();
+	const inputId = `${uid}-address`;
+	const suggestionsId = `${uid}-suggestions`;
 
 	let inputValue = $state('');
 	let suggestions = $state<AutocompleteSuggestion[]>([]);
@@ -103,66 +107,70 @@
 	}
 </script>
 
-<div class={cn('relative', className)}>
-	<Input
-		bind:value={inputValue}
-		type="text"
-		placeholder="Enter your address"
-		{disabled}
-		oninput={handleInput}
-		onkeydown={handleKeydown}
-		onfocus={handleFocus}
-		onblur={handleBlur}
-		aria-autocomplete="list"
-		aria-expanded={isOpen}
-		aria-controls="address-suggestions"
-		aria-activedescendant={selectedIndex >= 0 ? `suggestion-${selectedIndex}` : undefined}
-		class="pr-10"
-	/>
+<div class={cn('space-y-1.5', className)}>
+	<Label for={inputId}>Address</Label>
+	<div class="relative">
+		<Input
+			id={inputId}
+			bind:value={inputValue}
+			type="text"
+			placeholder="123 Main St, Springfield, MO"
+			{disabled}
+			oninput={handleInput}
+			onkeydown={handleKeydown}
+			onfocus={handleFocus}
+			onblur={handleBlur}
+			aria-autocomplete="list"
+			aria-expanded={isOpen}
+			aria-controls={suggestionsId}
+			aria-activedescendant={selectedIndex >= 0 ? `${suggestionsId}-${selectedIndex}` : undefined}
+			class="pr-10"
+		/>
 
-	{#if isLoading}
-		<div class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">
-			<svg
-				class="h-4 w-4 animate-spin text-slate-400"
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-			>
-				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-				></circle>
-				<path
-					class="opacity-75"
-					fill="currentColor"
-					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-				></path>
-			</svg>
-		</div>
-	{/if}
-
-	{#if isOpen && suggestions.length > 0}
-		<ul
-			id="address-suggestions"
-			class="absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border border-slate-200 bg-white py-1 shadow-lg"
-			role="listbox"
-		>
-			{#each suggestions as suggestion, index (suggestion.gid)}
-				<li
-					id="suggestion-{index}"
-					role="option"
-					aria-selected={index === selectedIndex}
-					class={cn(
-						'cursor-pointer px-3 py-2 text-sm',
-						index === selectedIndex ? 'bg-sky-100 text-sky-900' : 'hover:bg-slate-50',
-					)}
-					onclick={() => handleSelect(suggestion)}
-					onkeydown={() => handleSelect(suggestion)}
+		{#if isLoading}
+			<div class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">
+				<svg
+					class="h-4 w-4 animate-spin text-slate-400"
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
 				>
-					<div class="font-medium">{suggestion.label}</div>
-					{#if suggestion.address !== suggestion.label}
-						<div class="text-xs text-slate-500">{suggestion.address}</div>
-					{/if}
-				</li>
-			{/each}
-		</ul>
-	{/if}
+					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+					></circle>
+					<path
+						class="opacity-75"
+						fill="currentColor"
+						d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+					></path>
+				</svg>
+			</div>
+		{/if}
+
+		{#if isOpen && suggestions.length > 0}
+			<ul
+				id={suggestionsId}
+				class="absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+				role="listbox"
+			>
+				{#each suggestions as suggestion, index (suggestion.gid)}
+					<li
+						id={`${suggestionsId}-${index}`}
+						role="option"
+						aria-selected={index === selectedIndex}
+						class={cn(
+							'cursor-pointer px-3 py-2 text-sm',
+							index === selectedIndex ? 'bg-sky-100 text-sky-900' : 'hover:bg-slate-50',
+						)}
+						onclick={() => handleSelect(suggestion)}
+						onkeydown={() => handleSelect(suggestion)}
+					>
+						<div class="font-medium">{suggestion.label}</div>
+						{#if suggestion.address !== suggestion.label}
+							<div class="text-xs text-slate-500">{suggestion.address}</div>
+						{/if}
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	</div>
 </div>
