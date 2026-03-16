@@ -10,6 +10,7 @@
 	import { formatShelterAddress } from '$lib/shelters/presentation';
 	import { isValidPoint } from '$lib/geo';
 	import type { Shelter } from '$lib/shelters/types';
+	import { toast } from 'svelte-sonner';
 
 	type DirectionsActionProps = {
 		shelter: Shelter;
@@ -119,6 +120,7 @@
 		try {
 			await navigator.clipboard.writeText(fullAddress);
 			copiedAddress = true;
+			toast.success('Address copied to clipboard');
 			setTimeout(() => {
 				copiedAddress = false;
 			}, 2000);
@@ -162,11 +164,10 @@
 	>
 		{#if copiedAddress}
 			<CheckIcon class="size-4 text-emerald-600" aria-hidden="true" />
-			Copied!
 		{:else}
 			<CopyIcon class="size-4" aria-hidden="true" />
-			Copy Address
 		{/if}
+		Copy Address
 	</Button>
 </div>
 
