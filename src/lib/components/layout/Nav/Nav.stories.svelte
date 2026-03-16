@@ -4,13 +4,14 @@
 	import { userEvent } from 'storybook/test';
 	import Nav from './Nav.svelte';
 	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
-	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
+	import {
+		createUserState,
+		setUserStateContext,
+		type DirectionsApp,
+	} from '$lib/state/user-state.svelte';
 	import { storage } from '$lib/storage';
 
-	const createStoryState = (options?: {
-		hasLocation?: boolean;
-		mapProvider?: 'apple' | 'google' | null;
-	}) => {
+	const createStoryState = (options?: { hasLocation?: boolean; directionsApp?: DirectionsApp }) => {
 		storage.clear();
 		const locationState = createLocationState();
 		const userState = createUserState();
@@ -23,8 +24,8 @@
 			);
 		}
 
-		if (options?.mapProvider) {
-			userState.setMapProvider(options.mapProvider);
+		if (options?.directionsApp) {
+			userState.setDirectionsApp(options.directionsApp);
 		}
 
 		return { locationState, userState };
@@ -74,9 +75,9 @@
 />
 
 <Story
-	name="With Map Provider"
+	name="With Directions App"
 	template={StoryShell}
-	args={{ state: createStoryState({ mapProvider: 'apple' }) }}
+	args={{ state: createStoryState({ directionsApp: 'apple' }) }}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));
@@ -89,9 +90,9 @@
 />
 
 <Story
-	name="With Location And Map Provider"
+	name="With Location And Directions App"
 	template={StoryShell}
-	args={{ state: createStoryState({ hasLocation: true, mapProvider: 'google' }) }}
+	args={{ state: createStoryState({ hasLocation: true, directionsApp: 'google' }) }}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));

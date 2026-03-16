@@ -2,6 +2,8 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, waitFor, within } from 'storybook/test';
 	import { Map } from '$lib/components/layout';
+	import { setLocationStateContext, createLocationState } from '$lib/state/location-state.svelte';
+	import { setUserStateContext, createUserState } from '$lib/state/user-state.svelte';
 	import AppShell from './AppShell.svelte';
 
 	const shelterMarkers = [
@@ -10,9 +12,30 @@
 		{ id: 'south', label: 'South Shelter', latitude: 37.1735, longitude: -93.2868 },
 	];
 
+	const createStoryState = () => {
+		const locationState = createLocationState();
+		const userState = createUserState();
+
+		locationState.setReady(
+			{ latitude: 37.208957, longitude: -93.292299 },
+			'address',
+			'123 Main St, Springfield, MO',
+		);
+
+		return { locationState, userState };
+	};
+
 	const { Story } = defineMeta({
 		title: 'Layout/App Shell',
 		component: AppShell,
+		decorators: [
+			(Story, context) => {
+				const { locationState, userState } = context.args.state;
+				setLocationStateContext(locationState);
+				setUserStateContext(userState);
+				return Story();
+			},
+		],
 	});
 
 	const assertMobileLayout = async (canvasElement: HTMLElement) => {
@@ -100,6 +123,7 @@
 <Story
 	name="Mobile"
 	template={DefaultTemplate}
+	args={{ state: createStoryState() }}
 	globals={{ viewport: { value: 'mobile1', isRotated: false } }}
 	play={async ({ canvasElement }) => {
 		await assertMobileLayout(canvasElement);
@@ -109,6 +133,7 @@
 <Story
 	name="Desktop"
 	template={DefaultTemplate}
+	args={{ state: createStoryState() }}
 	globals={{ viewport: { value: 'desktop', isRotated: false } }}
 	play={async ({ canvasElement }) => {
 		await assertDesktopLayout(canvasElement);

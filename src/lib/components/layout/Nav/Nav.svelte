@@ -15,7 +15,7 @@
 	const locationState = getLocationStateContext();
 	const userState = getUserStateContext();
 
-	const showMenu = $derived(locationState.hasLocation || userState.mapProvider !== null);
+	const showMenu = $derived(locationState.hasLocation || userState.directionsApp !== undefined);
 </script>
 
 <header
@@ -48,7 +48,7 @@
 						Edit Location
 					</button>
 				{/if}
-				{#if userState.mapProvider}
+				{#if userState.directionsApp}
 					<button
 						type="button"
 						class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-slate-100"
