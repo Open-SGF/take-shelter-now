@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { AppShell } from '$lib/components/layout';
+	import { Toaster } from '$lib/components/ui/sonner';
 	import type { GeoPoint } from '$lib/geo';
 	import type { Snippet } from 'svelte';
 	import { Map, type MapMarker } from '$lib/components/layout';
@@ -130,3 +131,5 @@
 
 	{@render children()}
 </AppShell>
+
+<Toaster />
