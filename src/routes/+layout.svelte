@@ -132,4 +132,4 @@
 	{@render children()}
 </AppShell>
 
-<Toaster />
+<Toaster position="bottom-left" />
