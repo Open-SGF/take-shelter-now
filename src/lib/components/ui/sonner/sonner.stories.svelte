@@ -25,7 +25,7 @@
 >
 	{#snippet template()}
 		<div class="space-y-4 p-4">
-			<Toaster />
+			<Toaster position="bottom-left" />
 			<div class="flex flex-wrap gap-2">
 				<button
 					class="rounded bg-slate-900 px-4 py-2 text-sm text-white"
@@ -77,7 +77,7 @@
 >
 	{#snippet template()}
 		<div class="p-4">
-			<Toaster position="bottom-right" />
+			<Toaster position="bottom-left" />
 			<button
 				class="rounded bg-emerald-600 px-4 py-2 text-sm text-white"
 				onclick={() => toast.success('Address copied to clipboard')}
@@ -104,7 +104,7 @@
 >
 	{#snippet template()}
 		<div class="p-4">
-			<Toaster />
+			<Toaster position="bottom-left" />
 			<button
 				class="rounded bg-slate-900 px-4 py-2 text-sm text-white"
 				onclick={() =>
@@ -134,7 +134,7 @@
 >
 	{#snippet template()}
 		<div class="p-4">
-			<Toaster />
+			<Toaster position="bottom-left" />
 			<button
 				class="rounded bg-slate-900 px-4 py-2 text-sm text-white"
 				onclick={() =>
@@ -166,7 +166,7 @@
 >
 	{#snippet template()}
 		<div class="p-4">
-			<Toaster />
+			<Toaster position="bottom-left" />
 			<button
 				class="rounded bg-slate-900 px-4 py-2 text-sm text-white"
 				onclick={() =>
