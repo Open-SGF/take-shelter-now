@@ -1,5 +1,6 @@
 import { createContext } from 'svelte';
 import type { GeoPoint } from '$lib/geo';
+import { storage } from '$lib/storage';
 
 export type LocationMethod = 'geolocation' | 'address';
 
@@ -43,38 +44,21 @@ export type LocationState = {
 
 export const [getLocationStateContext, setLocationStateContext] = createContext<LocationState>();
 
-const LOCATION_STORAGE_KEY = 'take-shelter-location';
+const LOCATION_KEY = 'location';
 
 const readLocationFromStorage = (): StoredLocation | null => {
-	if (typeof window === 'undefined') {
-		return null;
-	}
-	try {
-		const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
-		if (saved) {
-			const parsed = JSON.parse(saved) as StoredLocation;
-			if (typeof parsed.latitude === 'number' && typeof parsed.longitude === 'number') {
-				return parsed;
-			}
-		}
-	} catch {
-		// localStorage not available or invalid JSON
+	const saved = storage.get<StoredLocation>(LOCATION_KEY);
+	if (saved && typeof saved.latitude === 'number' && typeof saved.longitude === 'number') {
+		return saved;
 	}
 	return null;
 };
 
 const writeLocationToStorage = (location: StoredLocation | null): void => {
-	if (typeof window === 'undefined') {
-		return;
-	}
-	try {
-		if (location === null) {
-			localStorage.removeItem(LOCATION_STORAGE_KEY);
-		} else {
-			localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(location));
-		}
-	} catch {
-		// localStorage not available
+	if (location === null) {
+		storage.remove(LOCATION_KEY);
+	} else {
+		storage.set(LOCATION_KEY, location);
 	}
 };
 

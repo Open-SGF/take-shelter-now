@@ -1,4 +1,5 @@
 import { createContext } from 'svelte';
+import { storage } from '$lib/storage';
 
 export type MapProvider = 'apple' | 'google';
 
@@ -9,35 +10,21 @@ export type UserState = {
 
 export const [getUserStateContext, setUserStateContext] = createContext<UserState>();
 
-const MAP_PROVIDER_STORAGE_KEY = 'take-shelter-map-provider';
+const MAP_PROVIDER_KEY = 'map-provider';
 
 const readMapProviderFromStorage = (): MapProvider | null => {
-	if (typeof window === 'undefined') {
-		return null;
-	}
-	try {
-		const saved = localStorage.getItem(MAP_PROVIDER_STORAGE_KEY);
-		if (saved === 'apple' || saved === 'google') {
-			return saved;
-		}
-	} catch {
-		// localStorage not available
+	const saved = storage.get<string>(MAP_PROVIDER_KEY);
+	if (saved === 'apple' || saved === 'google') {
+		return saved;
 	}
 	return null;
 };
 
 const writeMapProviderToStorage = (provider: MapProvider | null): void => {
-	if (typeof window === 'undefined') {
-		return;
-	}
-	try {
-		if (provider === null) {
-			localStorage.removeItem(MAP_PROVIDER_STORAGE_KEY);
-		} else {
-			localStorage.setItem(MAP_PROVIDER_STORAGE_KEY, provider);
-		}
-	} catch {
-		// localStorage not available
+	if (provider === null) {
+		storage.remove(MAP_PROVIDER_KEY);
+	} else {
+		storage.set(MAP_PROVIDER_KEY, provider);
 	}
 };
 
