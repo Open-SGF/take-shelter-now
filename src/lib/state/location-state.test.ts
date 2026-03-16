@@ -1,9 +1,10 @@
 import { describe, expect, test, beforeEach } from 'vitest';
 import { createLocationState } from './location-state.svelte';
+import { storage } from '$lib/storage';
 
 describe('createLocationState', () => {
 	beforeEach(() => {
-		localStorage.clear();
+		storage.clear();
 	});
 
 	test('starts with idle status and no location', () => {
@@ -14,9 +15,9 @@ describe('createLocationState', () => {
 		expect(locationState.location).toBe(null);
 	});
 
-	test('reads location from localStorage', () => {
+	test('reads location from storage', () => {
 		const stored = { latitude: 37.2, longitude: -93.2, address: '123 Main St' };
-		localStorage.setItem('take-shelter-location', JSON.stringify(stored));
+		storage.set('location', stored);
 
 		const locationState = createLocationState();
 
