@@ -58,7 +58,7 @@ describe('/+page.svelte', () => {
 		};
 
 		render(Wrapper);
-		expect(screen.getByPlaceholderText('Enter your address')).toBeInTheDocument();
+		expect(screen.getByLabelText('Enter an address')).toBeInTheDocument();
 	});
 
 	test('shows shelter list when location is set', () => {
