@@ -18,8 +18,9 @@
 	const locationState = getLocationStateContext();
 	const userState = getUserStateContext();
 
-	const pathname = page.url.pathname;
-	const showEditLocation = $derived(locationState.hasLocation && pathname !== '/location/');
+	const showEditLocation = $derived(
+		locationState.hasLocation && page.url.pathname !== '/location/',
+	);
 	const showMenu = $derived(showEditLocation || userState.directionsApp !== undefined);
 
 	function handleEditLocationClick() {
@@ -41,13 +42,13 @@
 	{#if showMenu}
 		<Popover>
 			<PopoverTrigger
-				class="rounded-md p-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+				class="cursor-pointer rounded-md p-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
 				data-testid="nav-menu-trigger"
 			>
 				<MoreVerticalIcon class="size-5" />
 				<span class="sr-only">Menu</span>
 			</PopoverTrigger>
-			<PopoverContent align="end" class="w-56 p-1">
+			<PopoverContent align="end" class="z-[1100] w-56 p-1">
 				{#if showEditLocation}
 					<button
 						type="button"
