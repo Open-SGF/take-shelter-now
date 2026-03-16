@@ -20,35 +20,11 @@ const SPRINGFIELD_MO_FOCUS = {
 	longitude: -93.292299,
 };
 
-function formatAddress(props: {
-	name?: string;
-	street?: string;
-	housenumber?: string;
-	locality?: string;
-	region?: string;
-	postalcode?: string;
-}) {
-	const parts: string[] = [];
-
-	if (props.housenumber && props.street) {
-		parts.push(`${props.housenumber} ${props.street}`);
-	} else if (props.street) {
-		parts.push(props.street);
-	} else if (props.name) {
-		parts.push(props.name);
+function formatLabel(name?: string | null, coarseLocation?: string | null): string {
+	if (name && coarseLocation) {
+		return `${name}, ${coarseLocation}`;
 	}
-
-	if (props.locality) {
-		parts.push(props.locality);
-	}
-	if (props.region) {
-		parts.push(props.region);
-	}
-	if (props.postalcode) {
-		parts.push(props.postalcode);
-	}
-
-	return parts.join(', ');
+	return name ?? coarseLocation ?? '';
 }
 
 export async function searchAddresses(query: string) {
@@ -57,27 +33,23 @@ export async function searchAddresses(query: string) {
 	}
 
 	try {
-		const response = await geocodingApi.autocomplete({
+		const response = await geocodingApi.autocompleteV2({
 			text: query,
 			focusPointLat: SPRINGFIELD_MO_FOCUS.latitude,
 			focusPointLon: SPRINGFIELD_MO_FOCUS.longitude,
 			boundaryCountry: ['US'],
-			layers: ['address', 'venue'],
+			layers: ['address', 'poi'],
 			size: 5,
 		});
 
-		return response.features.map((feature) => ({
-			gid: feature.properties?.gid ?? '',
-			label: feature.properties?.label ?? '',
-			address: formatAddress({
-				name: feature.properties?.name,
-				street: feature.properties?.street,
-				housenumber: feature.properties?.housenumber,
-				locality: feature.properties?.locality,
-				region: feature.properties?.regionA,
-				postalcode: feature.properties?.postalcode,
-			}),
-		}));
+		return response.features.map((feature) => {
+			const props = feature.properties;
+			return {
+				gid: props?.gid ?? '',
+				label: formatLabel(props?.name, props?.coarseLocation),
+				address: props?.formattedAddressLine ?? props?.name ?? '',
+			};
+		});
 	} catch (error) {
 		console.error('Geocoding autocomplete error:', error);
 		return [];
@@ -86,23 +58,18 @@ export async function searchAddresses(query: string) {
 
 export async function getPlaceDetails(gid: string) {
 	try {
-		const response = await geocodingApi.placeDetails({ ids: [gid] });
+		const response = await geocodingApi.placeDetailsV2({ ids: [gid] });
 
 		const feature = response.features[0];
 		if (!feature?.geometry?.coordinates) {
 			return null;
 		}
 
+		const props = feature.properties;
+
 		return {
-			label: feature.properties?.label ?? '',
-			address: formatAddress({
-				name: feature.properties?.name,
-				street: feature.properties?.street,
-				housenumber: feature.properties?.housenumber,
-				locality: feature.properties?.locality,
-				region: feature.properties?.regionA,
-				postalcode: feature.properties?.postalcode,
-			}),
+			label: formatLabel(props?.name, props?.coarseLocation),
+			address: props?.formattedAddressLine ?? props?.name ?? '',
 			location: fromGeoJSONPoint(feature.geometry.coordinates),
 		};
 	} catch (error) {
@@ -113,12 +80,12 @@ export async function getPlaceDetails(gid: string) {
 
 export async function geocodeAddress(address: string) {
 	try {
-		const response = await geocodingApi.search({
+		const response = await geocodingApi.searchV2({
 			text: address,
 			focusPointLat: SPRINGFIELD_MO_FOCUS.latitude,
 			focusPointLon: SPRINGFIELD_MO_FOCUS.longitude,
 			boundaryCountry: ['US'],
-			layers: ['address', 'venue'],
+			layers: ['address', 'poi'],
 			size: 1,
 		});
 
@@ -127,16 +94,11 @@ export async function geocodeAddress(address: string) {
 			return null;
 		}
 
+		const props = feature.properties;
+
 		return {
-			label: feature.properties?.label ?? '',
-			address: formatAddress({
-				name: feature.properties?.name,
-				street: feature.properties?.street,
-				housenumber: feature.properties?.housenumber,
-				locality: feature.properties?.locality,
-				region: feature.properties?.regionA,
-				postalcode: feature.properties?.postalcode,
-			}),
+			label: formatLabel(props?.name, props?.coarseLocation),
+			address: props?.formattedAddressLine ?? props?.name ?? '',
 			location: fromGeoJSONPoint(feature.geometry.coordinates),
 		};
 	} catch (error) {

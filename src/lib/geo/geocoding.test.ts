@@ -1,16 +1,16 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import type { GeocodeResponse, GeocodingGeoJSONFeature } from '@stadiamaps/api';
+import type { GeocodeResponseEnvelopePropertiesV2, FeaturePropertiesV2 } from '@stadiamaps/api';
 
-const mockAutocomplete = vi.fn();
-const mockPlaceDetails = vi.fn();
-const mockSearch = vi.fn();
+const mockAutocompleteV2 = vi.fn();
+const mockPlaceDetailsV2 = vi.fn();
+const mockSearchV2 = vi.fn();
 
 vi.mock('@stadiamaps/api', () => {
 	const mockApi = function () {
 		return {
-			autocomplete: mockAutocomplete,
-			placeDetails: mockPlaceDetails,
-			search: mockSearch,
+			autocompleteV2: mockAutocompleteV2,
+			placeDetailsV2: mockPlaceDetailsV2,
+			searchV2: mockSearchV2,
 		};
 	};
 	return {
@@ -18,30 +18,32 @@ vi.mock('@stadiamaps/api', () => {
 	};
 });
 
-const createMockFeature = (overrides: Record<string, unknown> = {}) =>
+const createMockFeature = (overrides: Partial<FeaturePropertiesV2> = {}) =>
 	({
 		type: 'Feature',
 		geometry: { type: 'Point', coordinates: [-93.292299, 37.208957] },
 		properties: {
-			label: '123 Main St, Springfield, MO',
-			street: 'Main St',
-			housenumber: '123',
-			locality: 'Springfield',
-			regionA: 'MO',
-			postalcode: '65801',
-			...overrides,
+			gid: 'test-gid',
+			name: '123 Main St',
+			coarseLocation: 'Springfield, MO, USA',
+			formattedAddressLine: '123 Main St, Springfield, MO 65801',
+			layer: 'address',
+			precision: 'point',
+			...overrides.properties,
 		},
-	}) satisfies GeocodingGeoJSONFeature;
+		...overrides,
+	}) satisfies FeaturePropertiesV2;
 
 const createMockResponse = (
-	features: ReturnType<typeof createMockFeature>[] = [],
-): GeocodeResponse => ({
-	geocoding: {},
+	features: FeaturePropertiesV2[] = [],
+): GeocodeResponseEnvelopePropertiesV2 => ({
+	geocoding: { attribution: 'https://stadiamaps.com/attribution/' },
 	features,
+	type: 'FeatureCollection',
 });
 
 const testApiError = async (
-	mockFn: typeof mockAutocomplete,
+	mockFn: typeof mockAutocompleteV2,
 	testFn: () => Promise<unknown>,
 	expected: unknown,
 ) => {
@@ -57,9 +59,9 @@ describe('geocoding', () => {
 
 	beforeEach(async () => {
 		vi.resetModules();
-		mockAutocomplete.mockReset();
-		mockPlaceDetails.mockReset();
-		mockSearch.mockReset();
+		mockAutocompleteV2.mockReset();
+		mockPlaceDetailsV2.mockReset();
+		mockSearchV2.mockReset();
 		geocoding = await import('./geocoding');
 	});
 
@@ -71,67 +73,78 @@ describe('geocoding', () => {
 		test('returns empty array when query is less than 3 characters', async () => {
 			const result = await geocoding.searchAddresses('ab');
 			expect(result).toEqual([]);
-			expect(mockAutocomplete).not.toHaveBeenCalled();
+			expect(mockAutocompleteV2).not.toHaveBeenCalled();
 		});
 
-		test('calls autocomplete with correct parameters and returns formatted suggestions', async () => {
-			mockAutocomplete.mockResolvedValue(
-				createMockResponse([createMockFeature({ gid: 'test-gid-1' })]),
+		test('calls autocompleteV2 with correct parameters and returns formatted suggestions', async () => {
+			mockAutocompleteV2.mockResolvedValue(
+				createMockResponse([
+					createMockFeature({
+						properties: {
+							gid: 'test-gid-1',
+							name: '123 Main St',
+							coarseLocation: 'Springfield, MO, USA',
+							formattedAddressLine: '123 Main St, Springfield, MO 65801',
+							layer: 'address',
+							precision: 'point',
+						},
+					}),
+				]),
 			);
 
 			const result = await geocoding.searchAddresses('123 Main');
 
-			expect(mockAutocomplete).toHaveBeenCalledWith({
+			expect(mockAutocompleteV2).toHaveBeenCalledWith({
 				text: '123 Main',
 				focusPointLat: 37.208957,
 				focusPointLon: -93.292299,
 				boundaryCountry: ['US'],
-				layers: ['address', 'venue'],
+				layers: ['address', 'poi'],
 				size: 5,
 			});
 			expect(result).toEqual([
 				{
 					gid: 'test-gid-1',
-					label: '123 Main St, Springfield, MO',
-					address: '123 Main St, Springfield, MO, 65801',
+					label: '123 Main St, Springfield, MO, USA',
+					address: '123 Main St, Springfield, MO 65801',
 				},
 			]);
 		});
 
 		test('returns empty array on API error', async () => {
-			await testApiError(mockAutocomplete, () => geocoding.searchAddresses('123 Main'), []);
+			await testApiError(mockAutocompleteV2, () => geocoding.searchAddresses('123 Main'), []);
 		});
 	});
 
 	describe('getPlaceDetails', () => {
-		test('calls placeDetails with correct parameters and returns formatted result', async () => {
-			mockPlaceDetails.mockResolvedValue(createMockResponse([createMockFeature()]));
+		test('calls placeDetailsV2 with correct parameters and returns formatted result', async () => {
+			mockPlaceDetailsV2.mockResolvedValue(createMockResponse([createMockFeature()]));
 
 			const result = await geocoding.getPlaceDetails('test-gid');
 
-			expect(mockPlaceDetails).toHaveBeenCalledWith({ ids: ['test-gid'] });
+			expect(mockPlaceDetailsV2).toHaveBeenCalledWith({ ids: ['test-gid'] });
 			expect(result).toEqual({
-				label: '123 Main St, Springfield, MO',
-				address: '123 Main St, Springfield, MO, 65801',
+				label: '123 Main St, Springfield, MO, USA',
+				address: '123 Main St, Springfield, MO 65801',
 				location: { longitude: -93.292299, latitude: 37.208957 },
 			});
 		});
 
 		test('returns null when feature has no coordinates', async () => {
-			mockPlaceDetails.mockResolvedValue(
+			mockPlaceDetailsV2.mockResolvedValue(
 				createMockResponse([
 					{
 						type: 'Feature',
-						geometry: { type: 'Point', coordinates: undefined as unknown as number[] },
+						geometry: null,
 						properties: {
-							label: 'Test',
-							street: '',
-							housenumber: '',
-							locality: '',
-							regionA: '',
-							postalcode: '',
+							gid: 'test-gid',
+							name: 'Test',
+							coarseLocation: undefined,
+							formattedAddressLine: undefined,
+							layer: 'address',
+							precision: 'point',
 						},
-					} satisfies GeocodingGeoJSONFeature,
+					} satisfies FeaturePropertiesV2,
 				]),
 			);
 
@@ -141,7 +154,7 @@ describe('geocoding', () => {
 		});
 
 		test('returns null when no features returned', async () => {
-			mockPlaceDetails.mockResolvedValue(createMockResponse());
+			mockPlaceDetailsV2.mockResolvedValue(createMockResponse());
 
 			const result = await geocoding.getPlaceDetails('test-gid');
 
@@ -149,33 +162,33 @@ describe('geocoding', () => {
 		});
 
 		test('returns null on API error', async () => {
-			await testApiError(mockPlaceDetails, () => geocoding.getPlaceDetails('test-gid'), null);
+			await testApiError(mockPlaceDetailsV2, () => geocoding.getPlaceDetails('test-gid'), null);
 		});
 	});
 
 	describe('geocodeAddress', () => {
-		test('calls search with correct parameters and returns formatted result', async () => {
-			mockSearch.mockResolvedValue(createMockResponse([createMockFeature()]));
+		test('calls searchV2 with correct parameters and returns formatted result', async () => {
+			mockSearchV2.mockResolvedValue(createMockResponse([createMockFeature()]));
 
 			const result = await geocoding.geocodeAddress('123 Main St, Springfield, MO');
 
-			expect(mockSearch).toHaveBeenCalledWith({
+			expect(mockSearchV2).toHaveBeenCalledWith({
 				text: '123 Main St, Springfield, MO',
 				focusPointLat: 37.208957,
 				focusPointLon: -93.292299,
 				boundaryCountry: ['US'],
-				layers: ['address', 'venue'],
+				layers: ['address', 'poi'],
 				size: 1,
 			});
 			expect(result).toEqual({
-				label: '123 Main St, Springfield, MO',
-				address: '123 Main St, Springfield, MO, 65801',
+				label: '123 Main St, Springfield, MO, USA',
+				address: '123 Main St, Springfield, MO 65801',
 				location: { longitude: -93.292299, latitude: 37.208957 },
 			});
 		});
 
 		test('returns null when no features returned', async () => {
-			mockSearch.mockResolvedValue(createMockResponse());
+			mockSearchV2.mockResolvedValue(createMockResponse());
 
 			const result = await geocoding.geocodeAddress('nonexistent address');
 
@@ -183,7 +196,7 @@ describe('geocoding', () => {
 		});
 
 		test('returns null on API error', async () => {
-			await testApiError(mockSearch, () => geocoding.geocodeAddress('123 Main St'), null);
+			await testApiError(mockSearchV2, () => geocoding.geocodeAddress('123 Main St'), null);
 		});
 	});
 });
