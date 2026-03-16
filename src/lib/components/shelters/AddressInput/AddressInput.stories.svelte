@@ -30,7 +30,7 @@
 	template={StoryShell}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByPlaceholderText('123 Main St, Springfield, MO');
+		const input = canvas.getByLabelText('Enter an address');
 
 		await fireEvent.input(input, { target: { value: '12' } });
 		await expect(canvas.queryByRole('listbox')).not.toBeInTheDocument();
@@ -58,7 +58,7 @@
 	template={StoryShell}
 	play={async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByPlaceholderText('123 Main St, Springfield, MO');
+		const input = canvas.getByLabelText('Enter an address');
 
 		await fireEvent.input(input, { target: { value: 'Springfield' } });
 
@@ -114,7 +114,7 @@
 	template={StoryShell}
 	play={async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByPlaceholderText('123 Main St, Springfield, MO');
+		const input = canvas.getByLabelText('Enter an address');
 
 		await fireEvent.input(input, { target: { value: 'Walnut' } });
 

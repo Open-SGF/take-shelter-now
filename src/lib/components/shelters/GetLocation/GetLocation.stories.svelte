@@ -60,7 +60,7 @@
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByText('Use Current Location')).toBeInTheDocument();
-		await expect(canvas.getByPlaceholderText('123 Main St, Springfield, MO')).toBeInTheDocument();
+		await expect(canvas.getByLabelText('Enter an address')).toBeInTheDocument();
 	}}
 />
 

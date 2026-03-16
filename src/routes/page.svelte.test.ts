@@ -58,7 +58,7 @@ describe('/+page.svelte', () => {
 		};
 
 		render(Wrapper);
-		expect(screen.getByPlaceholderText('123 Main St, Springfield, MO')).toBeInTheDocument();
+		expect(screen.getByLabelText('Enter an address')).toBeInTheDocument();
 	});
 
 	test('shows shelter list when location is set', () => {
