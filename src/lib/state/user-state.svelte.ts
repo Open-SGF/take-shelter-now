@@ -1,45 +1,45 @@
 import { createContext } from 'svelte';
 import { storage } from '$lib/storage';
 
-export type MapProvider = 'apple' | 'google';
+export type DirectionsApp = 'apple' | 'google';
 
 export type UserState = {
-	readonly mapProvider: MapProvider | null;
-	setMapProvider: (provider: MapProvider | null) => void;
+	readonly directionsApp?: DirectionsApp;
+	setDirectionsApp: (app?: DirectionsApp) => void;
 };
 
 export const [getUserStateContext, setUserStateContext] = createContext<UserState>();
 
-const MAP_PROVIDER_KEY = 'map-provider';
+const DIRECTIONS_APP_KEY = 'directions-app';
 
-const readMapProviderFromStorage = (): MapProvider | null => {
-	const saved = storage.get<string>(MAP_PROVIDER_KEY);
+const readDirectionsAppFromStorage = (): DirectionsApp | undefined => {
+	const saved = storage.get<string>(DIRECTIONS_APP_KEY);
 	if (saved === 'apple' || saved === 'google') {
 		return saved;
 	}
-	return null;
+	return undefined;
 };
 
-const writeMapProviderToStorage = (provider: MapProvider | null): void => {
-	if (provider === null) {
-		storage.remove(MAP_PROVIDER_KEY);
+const writeDirectionsAppToStorage = (app?: DirectionsApp): void => {
+	if (app === undefined) {
+		storage.remove(DIRECTIONS_APP_KEY);
 	} else {
-		storage.set(MAP_PROVIDER_KEY, provider);
+		storage.set(DIRECTIONS_APP_KEY, app);
 	}
 };
 
 export const createUserState = (): UserState => {
-	let mapProvider = $state<MapProvider | null>(readMapProviderFromStorage());
+	let directionsApp = $state<DirectionsApp | undefined>(readDirectionsAppFromStorage());
 
-	const setMapProvider = (provider: MapProvider | null) => {
-		mapProvider = provider;
-		writeMapProviderToStorage(provider);
+	const setDirectionsApp = (app?: DirectionsApp) => {
+		directionsApp = app;
+		writeDirectionsAppToStorage(app);
 	};
 
 	return {
-		get mapProvider() {
-			return mapProvider;
+		get directionsApp() {
+			return directionsApp;
 		},
-		setMapProvider,
+		setDirectionsApp,
 	};
 };

@@ -2,6 +2,8 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, waitFor, within } from 'storybook/test';
 	import { Map } from '$lib/components/layout';
+	import { setLocationStateContext, createLocationState } from '$lib/state/location-state.svelte';
+	import { setUserStateContext, createUserState } from '$lib/state/user-state.svelte';
 	import AppShell from './AppShell.svelte';
 
 	const shelterMarkers = [
@@ -13,6 +15,22 @@
 	const { Story } = defineMeta({
 		title: 'Layout/App Shell',
 		component: AppShell,
+		decorators: [
+			(Story) => {
+				const locationState = createLocationState();
+				const userState = createUserState();
+
+				locationState.setReady(
+					{ latitude: 37.208957, longitude: -93.292299 },
+					'address',
+					'123 Main St, Springfield, MO',
+				);
+
+				setLocationStateContext(locationState);
+				setUserStateContext(userState);
+				return Story();
+			},
+		],
 	});
 
 	const assertMobileLayout = async (canvasElement: HTMLElement) => {

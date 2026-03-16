@@ -1,57 +1,18 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { AddressInput } from '$lib/components/shelters/AddressInput';
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import type { GeoPoint } from '$lib/geo';
 
+	type GetLocationProps = {
+		onLocationConfirmed?: () => void;
+	};
+
+	let { onLocationConfirmed }: GetLocationProps = $props();
 	const locationState = getLocationStateContext();
 
-	let isGeolocationSupported = $state(false);
-
-	onMount(() => {
-		isGeolocationSupported = 'geolocation' in navigator;
-	});
-
 	function handleGeolocationClick() {
-		if (!navigator.geolocation) {
-			locationState.setError('Geolocation is not supported by your browser.');
-			return;
-		}
-
-		locationState.setLoading('geolocation');
-
-		navigator.geolocation.getCurrentPosition(
-			(position) => {
-				locationState.setReady(
-					{
-						latitude: position.coords.latitude,
-						longitude: position.coords.longitude,
-					},
-					'geolocation',
-				);
-			},
-			(error) => {
-				const messages: Record<number, string> = {
-					[GeolocationPositionError.PERMISSION_DENIED]:
-						'Location permission denied. Please enter your address manually.',
-					[GeolocationPositionError.POSITION_UNAVAILABLE]:
-						'Unable to determine your location. Please enter your address.',
-					[GeolocationPositionError.TIMEOUT]:
-						'Location request timed out. Please try again or enter your address.',
-				};
-
-				const code =
-					error.code === GeolocationPositionError.PERMISSION_DENIED
-						? 'permission_denied'
-						: error.code === GeolocationPositionError.POSITION_UNAVAILABLE
-							? 'position_unavailable'
-							: 'timeout';
-
-				locationState.setError(messages[error.code] ?? 'Unable to get location.', code);
-			},
-			{ enableHighAccuracy: true, timeout: 10000 },
-		);
+		locationState.requestGeolocation(onLocationConfirmed);
 	}
 
 	function handleAddressSelect(location: GeoPoint, address: string) {
@@ -64,6 +25,7 @@
 
 	function handleConfirmLocation() {
 		locationState.confirmPendingLocation();
+		onLocationConfirmed?.();
 	}
 
 	function handleCancel() {
@@ -119,7 +81,7 @@
 		</div>
 	{:else}
 		<div class="space-y-4">
-			{#if isGeolocationSupported}
+			{#if locationState.isGeolocationSupported}
 				<Button onclick={handleGeolocationClick} size="lg" class="w-full">
 					<img
 						src="https://res.cloudinary.com/du9tnv8ss/image/upload/v1756782708/navigation_bgtfde.png"

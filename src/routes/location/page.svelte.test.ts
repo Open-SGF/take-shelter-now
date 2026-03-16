@@ -12,6 +12,7 @@ import {
 	type ShelterState,
 } from '$lib/state/shelter-state.svelte';
 import { createUserState, setUserStateContext, type UserState } from '$lib/state/user-state.svelte';
+import { storage } from '$lib/storage';
 import Page from './+page.svelte';
 
 const mockGeolocation = () => {
@@ -24,12 +25,21 @@ const mockGeolocation = () => {
 	});
 };
 
-describe('/+page.svelte', () => {
+vi.mock('$app/navigation', () => ({
+	goto: vi.fn(),
+}));
+
+vi.mock('$app/paths', () => ({
+	resolve: (path: string) => path,
+}));
+
+describe('/location/+page.svelte', () => {
 	let locationState: LocationState;
 	let shelterState: ShelterState;
 	let userState: UserState;
 
 	beforeEach(() => {
+		storage.clear();
 		locationState = createLocationState();
 		userState = createUserState();
 		shelterState = createShelterState(() => locationState.location);
@@ -61,8 +71,12 @@ describe('/+page.svelte', () => {
 		expect(screen.getByLabelText('Enter an address')).toBeInTheDocument();
 	});
 
-	test('shows shelter list when location is set', () => {
-		locationState.setReady({ latitude: 37.2, longitude: -93.2 }, 'geolocation');
+	test('shows back button when location is already set (edit mode)', () => {
+		locationState.setReady(
+			{ latitude: 37.208957, longitude: -93.292299 },
+			'address',
+			'123 Main St',
+		);
 
 		const Wrapper = (...args: Parameters<typeof Page>) => {
 			setLocationStateContext(locationState);
@@ -72,6 +86,18 @@ describe('/+page.svelte', () => {
 		};
 
 		render(Wrapper);
-		expect(screen.getByTestId('shelter-list')).toBeInTheDocument();
+		expect(screen.getByTestId('location-back')).toBeInTheDocument();
+	});
+
+	test('hides back button when no location is set (initial setup)', () => {
+		const Wrapper = (...args: Parameters<typeof Page>) => {
+			setLocationStateContext(locationState);
+			setShelterStateContext(shelterState);
+			setUserStateContext(userState);
+			return Page(...args);
+		};
+
+		render(Wrapper);
+		expect(screen.queryByTestId('location-back')).not.toBeInTheDocument();
 	});
 });
