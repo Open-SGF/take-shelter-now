@@ -176,33 +176,33 @@
 		<div class="space-y-4">
 			<div>
 				<h2 class="text-lg font-semibold">Get Directions</h2>
-				<p class="text-sm text-slate-500">Choose your preferred map provider</p>
+				<p class="text-muted-foreground text-sm">Choose your preferred map provider</p>
 			</div>
 
 			<div class="space-y-2">
 				<button
 					type="button"
-					class="flex w-full items-center gap-3 rounded-lg border border-slate-200 p-3 text-left transition-colors hover:bg-slate-50"
+					class="border-border hover:bg-muted flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors"
 					onclick={() => handleProviderSelect('apple')}
 					data-testid="apple-maps-option"
 				>
 					<img src="/icons/apple-maps.svg" alt="" class="size-10" />
 					<div>
 						<p class="font-medium">Apple Maps</p>
-						<p class="text-xs text-slate-500">Open in Apple Maps</p>
+						<p class="text-muted-foreground text-xs">Open in Apple Maps</p>
 					</div>
 				</button>
 
 				<button
 					type="button"
-					class="flex w-full items-center gap-3 rounded-lg border border-slate-200 p-3 text-left transition-colors hover:bg-slate-50"
+					class="border-border hover:bg-muted flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors"
 					onclick={() => handleProviderSelect('google')}
 					data-testid="google-maps-option"
 				>
 					<img src="/icons/google-maps.svg" alt="" class="size-10" />
 					<div>
 						<p class="font-medium">Google Maps</p>
-						<p class="text-xs text-slate-500">Open in Google Maps</p>
+						<p class="text-muted-foreground text-xs">Open in Google Maps</p>
 					</div>
 				</button>
 			</div>
@@ -213,7 +213,7 @@
 			</label>
 
 			{#if userState.directionsApp}
-				<p class="text-xs text-slate-400">
+				<p class="text-muted-foreground text-xs">
 					Long-press "Get Directions" to change your saved preference.
 				</p>
 			{/if}

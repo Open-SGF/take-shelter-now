@@ -31,7 +31,7 @@
 <header
 	data-testid="nav"
 	class={cn(
-		'z-50 flex h-[72px] w-full items-center justify-center rounded-b-2xl bg-white p-8 md:justify-start',
+		'bg-surface z-50 flex h-[72px] w-full items-center justify-center rounded-b-2xl p-8 md:justify-start',
 		className,
 	)}
 >
@@ -42,7 +42,7 @@
 	{#if showMenu}
 		<Popover>
 			<PopoverTrigger
-				class="cursor-pointer rounded-md p-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+				class="text-text-tertiary hover:bg-interactive-bg hover:text-interactive-text cursor-pointer rounded-md p-2 transition-colors"
 				data-testid="nav-menu-trigger"
 			>
 				<MoreVerticalIcon class="size-5" />
@@ -52,7 +52,7 @@
 				{#if showEditLocation}
 					<button
 						type="button"
-						class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-slate-100"
+						class="hover:bg-interactive-bg flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors"
 						data-testid="nav-menu-edit-location"
 						onclick={handleEditLocationClick}
 					>
@@ -62,7 +62,7 @@
 				{#if userState.directionsApp}
 					<button
 						type="button"
-						class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-slate-100"
+						class="hover:bg-interactive-bg flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors"
 						data-testid="nav-menu-reset-directions"
 					>
 						Reset Directions App

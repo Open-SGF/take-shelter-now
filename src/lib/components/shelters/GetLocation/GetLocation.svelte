@@ -44,7 +44,7 @@
 			<div
 				class="border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"
 			></div>
-			<p class="mt-4 text-sm text-slate-600">
+			<p class="text-text-tertiary mt-4 text-sm">
 				{locationState.status.method === 'geolocation'
 					? 'Getting your location...'
 					: 'Looking up address...'}
@@ -59,18 +59,18 @@
 		</div>
 	{:else if locationState.pendingLocation}
 		<div class="space-y-4">
-			<div class="rounded-lg bg-slate-50 p-3">
-				<p class="text-sm font-medium text-slate-800">
+			<div class="bg-surface-muted rounded-lg p-3">
+				<p class="text-foreground text-sm font-medium">
 					{locationState.pendingLocation.address ?? 'Selected location'}
 				</p>
-				<p class="mt-1 text-xs text-slate-500">
+				<p class="text-muted-foreground mt-1 text-xs">
 					{locationState.pendingLocation.location.latitude.toFixed(6)}, {locationState.pendingLocation.location.longitude.toFixed(
 						6,
 					)}
 				</p>
 			</div>
 
-			<p class="text-sm text-slate-600">
+			<p class="text-text-tertiary text-sm">
 				Drag the map to position the pin at your location, then confirm.
 			</p>
 
@@ -94,14 +94,14 @@
 
 			<div class="relative">
 				<div class="absolute inset-0 flex items-center">
-					<div class="w-full border-t border-slate-200"></div>
+					<div class="border-border w-full border-t"></div>
 				</div>
 				<div class="relative flex justify-center">
-					<span class="bg-white px-2 text-sm text-slate-500">or</span>
+					<span class="bg-surface text-muted-foreground px-2 text-sm">or</span>
 				</div>
 			</div>
 
-			<div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+			<div class="border-border bg-surface-muted rounded-lg border p-4">
 				<AddressInput onLocationSelect={handleAddressSelect} />
 			</div>
 		</div>

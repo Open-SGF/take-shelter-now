@@ -65,7 +65,7 @@
 						>{shelter.name}</Item.Title
 					>
 					<Item.Description
-						class="line-clamp-1 text-xs text-slate-600"
+						class="text-text-tertiary line-clamp-1 text-xs"
 						data-testid="shelter-list-item-address">{address}</Item.Description
 					>
 
@@ -76,7 +76,7 @@
 								{@const AmenityIcon = amenityDetails.icon}
 								<Badge
 									variant="outline"
-									class="h-5 gap-1 border-emerald-200 bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-800"
+									class="border-success-border bg-success-bg text-success-text h-5 gap-1 px-2 text-[11px] font-semibold"
 								>
 									<AmenityIcon class="size-3.5" aria-hidden="true" />
 									{amenityDetails.label}
@@ -108,7 +108,7 @@
 						>{shelter.name}</Item.Title
 					>
 					<Item.Description
-						class="line-clamp-1 text-xs text-slate-600"
+						class="text-text-tertiary line-clamp-1 text-xs"
 						data-testid="shelter-list-item-address">{address}</Item.Description
 					>
 
@@ -119,7 +119,7 @@
 								{@const AmenityIcon = amenityDetails.icon}
 								<Badge
 									variant="outline"
-									class="h-5 gap-1 border-emerald-200 bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-800"
+									class="border-success-border bg-success-bg text-success-text h-5 gap-1 px-2 text-[11px] font-semibold"
 								>
 									<AmenityIcon class="size-3.5" aria-hidden="true" />
 									{amenityDetails.label}

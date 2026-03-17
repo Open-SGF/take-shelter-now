@@ -17,7 +17,7 @@
 
 <div
 	data-testid="app-shell"
-	class="flex h-screen w-full flex-col overflow-hidden bg-slate-100 supports-[height:100dvh]:h-dvh"
+	class="bg-muted flex h-screen w-full flex-col overflow-hidden supports-[height:100dvh]:h-dvh"
 >
 	<Nav class="shrink-0" />
 

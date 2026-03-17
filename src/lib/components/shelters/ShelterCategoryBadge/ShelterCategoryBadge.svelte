@@ -26,7 +26,7 @@
 
 <Badge
 	variant="secondary"
-	class="h-5 gap-1 bg-slate-100 px-2 text-[11px] font-semibold text-slate-700"
+	class="bg-muted text-text-secondary h-5 gap-1 px-2 text-[11px] font-semibold"
 	data-testid="shelter-category-badge"
 	{...restProps}
 >
