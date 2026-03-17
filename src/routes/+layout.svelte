@@ -11,7 +11,6 @@
 	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
 	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
 	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
-	import type { Shelter } from '$lib/shelters/types';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -36,27 +35,7 @@
 	setShelterStateContext(shelterState);
 
 	$effect(() => {
-		const controller = new AbortController();
-
-		shelterState.setLoading();
-
-		fetch('/shelters.json', { signal: controller.signal })
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error(`Failed to fetch shelters: ${response.status}`);
-				}
-				return response.json();
-			})
-			.then((shelters: Shelter[]) => {
-				shelterState.setShelters(shelters);
-			})
-			.catch((error) => {
-				if (error.name !== 'AbortError') {
-					shelterState.setError(error.message);
-				}
-			});
-
-		return () => controller.abort();
+		shelterState.loadShelters();
 	});
 
 	const defaultCenter: GeoPoint = {

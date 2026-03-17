@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import type { Shelter } from '$lib/shelters/types';
 import { createShelterState } from './shelter-state.svelte';
 
@@ -19,18 +19,96 @@ const buildShelter = (
 	};
 };
 
+const mockShelters = [
+	buildShelter({ name: 'One', slug: 'one', latitude: 37.2, longitude: -93.2 }),
+	buildShelter({ name: 'Two', slug: 'two', latitude: 37.21, longitude: -93.29 }),
+];
+
 describe('createShelterState', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
 	test('starts with loading state', () => {
 		const shelterState = createShelterState(() => null);
 
 		expect(shelterState.dataState.kind).toBe('loading');
 	});
 
-	test('returns shelters with zero distances when no location', () => {
+	test('loadShelters fetches and sets shelters', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve(mockShelters),
+			}),
+		);
+
 		const shelterState = createShelterState(() => null);
-		shelterState.setShelters([
-			buildShelter({ name: 'One', slug: 'one', latitude: 37.2, longitude: -93.2 }),
-		]);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		if (shelterState.dataState.kind === 'ready') {
+			expect(shelterState.dataState.shelters).toHaveLength(2);
+		}
+	});
+
+	test('loadShelters sets error state on fetch failure', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 500,
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('error');
+		});
+
+		if (shelterState.dataState.kind === 'error') {
+			expect(shelterState.dataState.message).toBe('Failed to fetch shelters: 500');
+		}
+	});
+
+	test('loadShelters sets empty state when no shelters', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve([]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('empty');
+		});
+	});
+
+	test('returns shelters with zero distances when no location', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve([mockShelters[0]]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
 
 		const result = shelterState.sheltersWithDistance;
 
@@ -39,13 +117,26 @@ describe('createShelterState', () => {
 		expect(result[0].slug).toBe('one');
 	});
 
-	test('sorts shelters by computed distance when location available', () => {
+	test('sorts shelters by computed distance when location available', async () => {
 		const location = { latitude: 37.208957, longitude: -93.292299 };
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({ name: 'Far', slug: 'far', latitude: 37.4, longitude: -93.5 }),
+						buildShelter({ name: 'Near', slug: 'near', latitude: 37.21, longitude: -93.29 }),
+					]),
+			}),
+		);
+
 		const shelterState = createShelterState(() => location);
-		shelterState.setShelters([
-			buildShelter({ name: 'Far', slug: 'far', latitude: 37.4, longitude: -93.5 }),
-			buildShelter({ name: 'Near', slug: 'near', latitude: 37.21, longitude: -93.29 }),
-		]);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
 
 		const result = shelterState.sheltersWithDistance;
 
@@ -53,33 +144,32 @@ describe('createShelterState', () => {
 		expect(result[0].distance).toBeLessThan(result[1].distance);
 	});
 
-	test('setError sets error state', () => {
-		const shelterState = createShelterState(() => null);
+	test('loadShelters aborts previous request', async () => {
+		let abortCount = 0;
+		const originalAbortController = globalThis.AbortController;
 
-		shelterState.setError('Network error');
-
-		expect(shelterState.dataState.kind).toBe('error');
-		if (shelterState.dataState.kind === 'error') {
-			expect(shelterState.dataState.message).toBe('Network error');
+		class MockAbortController {
+			signal = {} as AbortSignal;
+			abort() {
+				abortCount++;
+			}
 		}
-	});
 
-	test('setLoading resets to loading state', () => {
+		vi.stubGlobal('AbortController', MockAbortController);
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve(mockShelters),
+			}),
+		);
+
 		const shelterState = createShelterState(() => null);
-		shelterState.setShelters([
-			buildShelter({ name: 'Test', slug: 'test', latitude: 37.2, longitude: -93.2 }),
-		]);
+		shelterState.loadShelters();
+		shelterState.loadShelters();
 
-		shelterState.setLoading();
+		expect(abortCount).toBe(1);
 
-		expect(shelterState.dataState.kind).toBe('loading');
-	});
-
-	test('setShelters with empty array sets empty state', () => {
-		const shelterState = createShelterState(() => null);
-
-		shelterState.setShelters([]);
-
-		expect(shelterState.dataState.kind).toBe('empty');
+		vi.stubGlobal('AbortController', originalAbortController);
 	});
 });

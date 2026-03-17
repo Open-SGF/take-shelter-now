@@ -13,9 +13,7 @@ export type ShelterDataState =
 export type ShelterState = {
 	readonly dataState: ShelterDataState;
 	readonly sheltersWithDistance: ShelterWithDistance[];
-	setShelters: (shelters: Shelter[]) => void;
-	setLoading: () => void;
-	setError: (message: string) => void;
+	loadShelters: () => void;
 };
 
 export type LocationGetter = () => { latitude: number; longitude: number } | null;
@@ -24,6 +22,7 @@ export const [getShelterStateContext, setShelterStateContext] = createContext<Sh
 
 export const createShelterState = (getLocation: LocationGetter): ShelterState => {
 	let dataState = $state<ShelterDataState>({ kind: 'loading' });
+	let abortController: AbortController | null = null;
 
 	const setShelters = (shelters: Shelter[]) => {
 		dataState = shelters.length > 0 ? { kind: 'ready', shelters } : { kind: 'empty' };
@@ -35,6 +34,29 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 
 	const setError = (message: string) => {
 		dataState = { kind: 'error', message };
+	};
+
+	const loadShelters = () => {
+		abortController?.abort();
+		abortController = new AbortController();
+
+		setLoading();
+
+		fetch('/shelters.json', { signal: abortController.signal })
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error(`Failed to fetch shelters: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then((shelters: Shelter[]) => {
+				setShelters(shelters);
+			})
+			.catch((error) => {
+				if (error.name !== 'AbortError') {
+					setError(error.message);
+				}
+			});
 	};
 
 	const sheltersWithDistance = $derived.by<ShelterWithDistance[]>(() => {
@@ -65,8 +87,6 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 		get sheltersWithDistance() {
 			return sheltersWithDistance;
 		},
-		setShelters,
-		setLoading,
-		setError,
+		loadShelters,
 	};
 };
