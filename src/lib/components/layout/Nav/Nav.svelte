@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { cn } from '$lib/utils.js';
+	import { cn } from '$lib/components/utils';
 	import MoreVerticalIcon from '@lucide/svelte/icons/more-vertical';
 	import { Popover } from '$lib/components/ui/popover';
 	import PopoverContent from '$lib/components/ui/popover/popover-content.svelte';
