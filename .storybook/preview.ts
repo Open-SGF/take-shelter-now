@@ -9,6 +9,7 @@ const initialHandlers = isChromatic() ? [...geocodingHandlers, ...tileHandlers] 
 
 initialize(
 	{
+		quiet: true,
 		onUnhandledRequest: 'bypass',
 		serviceWorker: {
 			url: '/mockServiceWorker.js',
