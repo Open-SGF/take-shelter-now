@@ -9,6 +9,12 @@
 	import { formatShelterCategory, type ShelterCategory } from '$lib/shelters/presentation';
 	import FilterIcon from '@lucide/svelte/icons/filter';
 
+	const uid = $props.id();
+	const openNowId = `${uid}-open-now`;
+	const petsId = `${uid}-pets`;
+	const accessibilityId = `${uid}-accessibility`;
+	const backupPowerId = `${uid}-backup-power`;
+
 	const shelterState = getShelterStateContext();
 
 	let open = $state(false);
@@ -64,46 +70,44 @@
 			<div class="space-y-3">
 				<div class="flex items-center gap-2">
 					<Checkbox
-						id="filter-open-now"
+						id={openNowId}
 						checked={shelterState.filters.openNow}
 						onCheckedChange={(checked) => shelterState.setFilter('openNow', !!checked)}
 						data-testid="filter-open-now-checkbox"
 					/>
-					<Label for="filter-open-now" class="cursor-pointer text-sm font-normal">Open Now</Label>
+					<Label for={openNowId} class="cursor-pointer text-sm font-normal">Open Now</Label>
 				</div>
 
 				<div class="flex items-center gap-2">
 					<Checkbox
-						id="filter-pets"
+						id={petsId}
 						checked={shelterState.filters.petFriendly}
 						onCheckedChange={(checked) => shelterState.setFilter('petFriendly', !!checked)}
 						data-testid="filter-pets-checkbox"
 					/>
-					<Label for="filter-pets" class="cursor-pointer text-sm font-normal">Pets Allowed</Label>
+					<Label for={petsId} class="cursor-pointer text-sm font-normal">Pets Allowed</Label>
 				</div>
 
 				<div class="flex items-center gap-2">
 					<Checkbox
-						id="filter-accessibility"
+						id={accessibilityId}
 						checked={shelterState.filters.accessibility}
 						onCheckedChange={(checked) => shelterState.setFilter('accessibility', !!checked)}
 						data-testid="filter-accessibility-checkbox"
 					/>
-					<Label for="filter-accessibility" class="cursor-pointer text-sm font-normal">
+					<Label for={accessibilityId} class="cursor-pointer text-sm font-normal">
 						Wheelchair Accessible
 					</Label>
 				</div>
 
 				<div class="flex items-center gap-2">
 					<Checkbox
-						id="filter-backup-power"
+						id={backupPowerId}
 						checked={shelterState.filters.hasBackupPower}
 						onCheckedChange={(checked) => shelterState.setFilter('hasBackupPower', !!checked)}
 						data-testid="filter-backup-power-checkbox"
 					/>
-					<Label for="filter-backup-power" class="cursor-pointer text-sm font-normal">
-						Backup Power
-					</Label>
+					<Label for={backupPowerId} class="cursor-pointer text-sm font-normal">Backup Power</Label>
 				</div>
 			</div>
 
@@ -114,12 +118,12 @@
 				{#each categoryOptions as category (category)}
 					<div class="flex items-center gap-2">
 						<Checkbox
-							id="filter-category-{category}"
+							id={`${uid}-category-${category}`}
 							checked={shelterState.filters.categories.includes(category)}
 							onCheckedChange={() => toggleCategory(category)}
 							data-testid="filter-category-{category}-checkbox"
 						/>
-						<Label for="filter-category-{category}" class="cursor-pointer text-sm font-normal">
+						<Label for={`${uid}-category-${category}`} class="cursor-pointer text-sm font-normal">
 							{formatShelterCategory(category)}
 						</Label>
 					</div>
