@@ -133,7 +133,7 @@
 	data-snap-index={snapIndex}
 	class={cn(
 		'absolute inset-x-0 bottom-0 flex w-full flex-col',
-		'bg-surface rounded-tl-2xl rounded-bl-2xl px-4 pt-4 shadow-lg',
+		'bg-surface rounded-tl-2xl rounded-bl-2xl pt-4 shadow-lg',
 		'transition-[transform] duration-200 ease-out',
 		'max-md:rounded-tr-2xl max-md:rounded-bl-none md:rounded-tr-none md:rounded-br-none',
 		className,

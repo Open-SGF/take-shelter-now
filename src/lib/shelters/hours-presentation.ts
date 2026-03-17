@@ -225,7 +225,7 @@ export const summarizeShelterHours = (
 	if (!hours || hours.intervals.length === 0) {
 		return {
 			status: 'unknown',
-			statusLabel: 'Unknown',
+			statusLabel: 'Unknown hours',
 			scheduleLines: [],
 		};
 	}

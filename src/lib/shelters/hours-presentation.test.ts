@@ -49,7 +49,7 @@ describe('hours presentation', () => {
 			}),
 		).toEqual({
 			status: 'unknown',
-			statusLabel: 'Unknown',
+			statusLabel: 'Unknown hours',
 			scheduleLines: [],
 		});
 
