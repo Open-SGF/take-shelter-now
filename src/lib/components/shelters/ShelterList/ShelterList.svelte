@@ -5,7 +5,7 @@
 	const shelterState = getShelterStateContext();
 </script>
 
-<div class="pb-32" id="shelter_list" data-testid="shelter-list">
+<div id="shelter_list" data-testid="shelter-list">
 	{#if shelterState.dataState.kind === 'loading'}
 		<div class="space-y-3" data-testid="shelter-list-loading">
 			<p class="text-sm text-slate-600">Loading nearby shelters...</p>

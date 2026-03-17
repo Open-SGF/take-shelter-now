@@ -7,7 +7,7 @@
 	let { data } = $props();
 </script>
 
-<article class="p-4 pt-6 pb-32" data-testid="shelter-detail">
+<article class="p-4 pt-6" data-testid="shelter-detail">
 	<Button
 		href={resolve('/')}
 		variant="outline"
