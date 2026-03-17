@@ -36,6 +36,10 @@
 	function handleClearFiltersClick() {
 		shelterState.clearFilters();
 	}
+
+	function handleResetDirectionsAppClick() {
+		userState.setDirectionsApp(undefined);
+	}
 </script>
 
 <header
@@ -84,6 +88,7 @@
 						type="button"
 						class="hover:bg-interactive-bg flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors"
 						data-testid="nav-menu-reset-directions"
+						onclick={handleResetDirectionsAppClick}
 					>
 						Reset Directions App
 					</button>
