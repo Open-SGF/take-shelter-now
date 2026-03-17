@@ -89,6 +89,7 @@
 	<div class="mt-2 flex flex-wrap items-center gap-2">
 		<ShelterCategoryBadge category={shelter.category} data-testid="shelter-detail-category" />
 		<Badge variant="outline" class={availableHoursBadgeClass} data-testid="shelter-detail-status">
+			<Clock3Icon class="size-3.5" aria-hidden="true" />
 			{availableHoursSummary.statusLabel}
 		</Badge>
 	</div>

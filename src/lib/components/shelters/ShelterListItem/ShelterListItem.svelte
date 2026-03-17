@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import AccessibilityIcon from '@lucide/svelte/icons/accessibility';
 	import BatteryChargingIcon from '@lucide/svelte/icons/battery-charging';
+	import Clock3Icon from '@lucide/svelte/icons/clock-3';
 	import PawPrintIcon from '@lucide/svelte/icons/paw-print';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Item from '$lib/components/ui/item';
@@ -73,9 +74,10 @@
 							/>
 							<Badge
 								variant="outline"
-								class="{statusBadgeClass} h-5 px-2 text-[11px] font-semibold"
+								class="{statusBadgeClass} h-5 gap-1 px-2 text-[11px] font-semibold"
 								data-testid="shelter-list-item-status"
 							>
+								<Clock3Icon class="size-3.5" aria-hidden="true" />
 								{hoursSummary.statusLabel}
 							</Badge>
 						</div>
@@ -125,9 +127,10 @@
 							/>
 							<Badge
 								variant="outline"
-								class="{statusBadgeClass} h-5 px-2 text-[11px] font-semibold"
+								class="{statusBadgeClass} h-5 gap-1 px-2 text-[11px] font-semibold"
 								data-testid="shelter-list-item-status"
 							>
+								<Clock3Icon class="size-3.5" aria-hidden="true" />
 								{hoursSummary.statusLabel}
 							</Badge>
 						</div>
