@@ -1,54 +1,17 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { expect, within } from 'storybook/test';
+	import { expect, waitFor, within } from 'storybook/test';
 	import ShelterList from './ShelterList.svelte';
-	import {
-		createShelterState,
-		setShelterStateContext,
-		type ShelterDataState,
-	} from '$lib/state/shelter-state.svelte';
-	import type { Shelter } from '$lib/shelters/types';
-
-	type ShelterDataStatus = ShelterDataState['kind'];
-
-	const buildShelter = (index: number): Shelter => ({
-		name: `Shelter ${index + 1}`,
-		slug: `shelter-${index + 1}`,
-		addressLine1: `${400 + index} Main St`,
-		addressLine2: '',
-		city: 'Springfield',
-		state: 'MO',
-		zip: '65802',
-		latitude: 37.2 + index * 0.005,
-		longitude: -93.29 - index * 0.005,
-		photoUrls: [],
-	});
-
-	const readyShelters = Array.from({ length: 14 }, (_, index) => buildShelter(index));
-
-	const createStoryState = (
-		status: ShelterDataStatus,
-		shelters: Shelter[],
-		errorMessage: string | null = null,
-	) => {
-		const shelterState = createShelterState(() => null);
-
-		if (status === 'error') {
-			shelterState.setError(errorMessage ?? 'Unable to load shelter data.');
-		} else if (status === 'loading') {
-			shelterState.setLoading();
-		} else {
-			shelterState.setShelters(shelters);
-		}
-
-		return shelterState;
-	};
+	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import { sheltersHandlers } from '../../../../../.storybook/mocks/shelters';
 
 	const { Story } = defineMeta({
 		title: 'Shelters/ShelterList',
 		decorators: [
-			(Story, context) => {
-				setShelterStateContext(context.args.state);
+			(Story) => {
+				const shelterState = createShelterState(() => null);
+				setShelterStateContext(shelterState);
+				shelterState.loadShelters();
 				return Story();
 			},
 		],
@@ -64,7 +27,13 @@
 <Story
 	name="Loading"
 	template={StoryTemplate}
-	args={{ state: createStoryState('loading', []) }}
+	parameters={{
+		msw: {
+			handlers: {
+				shelters: sheltersHandlers.loading,
+			},
+		},
+	}}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByTestId('shelter-list-loading')).toBeInTheDocument();
@@ -75,10 +44,18 @@
 <Story
 	name="Empty"
 	template={StoryTemplate}
-	args={{ state: createStoryState('empty', []) }}
+	parameters={{
+		msw: {
+			handlers: {
+				shelters: sheltersHandlers.empty,
+			},
+		},
+	}}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(canvas.getByTestId('shelter-list-empty')).toBeInTheDocument();
+		await waitFor(() => {
+			expect(canvas.getByTestId('shelter-list-empty')).toBeInTheDocument();
+		});
 		await expect(canvas.queryByTestId('shelter-list-loading')).not.toBeInTheDocument();
 	}}
 />
@@ -86,23 +63,37 @@
 <Story
 	name="Error"
 	template={StoryTemplate}
-	args={{ state: createStoryState('error', [], 'Shelter data could not be parsed for display.') }}
+	parameters={{
+		msw: {
+			handlers: {
+				shelters: sheltersHandlers.error,
+			},
+		},
+	}}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(canvas.getByTestId('shelter-list-error')).toBeInTheDocument();
-		await expect(
-			canvas.getByText('Shelter data could not be parsed for display.'),
-		).toBeInTheDocument();
+		await waitFor(() => {
+			expect(canvas.getByTestId('shelter-list-error')).toBeInTheDocument();
+		});
+		await expect(canvas.getByText('Failed to fetch shelters: 500')).toBeInTheDocument();
 	}}
 />
 
 <Story
 	name="Ready"
 	template={StoryTemplate}
-	args={{ state: createStoryState('ready', readyShelters) }}
+	parameters={{
+		msw: {
+			handlers: {
+				shelters: sheltersHandlers.ready,
+			},
+		},
+	}}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(canvas.getByTestId('shelter-list-ready')).toBeInTheDocument();
+		await waitFor(() => {
+			expect(canvas.getByTestId('shelter-list-ready')).toBeInTheDocument();
+		});
 		await expect(canvas.getByText('Shelter 1')).toBeInTheDocument();
 		await expect(canvas.getByText('Shelter 14')).toBeInTheDocument();
 	}}
