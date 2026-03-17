@@ -9,6 +9,7 @@
 	import PopoverTrigger from '$lib/components/ui/popover/popover-trigger.svelte';
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import { getUserStateContext } from '$lib/state/user-state.svelte';
+	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
 
 	type NavProps = {
 		class?: string;
@@ -17,14 +18,23 @@
 	let { class: className }: NavProps = $props();
 	const locationState = getLocationStateContext();
 	const userState = getUserStateContext();
+	const shelterState = getShelterStateContext();
 
+	const isListPage = $derived(page.url.pathname === '/');
 	const showEditLocation = $derived(
 		locationState.hasLocation && page.url.pathname !== '/location/',
 	);
-	const showMenu = $derived(showEditLocation || userState.directionsApp !== undefined);
+	const showClearFilters = $derived(isListPage && shelterState.hasActiveFilters);
+	const showMenu = $derived(
+		showEditLocation || showClearFilters || userState.directionsApp !== undefined,
+	);
 
 	function handleEditLocationClick() {
 		goto(resolve('/location/'));
+	}
+
+	function handleClearFiltersClick() {
+		shelterState.clearFilters();
 	}
 </script>
 
@@ -49,6 +59,16 @@
 				<span class="sr-only">Menu</span>
 			</PopoverTrigger>
 			<PopoverContent align="end" class="z-popover w-56 p-1">
+				{#if showClearFilters}
+					<button
+						type="button"
+						class="hover:bg-interactive-bg flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors"
+						data-testid="nav-menu-clear-filters"
+						onclick={handleClearFiltersClick}
+					>
+						Clear Filters
+					</button>
+				{/if}
 				{#if showEditLocation}
 					<button
 						type="button"

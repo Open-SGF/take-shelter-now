@@ -6,6 +6,8 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Item from '$lib/components/ui/item';
 	import { ShelterCategoryBadge } from '$lib/components/shelters';
+	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import { navigateToShelterDetail } from '$lib/shelters/navigation';
 	import {
 		formatShelterAddress,
 		formatShelterDistance,
@@ -20,16 +22,22 @@
 	};
 
 	let { shelter, distanceMiles }: ShelterListItemProps = $props();
+	const shelterState = getShelterStateContext();
 
 	const amenityMeta: Record<ShelterAmenity, { icon: typeof PawPrintIcon; label: string }> = {
 		petsAllowed: { icon: PawPrintIcon, label: 'Pets allowed' },
-		backupPower: { icon: BatteryChargingIcon, label: 'Backup power' },
+		backupPower: { icon: BatteryChargingIcon, label: 'Backup Power' },
 		accessibility: { icon: AccessibilityIcon, label: 'Accessible' },
 	};
 
 	let address = $derived(formatShelterAddress(shelter));
 	let amenities = $derived(getAvailableAmenities(shelter));
 	let distanceLabel = $derived(formatShelterDistance(distanceMiles));
+
+	function handleClick(e: Event) {
+		e.preventDefault();
+		navigateToShelterDetail(shelter.slug, shelterState.filters);
+	}
 </script>
 
 <Item.Root
@@ -44,6 +52,7 @@
 				{...props}
 				href={resolve('/shelters/[slug]', { slug: shelter.slug })}
 				style:view-transition-name="shelter-{shelter.slug}"
+				onclick={handleClick}
 			>
 				<Item.Content class="gap-1.5">
 					<div class="flex items-start justify-between gap-3">

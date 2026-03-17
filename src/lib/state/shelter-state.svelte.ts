@@ -1,7 +1,6 @@
 import { createContext } from 'svelte';
 import type { Shelter, ShelterCategory } from '$lib/shelters/types';
 import { calculateDistance } from '$lib/utils';
-import { storage } from '$lib/storage';
 import {
 	type ShelterFilters,
 	defaultFilters,
@@ -25,6 +24,7 @@ export type ShelterState = {
 	readonly hasActiveFilters: boolean;
 	readonly activeFilterCount: number;
 	loadShelters: () => void;
+	setFilters: (filters: ShelterFilters) => void;
 	setFilter: (key: keyof ShelterFilters, value: boolean | ShelterCategory[]) => void;
 	clearFilters: () => void;
 };
@@ -33,28 +33,9 @@ export type LocationGetter = () => { latitude: number; longitude: number } | nul
 
 export const [getShelterStateContext, setShelterStateContext] = createContext<ShelterState>();
 
-const FILTERS_STORAGE_KEY = 'shelter-filters';
-
-const readFiltersFromStorage = (): ShelterFilters => {
-	const saved = storage.get<ShelterFilters>(FILTERS_STORAGE_KEY);
-	if (saved) {
-		return {
-			petFriendly: saved.petFriendly ?? false,
-			accessibility: saved.accessibility ?? false,
-			hasBackupPower: saved.hasBackupPower ?? false,
-			categories: Array.isArray(saved.categories) ? saved.categories : [],
-		};
-	}
-	return { ...defaultFilters };
-};
-
-const writeFiltersToStorage = (filters: ShelterFilters): void => {
-	storage.set(FILTERS_STORAGE_KEY, filters);
-};
-
 export const createShelterState = (getLocation: LocationGetter): ShelterState => {
 	let dataState = $state<ShelterDataState>({ kind: 'loading' });
-	let filters = $state<ShelterFilters>(readFiltersFromStorage());
+	let filters = $state<ShelterFilters>({ ...defaultFilters });
 	let abortController: AbortController | null = null;
 
 	const setShelters = (shelters: Shelter[]) => {
@@ -117,14 +98,16 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 
 	const activeFilters = $derived(hasActiveFilters(filters));
 
+	const setFilters = (newFilters: ShelterFilters) => {
+		filters = { ...newFilters };
+	};
+
 	const setFilter = (key: keyof ShelterFilters, value: boolean | ShelterCategory[]) => {
 		filters = { ...filters, [key]: value };
-		writeFiltersToStorage(filters);
 	};
 
 	const clearFilters = () => {
 		filters = { ...defaultFilters };
-		writeFiltersToStorage(filters);
 	};
 
 	return {
@@ -152,6 +135,7 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 			);
 		},
 		loadShelters,
+		setFilters,
 		setFilter,
 		clearFilters,
 	};
