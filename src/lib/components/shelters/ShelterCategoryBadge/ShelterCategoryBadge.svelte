@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type WithElementRef } from '$lib/utils.js';
+	import { type WithElementRef } from '$lib/components/utils';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import Building2Icon from '@lucide/svelte/icons/building-2';
 	import ChurchIcon from '@lucide/svelte/icons/church';

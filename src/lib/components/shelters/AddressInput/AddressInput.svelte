@@ -7,7 +7,7 @@
 		type AutocompleteSuggestion,
 		type GeoPoint,
 	} from '$lib/geo';
-	import { cn } from '$lib/utils.js';
+	import { cn } from '$lib/components/utils';
 
 	type AddressInputProps = {
 		onLocationSelect: (location: GeoPoint, label: string) => void;

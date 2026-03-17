@@ -1,9 +1,10 @@
 import { createContext } from 'svelte';
 import type { Shelter, ShelterCategory } from '$lib/shelters/types';
-import { calculateDistance } from '$lib/utils';
+import { distanceBetween } from '$lib/geo';
 import { type ShelterFilters, defaultFilters } from '$lib/shelters/filter';
+import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
 
-type ShelterWithDistance = Shelter & { distance: number };
+type ShelterWithDistance = Shelter & { distance: number; isOpen: boolean };
 
 export type ShelterDataState =
 	| { kind: 'loading' }
@@ -73,24 +74,33 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 		const location = getLocation();
 
 		if (location === null) {
-			return shelters.map((shelter) => ({ ...shelter, distance: 0 }));
+			return shelters.map((shelter) => ({
+				...shelter,
+				distance: 0,
+				isOpen: summarizeShelterHours(shelter.hours).status === 'open',
+			}));
 		}
 
 		return shelters
 			.map((shelter) => ({
 				...shelter,
-				distance: calculateDistance(
-					location.latitude,
-					location.longitude,
-					shelter.latitude,
-					shelter.longitude,
-				),
+				distance: distanceBetween(location, {
+					latitude: shelter.latitude,
+					longitude: shelter.longitude,
+				}),
+				isOpen: summarizeShelterHours(shelter.hours).status === 'open',
 			}))
-			.sort((a, b) => a.distance - b.distance);
+			.sort((a, b) => {
+				if (a.isOpen !== b.isOpen) {
+					return a.isOpen ? -1 : 1;
+				}
+				return a.distance - b.distance;
+			});
 	});
 
 	const activeFilterCount = $derived(
-		(filters.petFriendly ? 1 : 0) +
+		(filters.openNow ? 1 : 0) +
+			(filters.petFriendly ? 1 : 0) +
 			(filters.accessibility ? 1 : 0) +
 			(filters.hasBackupPower ? 1 : 0) +
 			filters.categories.length,
@@ -104,6 +114,9 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 		}
 
 		return sheltersWithDistance.filter((shelter) => {
+			if (filters.openNow && !shelter.isOpen) {
+				return false;
+			}
 			if (filters.petFriendly && !shelter.petFriendly) {
 				return false;
 			}

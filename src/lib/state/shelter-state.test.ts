@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import type { Shelter } from '$lib/shelters/types';
+import type { Shelter, ShelterHours } from '$lib/shelters/types';
 import { createShelterState } from './shelter-state.svelte';
+
+const HOURS_24_7: ShelterHours = {
+	timeZone: 'America/Chicago',
+	intervals: [{ startMinute: 0, endMinute: 10080 }],
+};
 
 const buildShelter = (
 	overrides: Partial<Shelter> & Pick<Shelter, 'name' | 'slug' | 'latitude' | 'longitude'>,
@@ -20,6 +25,7 @@ const buildShelter = (
 		accessibility: overrides.accessibility ?? false,
 		hasBackupPower: overrides.hasBackupPower ?? false,
 		category: overrides.category,
+		hours: overrides.hours,
 	};
 };
 
@@ -146,6 +152,181 @@ describe('createShelterState', () => {
 
 		expect(result.map((s) => s.slug)).toEqual(['near', 'far']);
 		expect(result[0].distance).toBeLessThan(result[1].distance);
+	});
+
+	test('sorts open shelters before closed shelters', async () => {
+		const location = { latitude: 37.208957, longitude: -93.292299 };
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Closed Near',
+							slug: 'closed-near',
+							latitude: 37.21,
+							longitude: -93.29,
+							hours: undefined,
+						}),
+						buildShelter({
+							name: 'Open Far',
+							slug: 'open-far',
+							latitude: 37.4,
+							longitude: -93.5,
+							hours: HOURS_24_7,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => location);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		const result = shelterState.sheltersWithDistance;
+
+		expect(result.map((s) => s.slug)).toEqual(['open-far', 'closed-near']);
+		expect(result[0].isOpen).toBe(true);
+		expect(result[1].isOpen).toBe(false);
+	});
+
+	test('sorts open shelters by distance among themselves', async () => {
+		const location = { latitude: 37.208957, longitude: -93.292299 };
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Open Far',
+							slug: 'open-far',
+							latitude: 37.4,
+							longitude: -93.5,
+							hours: HOURS_24_7,
+						}),
+						buildShelter({
+							name: 'Open Near',
+							slug: 'open-near',
+							latitude: 37.21,
+							longitude: -93.29,
+							hours: HOURS_24_7,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => location);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		const result = shelterState.sheltersWithDistance;
+
+		expect(result.map((s) => s.slug)).toEqual(['open-near', 'open-far']);
+		expect(result[0].distance).toBeLessThan(result[1].distance);
+	});
+
+	test('sorts closed shelters by distance among themselves', async () => {
+		const location = { latitude: 37.208957, longitude: -93.292299 };
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Closed Far',
+							slug: 'closed-far',
+							latitude: 37.4,
+							longitude: -93.5,
+							hours: undefined,
+						}),
+						buildShelter({
+							name: 'Closed Near',
+							slug: 'closed-near',
+							latitude: 37.21,
+							longitude: -93.29,
+							hours: undefined,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => location);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		const result = shelterState.sheltersWithDistance;
+
+		expect(result.map((s) => s.slug)).toEqual(['closed-near', 'closed-far']);
+		expect(result[0].distance).toBeLessThan(result[1].distance);
+	});
+
+	test('sorts open then closed shelters each by distance', async () => {
+		const location = { latitude: 37.208957, longitude: -93.292299 };
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Closed Near',
+							slug: 'closed-near',
+							latitude: 37.21,
+							longitude: -93.29,
+							hours: undefined,
+						}),
+						buildShelter({
+							name: 'Open Far',
+							slug: 'open-far',
+							latitude: 37.4,
+							longitude: -93.5,
+							hours: HOURS_24_7,
+						}),
+						buildShelter({
+							name: 'Closed Far',
+							slug: 'closed-far',
+							latitude: 37.5,
+							longitude: -93.6,
+							hours: undefined,
+						}),
+						buildShelter({
+							name: 'Open Near',
+							slug: 'open-near',
+							latitude: 37.22,
+							longitude: -93.3,
+							hours: HOURS_24_7,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => location);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		const result = shelterState.sheltersWithDistance;
+
+		expect(result.map((s) => s.slug)).toEqual([
+			'open-near',
+			'open-far',
+			'closed-near',
+			'closed-far',
+		]);
 	});
 
 	test('loadShelters aborts previous request', async () => {
@@ -495,5 +676,43 @@ describe('filtering', () => {
 
 		expect(shelterState.filteredShelters).toHaveLength(2);
 		expect(shelterState.hasActiveFilters).toBe(false);
+	});
+
+	test('filters by openNow', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Open Shelter',
+							slug: 'open-shelter',
+							latitude: 37.2,
+							longitude: -93.2,
+							hours: HOURS_24_7,
+						}),
+						buildShelter({
+							name: 'Closed Shelter',
+							slug: 'closed-shelter',
+							latitude: 37.21,
+							longitude: -93.29,
+							hours: undefined,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('openNow', true);
+
+		expect(shelterState.filteredShelters).toHaveLength(1);
+		expect(shelterState.filteredShelters[0].slug).toBe('open-shelter');
 	});
 });
