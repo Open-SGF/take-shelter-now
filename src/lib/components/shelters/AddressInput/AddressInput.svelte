@@ -149,7 +149,7 @@
 		{#if isOpen && suggestions.length > 0}
 			<ul
 				id={suggestionsId}
-				class="border-border bg-surface absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border py-1 shadow-lg"
+				class="border-border bg-surface z-float absolute top-full right-0 left-0 mt-1 max-h-60 overflow-auto rounded-md border py-1 shadow-lg"
 				role="listbox"
 			>
 				{#each suggestions as suggestion, index (suggestion.gid)}

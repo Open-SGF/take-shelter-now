@@ -69,7 +69,7 @@
 	{#if centerPin.enabled}
 		<div
 			data-testid="center-pin"
-			class="pointer-events-none absolute top-1/2 left-1/2 z-[1000] -translate-x-1/2 -translate-y-full"
+			class="z-map pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full"
 			aria-hidden="true"
 		>
 			<img src="/icons/map-pin.svg" alt="" class="block h-12 w-12 drop-shadow-lg" />

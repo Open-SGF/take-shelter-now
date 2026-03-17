@@ -31,7 +31,7 @@
 <header
 	data-testid="nav"
 	class={cn(
-		'bg-surface z-50 flex h-[72px] w-full items-center justify-center rounded-b-2xl p-8 md:justify-start',
+		'bg-surface flex h-[72px] w-full items-center justify-center rounded-b-2xl p-8 md:justify-start',
 		className,
 	)}
 >
@@ -48,7 +48,7 @@
 				<MoreVerticalIcon class="size-5" />
 				<span class="sr-only">Menu</span>
 			</PopoverTrigger>
-			<PopoverContent align="end" class="z-[1100] w-56 p-1">
+			<PopoverContent align="end" class="z-popover w-56 p-1">
 				{#if showEditLocation}
 					<button
 						type="button"

@@ -36,7 +36,7 @@
 
 		{#if !isDesktop}
 			<div data-testid="app-shell-mobile" class="pointer-events-none absolute inset-0">
-				<Sheet bind:snapIndex={sheetSnapIndex} class="pointer-events-auto z-[1200]">
+				<Sheet bind:snapIndex={sheetSnapIndex} class="z-sheet pointer-events-auto">
 					{@render children?.()}
 				</Sheet>
 			</div>
