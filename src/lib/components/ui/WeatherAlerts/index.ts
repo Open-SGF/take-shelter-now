@@ -1,0 +1,1 @@
+	export { default as WeatherAlerts } from './WeatherAlerts.svelte';
