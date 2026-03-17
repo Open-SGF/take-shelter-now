@@ -1,12 +1,7 @@
 import { createContext } from 'svelte';
 import type { Shelter, ShelterCategory } from '$lib/shelters/types';
 import { calculateDistance } from '$lib/utils';
-import {
-	type ShelterFilters,
-	defaultFilters,
-	hasActiveFilters,
-	filterShelters,
-} from '$lib/shelters/filter';
+import { type ShelterFilters, defaultFilters } from '$lib/shelters/filter';
 
 type ShelterWithDistance = Shelter & { distance: number };
 
@@ -94,9 +89,39 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 			.sort((a, b) => a.distance - b.distance);
 	});
 
-	const filteredShelters = $derived(filterShelters(sheltersWithDistance, filters));
+	const activeFilterCount = $derived(
+		(filters.petFriendly ? 1 : 0) +
+			(filters.accessibility ? 1 : 0) +
+			(filters.hasBackupPower ? 1 : 0) +
+			filters.categories.length,
+	);
 
-	const activeFilters = $derived(hasActiveFilters(filters));
+	const activeFilters = $derived(activeFilterCount > 0);
+
+	const filteredShelters = $derived.by(() => {
+		if (!activeFilters) {
+			return sheltersWithDistance;
+		}
+
+		return sheltersWithDistance.filter((shelter) => {
+			if (filters.petFriendly && !shelter.petFriendly) {
+				return false;
+			}
+			if (filters.accessibility && !shelter.accessibility) {
+				return false;
+			}
+			if (filters.hasBackupPower && !shelter.hasBackupPower) {
+				return false;
+			}
+			if (filters.categories.length > 0) {
+				const shelterCategory = shelter.category ?? 'other';
+				if (!filters.categories.includes(shelterCategory)) {
+					return false;
+				}
+			}
+			return true;
+		});
+	});
 
 	const setFilters = (newFilters: ShelterFilters) => {
 		filters = { ...newFilters };
@@ -127,12 +152,7 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 			return activeFilters;
 		},
 		get activeFilterCount() {
-			return (
-				(filters.petFriendly ? 1 : 0) +
-				(filters.accessibility ? 1 : 0) +
-				(filters.hasBackupPower ? 1 : 0) +
-				filters.categories.length
-			);
+			return activeFilterCount;
 		},
 		loadShelters,
 		setFilters,
