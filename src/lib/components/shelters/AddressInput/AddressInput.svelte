@@ -130,7 +130,7 @@
 		{#if isLoading}
 			<div class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">
 				<svg
-					class="h-4 w-4 animate-spin text-slate-400"
+					class="text-muted-foreground h-4 w-4 animate-spin"
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
@@ -149,7 +149,7 @@
 		{#if isOpen && suggestions.length > 0}
 			<ul
 				id={suggestionsId}
-				class="absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+				class="border-border bg-surface z-float absolute top-full right-0 left-0 mt-1 max-h-60 overflow-auto rounded-md border py-1 shadow-lg"
 				role="listbox"
 			>
 				{#each suggestions as suggestion, index (suggestion.gid)}
@@ -159,14 +159,16 @@
 						aria-selected={index === selectedIndex}
 						class={cn(
 							'cursor-pointer px-3 py-2 text-sm',
-							index === selectedIndex ? 'bg-sky-100 text-sky-900' : 'hover:bg-slate-50',
+							index === selectedIndex
+								? 'bg-suggestion-hover-bg text-suggestion-hover-text'
+								: 'hover:bg-muted',
 						)}
 						onclick={() => handleSelect(suggestion)}
 						onkeydown={() => handleSelect(suggestion)}
 					>
 						<div class="font-medium">{suggestion.label}</div>
 						{#if suggestion.address !== suggestion.label}
-							<div class="text-xs text-slate-500">{suggestion.address}</div>
+							<div class="text-muted-foreground text-xs">{suggestion.address}</div>
 						{/if}
 					</li>
 				{/each}

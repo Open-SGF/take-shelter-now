@@ -127,7 +127,7 @@
 {#snippet RecenterHarnessTemplate()}
 	<div class={mapShellClass}>
 		<div
-			class="absolute top-3 left-3 z-[1000] flex max-w-[20rem] flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
+			class="z-map absolute top-3 left-3 flex max-w-xs flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
 		>
 			<button
 				type="button"
@@ -204,7 +204,7 @@
 {#snippet CurrentLocationHarnessTemplate()}
 	<div class={mapShellClass}>
 		<div
-			class="absolute top-3 left-3 z-[1000] flex max-w-[20rem] flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
+			class="z-map absolute top-3 left-3 flex max-w-xs flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
 		>
 			<button
 				type="button"
@@ -265,7 +265,7 @@
 {#snippet SelectionHarnessTemplate()}
 	<div class={mapShellClass}>
 		<div
-			class="absolute top-3 left-3 z-[1000] flex max-w-[20rem] flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
+			class="z-map absolute top-3 left-3 flex max-w-xs flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
 		>
 			<button
 				type="button"
@@ -327,7 +327,7 @@
 {#snippet CenterPinHarnessTemplate()}
 	<div class={mapShellClass}>
 		<div
-			class="absolute top-3 left-3 z-[1000] flex max-w-[20rem] flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
+			class="z-map absolute top-3 left-3 flex max-w-xs flex-wrap gap-2 rounded-lg bg-white/95 p-2 shadow-md"
 		>
 			<button
 				type="button"

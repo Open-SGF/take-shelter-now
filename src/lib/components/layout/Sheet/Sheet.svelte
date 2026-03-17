@@ -133,7 +133,7 @@
 	data-snap-index={snapIndex}
 	class={cn(
 		'absolute inset-x-0 bottom-0 flex w-full flex-col',
-		'rounded-tl-2xl rounded-bl-2xl bg-white px-4 pt-4 shadow-lg',
+		'bg-surface rounded-tl-2xl rounded-bl-2xl px-4 pt-4 shadow-lg',
 		'transition-[transform] duration-200 ease-out',
 		'max-md:rounded-tr-2xl max-md:rounded-bl-none md:rounded-tr-none md:rounded-br-none',
 		className,
@@ -144,10 +144,10 @@
 		type="button"
 		data-testid="sheet-handle"
 		aria-label={handleLabel}
-		class="flex w-full touch-none items-center justify-center pt-1 pb-3 text-gray-500"
+		class="text-handle-text flex w-full touch-none items-center justify-center pt-1 pb-3"
 		onpointerdown={onPointerDown}
 	>
-		<span class="h-[4px] w-[60px] rounded-lg bg-gray-400"></span>
+		<span class="bg-handle-bg h-[4px] w-[60px] rounded-lg"></span>
 	</button>
 
 	<div

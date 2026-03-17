@@ -17,7 +17,7 @@
 
 <div
 	data-testid="app-shell"
-	class="flex h-screen w-full flex-col overflow-hidden bg-slate-100 supports-[height:100dvh]:h-dvh"
+	class="bg-muted flex h-screen w-full flex-col overflow-hidden supports-[height:100dvh]:h-dvh"
 >
 	<Nav class="shrink-0" />
 
@@ -36,7 +36,7 @@
 
 		{#if !isDesktop}
 			<div data-testid="app-shell-mobile" class="pointer-events-none absolute inset-0">
-				<Sheet bind:snapIndex={sheetSnapIndex} class="pointer-events-auto z-[1200]">
+				<Sheet bind:snapIndex={sheetSnapIndex} class="z-sheet pointer-events-auto">
 					{@render children?.()}
 				</Sheet>
 			</div>

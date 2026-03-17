@@ -18,13 +18,13 @@
 
 <DialogPrimitive.Portal>
 	<DialogPrimitive.Overlay
-		class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[1300] bg-black/50 backdrop-blur-sm"
+		class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 z-modal fixed inset-0 bg-black/50 backdrop-blur-sm"
 	/>
 	<DialogPrimitive.Content
 		bind:ref
 		class={cn(
-			'fixed top-1/2 left-1/2 z-[1301] grid w-full max-w-md -translate-x-1/2 -translate-y-1/2',
-			'rounded-xl bg-white p-6 shadow-xl',
+			'z-modal fixed top-1/2 left-1/2 grid w-full max-w-md -translate-x-1/2 -translate-y-1/2',
+			'bg-surface rounded-xl p-6 shadow-xl',
 			'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
 			'duration-200',
 			className,

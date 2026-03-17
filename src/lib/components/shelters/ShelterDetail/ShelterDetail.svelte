@@ -27,13 +27,13 @@
 	let { shelter, transitionId }: ShelterDetailProps = $props();
 
 	const positiveBadgeClass =
-		'h-5 gap-1 border-emerald-200 bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-800';
+		'h-5 gap-1 border-success-border bg-success-bg px-2 text-[11px] font-semibold text-success-text';
 	const neutralBadgeClass =
-		'h-5 gap-1 border-slate-200 bg-slate-50 px-2 text-[11px] font-semibold text-slate-700';
+		'h-5 gap-1 border-border bg-muted px-2 text-[11px] font-semibold text-text-secondary';
 	const warningBadgeClass =
-		'h-5 gap-1 border-amber-200 bg-amber-50 px-2 text-[11px] font-semibold text-amber-800';
-	const positivePillClass = 'border-emerald-200 bg-emerald-100 text-emerald-800';
-	const neutralPillClass = 'border-slate-200 bg-slate-100 text-slate-600';
+		'h-5 gap-1 border-warning-border bg-warning-bg px-2 text-[11px] font-semibold text-warning-text';
+	const positivePillClass = 'border-success-border bg-success-bg-alt text-success-text';
+	const neutralPillClass = 'border-border bg-muted text-text-tertiary';
 
 	let fullAddress = $derived(formatShelterAddress(shelter));
 	let petsAllowed = $derived(
@@ -92,21 +92,24 @@
 			{availableHoursSummary.statusLabel}
 		</Badge>
 	</div>
-	<p class="mt-1 text-xs font-medium text-slate-500" data-testid="shelter-detail-last-updated">
+	<p
+		class="text-muted-foreground mt-1 text-xs font-medium"
+		data-testid="shelter-detail-last-updated"
+	>
 		Last updated: {lastVerifiedDate}
 	</p>
 
-	<div class="mt-5 border-t border-slate-200 pt-5" data-testid="shelter-detail-core-info">
+	<div class="border-border mt-5 border-t pt-5" data-testid="shelter-detail-core-info">
 		<div class="space-y-4">
 			<div class="flex items-start gap-3">
 				<div
-					class="mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600"
+					class="bg-highlight-bg text-highlight-text mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full"
 				>
 					<MapPinIcon class="size-5" aria-hidden="true" />
 				</div>
 				<div class="min-w-0 flex-1">
-					<p class="text-sm font-medium text-slate-500">Address</p>
-					<p class="text-base leading-snug text-slate-900" data-testid="shelter-detail-address">
+					<p class="text-muted-foreground text-sm font-medium">Address</p>
+					<p class="text-foreground text-base leading-snug" data-testid="shelter-detail-address">
 						{fullAddress}
 					</p>
 					<DirectionsAction {shelter} />
@@ -115,15 +118,15 @@
 
 			<div class="flex items-start gap-3">
 				<div
-					class="mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600"
+					class="bg-highlight-bg text-highlight-text mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full"
 				>
 					<Clock3Icon class="size-5" aria-hidden="true" />
 				</div>
 				<div class="min-w-0">
-					<p class="text-sm font-medium text-slate-500">Location hours</p>
+					<p class="text-muted-foreground text-sm font-medium">Location hours</p>
 					{#if availableHoursSummary.scheduleLines.length > 0}
 						<ul
-							class="mt-1 space-y-0.5 text-base leading-snug text-slate-900"
+							class="text-foreground mt-1 space-y-0.5 text-base leading-snug"
 							data-testid="shelter-detail-hours-lines"
 						>
 							{#each availableHoursSummary.scheduleLines as line (line)}
@@ -136,33 +139,33 @@
 
 			<div class="flex items-start gap-3">
 				<div
-					class="mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+					class="bg-muted text-text-tertiary mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full"
 				>
 					<UsersIcon class="size-5" aria-hidden="true" />
 				</div>
 				<div class="min-w-0">
-					<p class="text-sm font-medium text-slate-500">Capacity</p>
-					<p class="text-base leading-snug text-slate-900">{capacity}</p>
+					<p class="text-muted-foreground text-sm font-medium">Capacity</p>
+					<p class="text-foreground text-base leading-snug">{capacity}</p>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="mt-5 border-t border-slate-200 pt-5" data-testid="shelter-detail-operational">
+	<div class="border-border mt-5 border-t pt-5" data-testid="shelter-detail-operational">
 		<div class="flex items-start gap-3">
 			<div
-				class="mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+				class="bg-muted text-text-tertiary mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-full"
 			>
 				<InfoIcon class="size-5" aria-hidden="true" />
 			</div>
 			<div class="min-w-0">
-				<p class="text-sm font-medium text-slate-500">Special instructions</p>
-				<p class="text-base leading-snug text-slate-900">{specialInstructions}</p>
+				<p class="text-muted-foreground text-sm font-medium">Special instructions</p>
+				<p class="text-foreground text-base leading-snug">{specialInstructions}</p>
 			</div>
 		</div>
 	</div>
 
-	<div class="mt-5 border-t border-slate-200 pt-5" data-testid="shelter-detail-accessibility">
+	<div class="border-border mt-5 border-t pt-5" data-testid="shelter-detail-accessibility">
 		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
 			<div class="flex flex-col items-center gap-2 text-center">
 				<div
@@ -170,7 +173,7 @@
 				>
 					<PawPrintIcon class="size-8" aria-hidden="true" />
 				</div>
-				<p class="text-xs font-semibold tracking-wide text-slate-700 uppercase">
+				<p class="text-text-secondary text-xs font-semibold tracking-wide uppercase">
 					Pets {petsAllowed}
 				</p>
 			</div>
@@ -180,7 +183,7 @@
 				>
 					<AccessibilityIcon class="size-8" aria-hidden="true" />
 				</div>
-				<p class="text-xs font-semibold tracking-wide text-slate-700 uppercase">
+				<p class="text-text-secondary text-xs font-semibold tracking-wide uppercase">
 					Access {wheelchairAccess}
 				</p>
 			</div>
@@ -190,7 +193,7 @@
 				>
 					<BatteryChargingIcon class="size-8" aria-hidden="true" />
 				</div>
-				<p class="text-xs font-semibold tracking-wide text-slate-700 uppercase">
+				<p class="text-text-secondary text-xs font-semibold tracking-wide uppercase">
 					Backup power {backupPower}
 				</p>
 			</div>
