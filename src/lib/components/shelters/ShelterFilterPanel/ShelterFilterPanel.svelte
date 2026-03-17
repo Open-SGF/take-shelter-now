@@ -64,6 +64,16 @@
 			<div class="space-y-3">
 				<div class="flex items-center gap-2">
 					<Checkbox
+						id="filter-open-now"
+						checked={shelterState.filters.openNow}
+						onCheckedChange={(checked) => shelterState.setFilter('openNow', !!checked)}
+						data-testid="filter-open-now-checkbox"
+					/>
+					<Label for="filter-open-now" class="cursor-pointer text-sm font-normal">Open Now</Label>
+				</div>
+
+				<div class="flex items-center gap-2">
+					<Checkbox
 						id="filter-pets"
 						checked={shelterState.filters.petFriendly}
 						onCheckedChange={(checked) => shelterState.setFilter('petFriendly', !!checked)}

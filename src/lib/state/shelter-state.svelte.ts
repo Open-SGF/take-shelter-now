@@ -99,7 +99,8 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 	});
 
 	const activeFilterCount = $derived(
-		(filters.petFriendly ? 1 : 0) +
+		(filters.openNow ? 1 : 0) +
+			(filters.petFriendly ? 1 : 0) +
 			(filters.accessibility ? 1 : 0) +
 			(filters.hasBackupPower ? 1 : 0) +
 			filters.categories.length,
@@ -113,6 +114,9 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 		}
 
 		return sheltersWithDistance.filter((shelter) => {
+			if (filters.openNow && !shelter.isOpen) {
+				return false;
+			}
 			if (filters.petFriendly && !shelter.petFriendly) {
 				return false;
 			}

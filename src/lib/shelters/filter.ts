@@ -1,6 +1,7 @@
 import type { ShelterCategory } from './types';
 
 export type ShelterFilters = {
+	openNow: boolean;
 	petFriendly: boolean;
 	accessibility: boolean;
 	hasBackupPower: boolean;
@@ -8,6 +9,7 @@ export type ShelterFilters = {
 };
 
 export const defaultFilters: ShelterFilters = {
+	openNow: false,
 	petFriendly: false,
 	accessibility: false,
 	hasBackupPower: false,
@@ -17,6 +19,9 @@ export const defaultFilters: ShelterFilters = {
 export const filtersToSearchParams = (filters: ShelterFilters): URLSearchParams => {
 	const params = new URLSearchParams();
 
+	if (filters.openNow) {
+		params.set('open', 'true');
+	}
 	if (filters.petFriendly) {
 		params.set('pets', 'true');
 	}
@@ -35,6 +40,7 @@ export const filtersToSearchParams = (filters: ShelterFilters): URLSearchParams 
 
 export const searchParamsToFilters = (params: URLSearchParams): ShelterFilters => {
 	return {
+		openNow: params.get('open') === 'true',
 		petFriendly: params.get('pets') === 'true',
 		accessibility: params.get('accessible') === 'true',
 		hasBackupPower: params.get('power') === 'true',

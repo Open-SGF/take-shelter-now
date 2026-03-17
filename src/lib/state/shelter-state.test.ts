@@ -677,4 +677,42 @@ describe('filtering', () => {
 		expect(shelterState.filteredShelters).toHaveLength(2);
 		expect(shelterState.hasActiveFilters).toBe(false);
 	});
+
+	test('filters by openNow', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Open Shelter',
+							slug: 'open-shelter',
+							latitude: 37.2,
+							longitude: -93.2,
+							hours: HOURS_24_7,
+						}),
+						buildShelter({
+							name: 'Closed Shelter',
+							slug: 'closed-shelter',
+							latitude: 37.21,
+							longitude: -93.29,
+							hours: undefined,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('openNow', true);
+
+		expect(shelterState.filteredShelters).toHaveLength(1);
+		expect(shelterState.filteredShelters[0].slug).toBe('open-shelter');
+	});
 });

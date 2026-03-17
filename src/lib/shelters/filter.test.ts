@@ -35,13 +35,20 @@ describe('filtersToSearchParams', () => {
 		expect(params.get('categories')).toBe('school,church');
 	});
 
+	test('sets open param when openNow is true', () => {
+		const params = filtersToSearchParams({ ...defaultFilters, openNow: true });
+		expect(params.get('open')).toBe('true');
+	});
+
 	test('combines all params', () => {
 		const params = filtersToSearchParams({
+			openNow: true,
 			petFriendly: true,
 			accessibility: true,
 			hasBackupPower: true,
 			categories: ['school'],
 		});
+		expect(params.get('open')).toBe('true');
 		expect(params.get('pets')).toBe('true');
 		expect(params.get('accessible')).toBe('true');
 		expect(params.get('power')).toBe('true');
@@ -90,10 +97,18 @@ describe('searchParamsToFilters', () => {
 		expect(searchParamsToFilters(params).categories).toEqual([]);
 	});
 
+	test('parses open param', () => {
+		const params = new URLSearchParams('open=true');
+		expect(searchParamsToFilters(params).openNow).toBe(true);
+	});
+
 	test('parses all params together', () => {
-		const params = new URLSearchParams('pets=true&accessible=true&power=true&categories=other');
+		const params = new URLSearchParams(
+			'open=true&pets=true&accessible=true&power=true&categories=other',
+		);
 		const filters = searchParamsToFilters(params);
 		expect(filters).toEqual({
+			openNow: true,
 			petFriendly: true,
 			accessibility: true,
 			hasBackupPower: true,
@@ -105,6 +120,7 @@ describe('searchParamsToFilters', () => {
 describe('filtersToSearchParams and searchParamsToFilters round-trip', () => {
 	test('round-trips filters with all options', () => {
 		const original: ShelterFilters = {
+			openNow: true,
 			petFriendly: true,
 			accessibility: true,
 			hasBackupPower: true,
