@@ -1,6 +1,13 @@
 import { createContext } from 'svelte';
-import type { Shelter } from '$lib/shelters/types';
+import type { Shelter, ShelterCategory } from '$lib/shelters/types';
 import { calculateDistance } from '$lib/utils';
+import { storage } from '$lib/storage';
+import {
+	type ShelterFilters,
+	defaultFilters,
+	hasActiveFilters,
+	filterShelters,
+} from '$lib/shelters/filter';
 
 type ShelterWithDistance = Shelter & { distance: number };
 
@@ -13,15 +20,41 @@ export type ShelterDataState =
 export type ShelterState = {
 	readonly dataState: ShelterDataState;
 	readonly sheltersWithDistance: ShelterWithDistance[];
+	readonly filteredShelters: ShelterWithDistance[];
+	readonly filters: ShelterFilters;
+	readonly hasActiveFilters: boolean;
+	readonly activeFilterCount: number;
 	loadShelters: () => void;
+	setFilter: (key: keyof ShelterFilters, value: boolean | ShelterCategory[]) => void;
+	clearFilters: () => void;
 };
 
 export type LocationGetter = () => { latitude: number; longitude: number } | null;
 
 export const [getShelterStateContext, setShelterStateContext] = createContext<ShelterState>();
 
+const FILTERS_STORAGE_KEY = 'shelter-filters';
+
+const readFiltersFromStorage = (): ShelterFilters => {
+	const saved = storage.get<ShelterFilters>(FILTERS_STORAGE_KEY);
+	if (saved) {
+		return {
+			petFriendly: saved.petFriendly ?? false,
+			accessibility: saved.accessibility ?? false,
+			hasBackupPower: saved.hasBackupPower ?? false,
+			categories: Array.isArray(saved.categories) ? saved.categories : [],
+		};
+	}
+	return { ...defaultFilters };
+};
+
+const writeFiltersToStorage = (filters: ShelterFilters): void => {
+	storage.set(FILTERS_STORAGE_KEY, filters);
+};
+
 export const createShelterState = (getLocation: LocationGetter): ShelterState => {
 	let dataState = $state<ShelterDataState>({ kind: 'loading' });
+	let filters = $state<ShelterFilters>(readFiltersFromStorage());
 	let abortController: AbortController | null = null;
 
 	const setShelters = (shelters: Shelter[]) => {
@@ -80,6 +113,20 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 			.sort((a, b) => a.distance - b.distance);
 	});
 
+	const filteredShelters = $derived(filterShelters(sheltersWithDistance, filters));
+
+	const activeFilters = $derived(hasActiveFilters(filters));
+
+	const setFilter = (key: keyof ShelterFilters, value: boolean | ShelterCategory[]) => {
+		filters = { ...filters, [key]: value };
+		writeFiltersToStorage(filters);
+	};
+
+	const clearFilters = () => {
+		filters = { ...defaultFilters };
+		writeFiltersToStorage(filters);
+	};
+
 	return {
 		get dataState() {
 			return dataState;
@@ -87,6 +134,25 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 		get sheltersWithDistance() {
 			return sheltersWithDistance;
 		},
+		get filteredShelters() {
+			return filteredShelters;
+		},
+		get filters() {
+			return filters;
+		},
+		get hasActiveFilters() {
+			return activeFilters;
+		},
+		get activeFilterCount() {
+			return (
+				(filters.petFriendly ? 1 : 0) +
+				(filters.accessibility ? 1 : 0) +
+				(filters.hasBackupPower ? 1 : 0) +
+				filters.categories.length
+			);
+		},
 		loadShelters,
+		setFilter,
+		clearFilters,
 	};
 };

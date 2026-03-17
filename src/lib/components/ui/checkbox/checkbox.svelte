@@ -32,7 +32,7 @@
 	{#if children}
 		{@render children?.()}
 	{:else}
-		<span class="flex items-center justify-center text-current">
+		<span class="flex items-center justify-center text-current" class:opacity-0={!checked}>
 			<CheckIcon class="size-3" />
 		</span>
 	{/if}
