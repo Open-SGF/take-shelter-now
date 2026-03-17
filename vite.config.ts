@@ -71,7 +71,11 @@ export default defineConfig({
 					name: 'storybook',
 					browser: {
 						enabled: true,
-						provider: playwright(),
+						provider: playwright({
+							launchOptions: {
+								args: ['--use-gl=angle', '--use-angle=swiftshader'],
+							},
+						}),
 						instances: [{ browser: 'chromium' }],
 						headless: true,
 					},
