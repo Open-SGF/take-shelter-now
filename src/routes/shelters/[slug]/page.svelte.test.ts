@@ -24,7 +24,7 @@ describe('/shelters/[slug]/+page.svelte', () => {
 		userState = createUserState();
 	});
 
-	test('renders page-level back link to list route', () => {
+	test('renders page-level back button to list route', () => {
 		const Wrapper = (...args: Parameters<typeof Page>) => {
 			setUserStateContext(userState);
 			return Page(...args);
@@ -36,9 +36,8 @@ describe('/shelters/[slug]/+page.svelte', () => {
 			},
 		});
 
-		const backLink = screen.getByRole('link', { name: 'Back to list' });
-		expect(backLink).toBeInTheDocument();
-		expect(backLink).toHaveAttribute('href', '/');
+		const backButton = screen.getByRole('button', { name: 'Back to list' });
+		expect(backButton).toBeInTheDocument();
 	});
 
 	test('renders ShelterDetail content from route data', () => {

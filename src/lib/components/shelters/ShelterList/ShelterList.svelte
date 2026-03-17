@@ -35,9 +35,17 @@
 				Check back soon for updated shelter availability.
 			</p>
 		</div>
+	{:else if shelterState.filteredShelters.length === 0 && shelterState.hasActiveFilters}
+		<div
+			class="border-border bg-surface-muted text-foreground rounded-xl border p-4"
+			data-testid="shelter-list-filtered-empty"
+		>
+			<p class="text-sm font-semibold">No shelters match your filters.</p>
+			<p class="text-text-tertiary mt-1 text-sm">Try adjusting your filter criteria.</p>
+		</div>
 	{:else}
 		<div class="space-y-3" data-testid="shelter-list-ready">
-			{#each shelterState.sheltersWithDistance as shelter (shelter.slug)}
+			{#each shelterState.filteredShelters as shelter (shelter.slug)}
 				<ShelterListItem {shelter} distanceMiles={shelter.distance} />
 			{/each}
 		</div>

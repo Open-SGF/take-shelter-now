@@ -1,6 +1,7 @@
 import { createContext } from 'svelte';
-import type { Shelter } from '$lib/shelters/types';
+import type { Shelter, ShelterCategory } from '$lib/shelters/types';
 import { calculateDistance } from '$lib/utils';
+import { type ShelterFilters, defaultFilters } from '$lib/shelters/filter';
 
 type ShelterWithDistance = Shelter & { distance: number };
 
@@ -13,7 +14,14 @@ export type ShelterDataState =
 export type ShelterState = {
 	readonly dataState: ShelterDataState;
 	readonly sheltersWithDistance: ShelterWithDistance[];
+	readonly filteredShelters: ShelterWithDistance[];
+	readonly filters: ShelterFilters;
+	readonly hasActiveFilters: boolean;
+	readonly activeFilterCount: number;
 	loadShelters: () => void;
+	setFilters: (filters: ShelterFilters) => void;
+	setFilter: (key: keyof ShelterFilters, value: boolean | ShelterCategory[]) => void;
+	clearFilters: () => void;
 };
 
 export type LocationGetter = () => { latitude: number; longitude: number } | null;
@@ -22,6 +30,7 @@ export const [getShelterStateContext, setShelterStateContext] = createContext<Sh
 
 export const createShelterState = (getLocation: LocationGetter): ShelterState => {
 	let dataState = $state<ShelterDataState>({ kind: 'loading' });
+	let filters = $state<ShelterFilters>({ ...defaultFilters });
 	let abortController: AbortController | null = null;
 
 	const setShelters = (shelters: Shelter[]) => {
@@ -80,6 +89,52 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 			.sort((a, b) => a.distance - b.distance);
 	});
 
+	const activeFilterCount = $derived(
+		(filters.petFriendly ? 1 : 0) +
+			(filters.accessibility ? 1 : 0) +
+			(filters.hasBackupPower ? 1 : 0) +
+			filters.categories.length,
+	);
+
+	const activeFilters = $derived(activeFilterCount > 0);
+
+	const filteredShelters = $derived.by(() => {
+		if (!activeFilters) {
+			return sheltersWithDistance;
+		}
+
+		return sheltersWithDistance.filter((shelter) => {
+			if (filters.petFriendly && !shelter.petFriendly) {
+				return false;
+			}
+			if (filters.accessibility && !shelter.accessibility) {
+				return false;
+			}
+			if (filters.hasBackupPower && !shelter.hasBackupPower) {
+				return false;
+			}
+			if (filters.categories.length > 0) {
+				const shelterCategory = shelter.category ?? 'other';
+				if (!filters.categories.includes(shelterCategory)) {
+					return false;
+				}
+			}
+			return true;
+		});
+	});
+
+	const setFilters = (newFilters: ShelterFilters) => {
+		filters = { ...newFilters };
+	};
+
+	const setFilter = (key: keyof ShelterFilters, value: boolean | ShelterCategory[]) => {
+		filters = { ...filters, [key]: value };
+	};
+
+	const clearFilters = () => {
+		filters = { ...defaultFilters };
+	};
+
 	return {
 		get dataState() {
 			return dataState;
@@ -87,6 +142,21 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 		get sheltersWithDistance() {
 			return sheltersWithDistance;
 		},
+		get filteredShelters() {
+			return filteredShelters;
+		},
+		get filters() {
+			return filters;
+		},
+		get hasActiveFilters() {
+			return activeFilters;
+		},
+		get activeFilterCount() {
+			return activeFilterCount;
+		},
 		loadShelters,
+		setFilters,
+		setFilter,
+		clearFilters,
 	};
 };

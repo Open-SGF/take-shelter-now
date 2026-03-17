@@ -1,5 +1,7 @@
 import { HttpResponse, http, delay, type RequestHandler } from 'msw';
-import type { Shelter } from '../../src/lib/shelters/types';
+import type { Shelter, ShelterCategory } from '../../src/lib/shelters/types';
+
+const categories: ShelterCategory[] = ['school', 'church', 'other'];
 
 const buildShelter = (index: number): Shelter => ({
 	name: `Shelter ${index + 1}`,
@@ -12,6 +14,10 @@ const buildShelter = (index: number): Shelter => ({
 	latitude: 37.2 + index * 0.005,
 	longitude: -93.29 - index * 0.005,
 	photoUrls: [],
+	category: categories[index % 3],
+	petFriendly: index % 2 === 0,
+	accessibility: index % 3 === 0,
+	hasBackupPower: index % 4 === 0,
 });
 
 const readyShelters = Array.from({ length: 14 }, (_, index) => buildShelter(index));

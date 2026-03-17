@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/svelte';
 import '@testing-library/jest-dom/vitest';
 import { setLocationStateContext, createLocationState } from '$lib/state/location-state.svelte';
 import { setUserStateContext, createUserState } from '$lib/state/user-state.svelte';
+import { setShelterStateContext, createShelterState } from '$lib/state/shelter-state.svelte';
 
 vi.mock('$app/state', () => ({
 	page: {
@@ -24,10 +25,12 @@ describe('Nav', () => {
 	test('uses header and navigation landmarks', () => {
 		const locationState = createLocationState();
 		const userState = createUserState();
+		const shelterState = createShelterState(() => locationState.location);
 
 		const Wrapper = (...args: Parameters<typeof Nav>) => {
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Nav(...args);
 		};
 
@@ -40,10 +43,12 @@ describe('Nav', () => {
 	test('renders site logo', () => {
 		const locationState = createLocationState();
 		const userState = createUserState();
+		const shelterState = createShelterState(() => locationState.location);
 
 		const Wrapper = (...args: Parameters<typeof Nav>) => {
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Nav(...args);
 		};
 
@@ -55,10 +60,12 @@ describe('Nav', () => {
 	test('merges custom class names', () => {
 		const locationState = createLocationState();
 		const userState = createUserState();
+		const shelterState = createShelterState(() => locationState.location);
 
 		const Wrapper = (...args: Parameters<typeof Nav>) => {
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Nav(...args);
 		};
 
@@ -74,6 +81,7 @@ describe('Nav', () => {
 	test('shows menu when location is set', () => {
 		const locationState = createLocationState();
 		const userState = createUserState();
+		const shelterState = createShelterState(() => locationState.location);
 
 		locationState.setReady(
 			{ latitude: 37.208957, longitude: -93.292299 },
@@ -84,6 +92,7 @@ describe('Nav', () => {
 		const Wrapper = (...args: Parameters<typeof Nav>) => {
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Nav(...args);
 		};
 
@@ -95,12 +104,14 @@ describe('Nav', () => {
 	test('shows menu when directions app is set', () => {
 		const locationState = createLocationState();
 		const userState = createUserState();
+		const shelterState = createShelterState(() => locationState.location);
 
 		userState.setDirectionsApp('apple');
 
 		const Wrapper = (...args: Parameters<typeof Nav>) => {
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Nav(...args);
 		};
 

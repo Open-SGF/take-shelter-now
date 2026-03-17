@@ -5,6 +5,7 @@
 	import Nav from './Nav.svelte';
 	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
 	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
+	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
 	import { storage } from '$lib/storage';
 
 	const { Story } = defineMeta({
@@ -25,8 +26,10 @@
 			storage.clear();
 			const locationState = createLocationState();
 			const userState = createUserState();
+			const shelterState = createShelterState(() => locationState.location);
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Story();
 		},
 	]}
@@ -44,6 +47,7 @@
 			storage.clear();
 			const locationState = createLocationState();
 			const userState = createUserState();
+			const shelterState = createShelterState(() => locationState.location);
 			locationState.setReady(
 				{ latitude: 37.208957, longitude: -93.292299 },
 				'address',
@@ -51,6 +55,7 @@
 			);
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Story();
 		},
 	]}
@@ -73,9 +78,11 @@
 			storage.clear();
 			const locationState = createLocationState();
 			const userState = createUserState();
+			const shelterState = createShelterState(() => locationState.location);
 			userState.setDirectionsApp('apple');
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Story();
 		},
 	]}
@@ -98,6 +105,7 @@
 			storage.clear();
 			const locationState = createLocationState();
 			const userState = createUserState();
+			const shelterState = createShelterState(() => locationState.location);
 			locationState.setReady(
 				{ latitude: 37.208957, longitude: -93.292299 },
 				'address',
@@ -106,6 +114,7 @@
 			userState.setDirectionsApp('google');
 			setLocationStateContext(locationState);
 			setUserStateContext(userState);
+			setShelterStateContext(shelterState);
 			return Story();
 		},
 	]}

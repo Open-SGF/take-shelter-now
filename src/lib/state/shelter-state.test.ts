@@ -16,6 +16,10 @@ const buildShelter = (
 		latitude: overrides.latitude,
 		longitude: overrides.longitude,
 		photoUrls: overrides.photoUrls ?? [],
+		petFriendly: overrides.petFriendly ?? false,
+		accessibility: overrides.accessibility ?? false,
+		hasBackupPower: overrides.hasBackupPower ?? false,
+		category: overrides.category,
 	};
 };
 
@@ -171,5 +175,325 @@ describe('createShelterState', () => {
 		expect(abortCount).toBe(1);
 
 		vi.stubGlobal('AbortController', originalAbortController);
+	});
+});
+
+describe('filtering', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	test('returns all shelters when no filters are active', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({ name: 'One', slug: 'one', latitude: 37.2, longitude: -93.2 }),
+						buildShelter({ name: 'Two', slug: 'two', latitude: 37.21, longitude: -93.29 }),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		expect(shelterState.filteredShelters).toHaveLength(2);
+		expect(shelterState.hasActiveFilters).toBe(false);
+		expect(shelterState.activeFilterCount).toBe(0);
+	});
+
+	test('filters by petFriendly', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Pets OK',
+							slug: 'pets-ok',
+							latitude: 37.2,
+							longitude: -93.2,
+							petFriendly: true,
+						}),
+						buildShelter({
+							name: 'No Pets',
+							slug: 'no-pets',
+							latitude: 37.21,
+							longitude: -93.29,
+							petFriendly: false,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('petFriendly', true);
+
+		expect(shelterState.filteredShelters).toHaveLength(1);
+		expect(shelterState.filteredShelters[0].slug).toBe('pets-ok');
+		expect(shelterState.hasActiveFilters).toBe(true);
+		expect(shelterState.activeFilterCount).toBe(1);
+	});
+
+	test('filters by accessibility', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Accessible',
+							slug: 'accessible',
+							latitude: 37.2,
+							longitude: -93.2,
+							accessibility: true,
+						}),
+						buildShelter({
+							name: 'Not Accessible',
+							slug: 'not-accessible',
+							latitude: 37.21,
+							longitude: -93.29,
+							accessibility: false,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('accessibility', true);
+
+		expect(shelterState.filteredShelters).toHaveLength(1);
+		expect(shelterState.filteredShelters[0].slug).toBe('accessible');
+	});
+
+	test('filters by hasBackupPower', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Has Power',
+							slug: 'has-power',
+							latitude: 37.2,
+							longitude: -93.2,
+							hasBackupPower: true,
+						}),
+						buildShelter({
+							name: 'No Power',
+							slug: 'no-power',
+							latitude: 37.21,
+							longitude: -93.29,
+							hasBackupPower: false,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('hasBackupPower', true);
+
+		expect(shelterState.filteredShelters).toHaveLength(1);
+		expect(shelterState.filteredShelters[0].slug).toBe('has-power');
+	});
+
+	test('filters by category', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'School',
+							slug: 'school-shelter',
+							latitude: 37.2,
+							longitude: -93.2,
+							category: 'school',
+						}),
+						buildShelter({
+							name: 'Church',
+							slug: 'church-shelter',
+							latitude: 37.21,
+							longitude: -93.29,
+							category: 'church',
+						}),
+						buildShelter({
+							name: 'Other',
+							slug: 'other-shelter',
+							latitude: 37.22,
+							longitude: -93.3,
+							category: 'other',
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('categories', ['school', 'church']);
+
+		expect(shelterState.filteredShelters).toHaveLength(2);
+		expect(shelterState.activeFilterCount).toBe(2);
+	});
+
+	test('treats undefined category as other', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'No Category',
+							slug: 'no-category',
+							latitude: 37.2,
+							longitude: -93.2,
+							category: undefined,
+						}),
+						buildShelter({
+							name: 'Explicit Other',
+							slug: 'explicit-other',
+							latitude: 37.21,
+							longitude: -93.29,
+							category: 'other',
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('categories', ['other']);
+
+		expect(shelterState.filteredShelters).toHaveLength(2);
+	});
+
+	test('combines multiple filters with AND logic', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Both',
+							slug: 'both',
+							latitude: 37.2,
+							longitude: -93.2,
+							petFriendly: true,
+							accessibility: true,
+						}),
+						buildShelter({
+							name: 'Pets Only',
+							slug: 'pets-only',
+							latitude: 37.21,
+							longitude: -93.29,
+							petFriendly: true,
+							accessibility: false,
+						}),
+						buildShelter({
+							name: 'Access Only',
+							slug: 'access-only',
+							latitude: 37.22,
+							longitude: -93.3,
+							petFriendly: false,
+							accessibility: true,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('petFriendly', true);
+		shelterState.setFilter('accessibility', true);
+
+		expect(shelterState.filteredShelters).toHaveLength(1);
+		expect(shelterState.filteredShelters[0].slug).toBe('both');
+		expect(shelterState.activeFilterCount).toBe(2);
+	});
+
+	test('clearFilters resets all filters', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve([
+						buildShelter({
+							name: 'Pets OK',
+							slug: 'pets-ok',
+							latitude: 37.2,
+							longitude: -93.2,
+							petFriendly: true,
+						}),
+						buildShelter({
+							name: 'No Pets',
+							slug: 'no-pets',
+							latitude: 37.21,
+							longitude: -93.29,
+							petFriendly: false,
+						}),
+					]),
+			}),
+		);
+
+		const shelterState = createShelterState(() => null);
+		shelterState.loadShelters();
+
+		await vi.waitFor(() => {
+			expect(shelterState.dataState.kind).toBe('ready');
+		});
+
+		shelterState.setFilter('petFriendly', true);
+		expect(shelterState.filteredShelters).toHaveLength(1);
+
+		shelterState.clearFilters();
+
+		expect(shelterState.filteredShelters).toHaveLength(2);
+		expect(shelterState.hasActiveFilters).toBe(false);
 	});
 });

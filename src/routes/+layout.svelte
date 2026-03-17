@@ -1,8 +1,7 @@
 <script lang="ts">
 	import '../app.css';
-	import { goto, onNavigate } from '$app/navigation';
+	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
 	import { AppShell } from '$lib/components/layout';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import type { GeoPoint } from '$lib/geo';
@@ -11,6 +10,7 @@
 	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
 	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
 	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import { navigateToShelterDetail } from '$lib/shelters/navigation';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -77,7 +77,7 @@
 	});
 
 	function handleMarkerTap(marker: MapMarker) {
-		goto(resolve('/shelters/[slug]', { slug: marker.id }));
+		navigateToShelterDetail(marker.id, shelterState.filters);
 	}
 
 	function handleCenterChange(location: GeoPoint) {

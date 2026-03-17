@@ -3,6 +3,8 @@
 	import { expect, within } from 'storybook/test';
 	import type { ComponentProps } from 'svelte';
 	import type { Shelter } from '$lib/shelters/types';
+	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
+	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
 	import ShelterListItem from './ShelterListItem.svelte';
 
 	type StoryArgs = ComponentProps<typeof ShelterListItem>;
@@ -48,6 +50,15 @@
 			shelter: fullDetailsShelter,
 			distanceMiles: 0.4,
 		},
+		decorators: [
+			(Story) => {
+				const locationState = createLocationState();
+				const shelterState = createShelterState(() => locationState.location);
+				setLocationStateContext(locationState);
+				setShelterStateContext(shelterState);
+				return Story();
+			},
+		],
 	});
 </script>
 
@@ -70,7 +81,7 @@
 		);
 		await expect(canvas.getByTestId('shelter-list-item-category')).toHaveTextContent('School');
 		await expect(canvas.getByText('Pets allowed')).toBeInTheDocument();
-		await expect(canvas.getByText('Backup power')).toBeInTheDocument();
+		await expect(canvas.getByText('Backup Power')).toBeInTheDocument();
 		await expect(canvas.getByText('Accessible')).toBeInTheDocument();
 		await expect(canvas.getByTestId('shelter-list-item-distance')).toHaveTextContent('2112 ft');
 	}}

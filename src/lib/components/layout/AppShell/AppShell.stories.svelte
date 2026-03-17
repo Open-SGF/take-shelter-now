@@ -4,6 +4,7 @@
 	import { Map } from '$lib/components/layout';
 	import { setLocationStateContext, createLocationState } from '$lib/state/location-state.svelte';
 	import { setUserStateContext, createUserState } from '$lib/state/user-state.svelte';
+	import { setShelterStateContext, createShelterState } from '$lib/state/shelter-state.svelte';
 	import AppShell from './AppShell.svelte';
 
 	const shelterMarkers = [
@@ -19,6 +20,7 @@
 			(Story) => {
 				const locationState = createLocationState();
 				const userState = createUserState();
+				const shelterState = createShelterState(() => locationState.location);
 
 				locationState.setReady(
 					{ latitude: 37.208957, longitude: -93.292299 },
@@ -28,6 +30,7 @@
 
 				setLocationStateContext(locationState);
 				setUserStateContext(userState);
+				setShelterStateContext(shelterState);
 				return Story();
 			},
 		],
