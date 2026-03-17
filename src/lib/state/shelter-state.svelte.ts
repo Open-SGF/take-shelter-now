@@ -2,8 +2,9 @@ import { createContext } from 'svelte';
 import type { Shelter, ShelterCategory } from '$lib/shelters/types';
 import { calculateDistance } from '$lib/utils';
 import { type ShelterFilters, defaultFilters } from '$lib/shelters/filter';
+import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
 
-type ShelterWithDistance = Shelter & { distance: number };
+type ShelterWithDistance = Shelter & { distance: number; isOpen: boolean };
 
 export type ShelterDataState =
 	| { kind: 'loading' }
@@ -73,7 +74,11 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 		const location = getLocation();
 
 		if (location === null) {
-			return shelters.map((shelter) => ({ ...shelter, distance: 0 }));
+			return shelters.map((shelter) => ({
+				...shelter,
+				distance: 0,
+				isOpen: summarizeShelterHours(shelter.hours).status === 'open',
+			}));
 		}
 
 		return shelters
@@ -85,8 +90,14 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 					shelter.latitude,
 					shelter.longitude,
 				),
+				isOpen: summarizeShelterHours(shelter.hours).status === 'open',
 			}))
-			.sort((a, b) => a.distance - b.distance);
+			.sort((a, b) => {
+				if (a.isOpen !== b.isOpen) {
+					return a.isOpen ? -1 : 1;
+				}
+				return a.distance - b.distance;
+			});
 	});
 
 	const activeFilterCount = $derived(
