@@ -1,6 +1,6 @@
 import { createContext } from 'svelte';
 import type { Shelter, ShelterCategory } from '$lib/shelters/types';
-import { calculateDistance } from '$lib/utils';
+import { distanceBetween } from '$lib/geo';
 import { type ShelterFilters, defaultFilters } from '$lib/shelters/filter';
 import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
 
@@ -84,12 +84,10 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 		return shelters
 			.map((shelter) => ({
 				...shelter,
-				distance: calculateDistance(
-					location.latitude,
-					location.longitude,
-					shelter.latitude,
-					shelter.longitude,
-				),
+				distance: distanceBetween(location, {
+					latitude: shelter.latitude,
+					longitude: shelter.longitude,
+				}),
 				isOpen: summarizeShelterHours(shelter.hours).status === 'open',
 			}))
 			.sort((a, b) => {

@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'vitest';
-import { fromGeoJSONPoint, isValidCoordinate, isValidPoint, toLeafletPoint } from './point';
+import {
+	distanceBetween,
+	fromGeoJSONPoint,
+	isValidCoordinate,
+	isValidPoint,
+	toLeafletPoint,
+} from './point';
 
 describe('point', () => {
 	test('validates finite coordinate values', () => {
@@ -20,5 +26,29 @@ describe('point', () => {
 
 	test('converts GeoJSON coordinates to GeoPoint', () => {
 		expect(fromGeoJSONPoint([-93.2, 37.2])).toEqual({ longitude: -93.2, latitude: 37.2 });
+	});
+});
+
+describe('distanceBetween', () => {
+	test('returns 0 for same coordinates', () => {
+		expect(
+			distanceBetween({ latitude: 37.2, longitude: -93.2 }, { latitude: 37.2, longitude: -93.2 }),
+		).toBe(0);
+	});
+
+	test('calculates distance between two points', () => {
+		const distance = distanceBetween(
+			{ latitude: 40.7128, longitude: -74.006 },
+			{ latitude: 34.0522, longitude: -118.2437 },
+		);
+		expect(distance).toBeCloseTo(2445, -2);
+	});
+
+	test('calculates short distance', () => {
+		const distance = distanceBetween(
+			{ latitude: 37.208957, longitude: -93.292299 },
+			{ latitude: 37.21, longitude: -93.29 },
+		);
+		expect(distance).toBeCloseTo(0.13, 1);
 	});
 });
