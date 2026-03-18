@@ -13,6 +13,7 @@ import type {
 
 export class MapController {
 	isReady = $state(false);
+	radarEnabled = $state(true);
 	prefersReducedMotion = $state(false);
 	flyToDuration = $derived(this.prefersReducedMotion ? 0 : BASE_FLY_TO_DURATION);
 
@@ -22,6 +23,8 @@ export class MapController {
 	#mapElement: HTMLDivElement | null = null;
 	#basemapLayer: Leaflet.Layer | null = null;
 	#markerLayer: Leaflet.LayerGroup | null = null;
+	#radarLayer: Leaflet.TileLayer | null = null;
+	#radarRefreshInterval: ReturnType<typeof setInterval> | null = null;
 	#currentLocationMarker: Leaflet.Marker | null = null;
 	#pendingViewportChangedHandler: (() => void) | null = null;
 	#moveHandler: (() => void) | null = null;
@@ -163,7 +166,62 @@ export class MapController {
 		this.#basemapLayer = this.#createBasemapLayer(L, basemapStyle).addTo(nextMap);
 		this.#markerLayer = L.layerGroup().addTo(nextMap);
 
+		if (this.radarEnabled) {
+			void this.#loadRadarOverlay(L, nextMap);
+			this.#radarRefreshInterval = setInterval(() => void this.#loadRadarOverlay(L, nextMap), 5 * 60 * 1000);
+		}
+
 		this.isReady = true;
+	}
+
+	setRadarEnabled(enabled: boolean) {
+		this.radarEnabled = enabled;
+
+		if (!this.leaflet || !this.map) return;
+
+		if (enabled) {
+			void this.#loadRadarOverlay(this.leaflet, this.map);
+			this.#radarRefreshInterval = setInterval(
+				() => void this.#loadRadarOverlay(this.leaflet!, this.map!),
+				5 * 60 * 1000,
+			);
+		} else {
+			if (this.#radarRefreshInterval) {
+				clearInterval(this.#radarRefreshInterval);
+				this.#radarRefreshInterval = null;
+			}
+			if (this.#radarLayer) {
+				this.#radarLayer.remove();
+				this.#radarLayer = null;
+			}
+		}
+	}
+
+	async #loadRadarOverlay(L: typeof Leaflet, mapInstance: Leaflet.Map): Promise<void> {
+		try {
+			const response = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+			const data = await response.json() as { host: string; radar: { past: Array<{ path: string }> } };
+			const frames = data.radar.past;
+			if (frames.length === 0) return;
+
+			const latestFrame = frames[frames.length - 1];
+			const tileUrl = data.host + latestFrame.path + '/256/{z}/{x}/{y}/2/1_1.png';
+
+			if (this.#radarLayer) {
+				this.#radarLayer.remove();
+			}
+
+			this.#radarLayer = L.tileLayer(tileUrl, {
+				tileSize: 256,
+				opacity: 0.5,
+				maxNativeZoom: 7,
+				maxZoom: 30,
+				zIndex: 10,
+				attribution: '<a href="https://www.rainviewer.com" target="_blank">RainViewer</a>',
+			}).addTo(mapInstance);
+		} catch {
+			// Radar is non-critical — silently ignore failures
+		}
 	}
 
 	#handleMediaQueryChange = (e: MediaQueryListEvent) => {
@@ -189,6 +247,11 @@ export class MapController {
 	dispose() {
 		this.#disposed = true;
 
+		if (this.#radarRefreshInterval) {
+			clearInterval(this.#radarRefreshInterval);
+			this.#radarRefreshInterval = null;
+		}
+
 		if (this.#mediaQuery) {
 			this.#mediaQuery.removeEventListener('change', this.#handleMediaQueryChange);
 			this.#mediaQuery = null;
@@ -204,6 +267,11 @@ export class MapController {
 		if (this.#currentLocationMarker) {
 			this.#currentLocationMarker.remove();
 			this.#currentLocationMarker = null;
+		}
+
+		if (this.#radarLayer) {
+			this.#radarLayer.remove();
+			this.#radarLayer = null;
 		}
 
 		if (this.#markerLayer) {

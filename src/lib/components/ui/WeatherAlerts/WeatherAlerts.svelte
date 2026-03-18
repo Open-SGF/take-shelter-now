@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
-	import { addToast } from '$lib/stores/toasts';
-	import { getAppStateContext } from '$lib/state/app-state-context';
+	import { toast } from 'svelte-sonner';
+	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import { onMount, onDestroy } from 'svelte';
 
 	type WeatherAlert = {
@@ -17,7 +17,7 @@
 		};
 	};
 
-	const appState = getAppStateContext();
+	const locationState = getLocationStateContext();
 
 	let seenIds = new SvelteSet<string>();
 
@@ -42,7 +42,7 @@
 
 	async function fetchAlerts() {
 		try {
-			const loc = appState.location ?? { latitude: 37.2090, longitude: -93.2923 }; // default: Springfield, MO
+			const loc = locationState.location ?? { latitude: 37.2090, longitude: -93.2923 }; // default: Springfield, MO
 			const url = `https://api.weather.gov/alerts/active?point=${loc.latitude.toFixed(4)},${loc.longitude.toFixed(4)}&status=actual`;
 
 			const res = await fetch(url, {
@@ -63,11 +63,7 @@
 					seenIds.add(alert.id);
 					// Skip toasting on the very first fetch (page load) — only notify on new ones
 					if (!isFirstLoad) {
-						addToast({
-							event: alert.properties.event,
-							areaDesc: alert.properties.areaDesc,
-							severity: alert.properties.severity as 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown',
-						});
+						toast.warning(`${alert.properties.event} — ${alert.properties.areaDesc}`);
 					}
 				}
 			});
@@ -93,7 +89,7 @@
 
 	// Refetch when location becomes available
 	$effect(() => {
-		if (appState.location) fetchAlerts();
+		if (locationState.location) fetchAlerts();
 	});
 
 	function formatExpires(iso: string) {
