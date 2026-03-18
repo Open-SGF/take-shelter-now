@@ -10,8 +10,9 @@
 		centerPin = {},
 		currentLocation = null,
 		onViewportChange = {},
+		radarEnabled = true,
 		class: className,
-	}: MapProps = $props();
+	}: MapProps & { radarEnabled?: boolean } = $props();
 
 	let mapElement: HTMLDivElement | null = $state(null);
 	let controller = new MapController();
@@ -54,6 +55,12 @@
 	$effect(() => {
 		if (controller.isReady && centerPin.enabled && centerPin.location) {
 			controller.enterCenterPinMode(centerPin.location);
+		}
+	});
+
+	$effect(() => {
+		if (controller.isReady) {
+			controller.setRadarEnabled(radarEnabled);
 		}
 	});
 </script>

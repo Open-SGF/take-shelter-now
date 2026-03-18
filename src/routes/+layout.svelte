@@ -105,6 +105,7 @@
 				location: centerPinLocation ?? undefined,
 				onCenterChange: handleCenterChange,
 			}}
+			radarEnabled={userState.radarEnabled}
 		/>
 	{/snippet}
 

@@ -35,7 +35,11 @@
 	]}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(canvas.queryByTestId('nav-menu-trigger')).not.toBeInTheDocument();
+		await userEvent.click(canvas.getByTestId('nav-menu-trigger'));
+		const bodyCanvas = within(document.body);
+		await waitFor(() => {
+			expect(bodyCanvas.queryByTestId('nav-menu-edit-location')).not.toBeInTheDocument();
+		});
 	}}
 />
 
