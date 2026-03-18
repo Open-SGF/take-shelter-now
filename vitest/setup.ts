@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest';
 import { vi } from 'vitest';
 
-vi.mock('$env/dynamic/public', () => ({
-	env: {
-		PUBLIC_SHELTERS_JSON_URL: '/shelters.json',
+vi.mock('$lib/config', () => ({
+	config: {
+		sheltersJsonUrl: '/shelters.json',
 	},
 }));
 
