@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { expect, fireEvent, waitFor, within } from 'storybook/test';
+	import { expect, userEvent, waitFor, within } from 'storybook/test';
 	import type { ComponentProps } from 'svelte';
 	import type { Shelter } from '$lib/shelters/types';
 	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
@@ -115,7 +115,7 @@
 		const canvas = within(canvasElement);
 
 		const directionsButton = canvas.getByTestId('get-directions-button');
-		await fireEvent.click(directionsButton);
+		await userEvent.click(directionsButton);
 
 		const bodyCanvas = within(document.body);
 		await waitFor(() => {
