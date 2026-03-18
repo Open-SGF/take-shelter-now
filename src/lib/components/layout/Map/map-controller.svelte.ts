@@ -211,8 +211,8 @@ export class MapController {
 			};
 			const frames = data.radar.past;
 			if (frames.length === 0) {
-			return;
-		}
+				return;
+			}
 
 			const latestFrame = frames[frames.length - 1];
 			const tileUrl = data.host + latestFrame.path + '/256/{z}/{x}/{y}/2/1_1.png';
