@@ -172,7 +172,7 @@ export class MapController {
 	setRadarEnabled(enabled: boolean) {
 		this.radarEnabled = enabled;
 
-		if (!this.leaflet || !this.map) {
+		if (this.#disposed || !this.leaflet || !this.map) {
 			return;
 		}
 
@@ -197,6 +197,9 @@ export class MapController {
 	async #loadRadarOverlay(L: typeof Leaflet, mapInstance: Leaflet.Map): Promise<void> {
 		try {
 			const response = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+			if (this.#disposed) {
+				return;
+			}
 			const data = (await response.json()) as {
 				host: string;
 				radar: { past: Array<{ path: string }> };
@@ -281,7 +284,7 @@ export class MapController {
 			this.#markerLayer = null;
 		}
 
-		if (this.#basemapLayer) {
+		if (this.#basemapLayer && this.map) {
 			this.#basemapLayer.remove();
 			this.#basemapLayer = null;
 		}
