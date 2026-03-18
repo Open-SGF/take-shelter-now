@@ -3,7 +3,6 @@
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { ShelterFilterPanel, ShelterList } from '$lib/components/shelters';
-	import WeatherAlerts from '$lib/components/ui/WeatherAlerts/WeatherAlerts.svelte';
 	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
 	import { searchParamsToFilters, filtersToSearchParams } from '$lib/shelters/filter';
 
@@ -40,7 +39,6 @@
 </script>
 
 <div class="p-4 pt-6">
-	<WeatherAlerts />
 	<div class="mb-4">
 		<ShelterFilterPanel />
 	</div>
