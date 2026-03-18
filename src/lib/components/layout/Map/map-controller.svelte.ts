@@ -180,7 +180,9 @@ export class MapController {
 	setRadarEnabled(enabled: boolean) {
 		this.radarEnabled = enabled;
 
-		if (!this.leaflet || !this.map) return;
+		if (!this.leaflet || !this.map) {
+			return;
+		}
 
 		if (enabled) {
 			void this.#loadRadarOverlay(this.leaflet, this.map);
@@ -208,7 +210,9 @@ export class MapController {
 				radar: { past: Array<{ path: string }> };
 			};
 			const frames = data.radar.past;
-			if (frames.length === 0) return;
+			if (frames.length === 0) {
+			return;
+		}
 
 			const latestFrame = frames[frames.length - 1];
 			const tileUrl = data.host + latestFrame.path + '/256/{z}/{x}/{y}/2/1_1.png';
