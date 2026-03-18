@@ -35,7 +35,7 @@
 	]}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(canvas.queryByTestId('nav-menu-trigger')).not.toBeInTheDocument();
+		await expect(canvas.getByTestId('nav-menu-trigger')).toBeInTheDocument();
 	}}
 />
 

@@ -25,9 +25,7 @@ describe('/+page.svelte (requires-location)', () => {
 		shelterState = createShelterState(() => locationState.location);
 	});
 
-	test('shows shelter list when location is set', () => {
-		locationState.setReady({ latitude: 37.2, longitude: -93.2 }, 'geolocation');
-
+	test('renders shelter list', () => {
 		const Wrapper = (...args: Parameters<typeof Page>) => {
 			setLocationStateContext(locationState);
 			setShelterStateContext(shelterState);
