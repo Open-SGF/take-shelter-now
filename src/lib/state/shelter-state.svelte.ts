@@ -3,6 +3,7 @@ import type { Shelter, ShelterCategory } from '$lib/shelters/types';
 import { distanceBetween } from '$lib/geo';
 import { type ShelterFilters, defaultFilters } from '$lib/shelters/filter';
 import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
+import { config } from '$lib/config';
 
 type ShelterWithDistance = Shelter & { distance: number; isOpen: boolean };
 
@@ -52,7 +53,7 @@ export const createShelterState = (getLocation: LocationGetter): ShelterState =>
 
 		setLoading();
 
-		fetch('/shelters.json', { signal: abortController.signal })
+		fetch(config.sheltersJsonUrl, { signal: abortController.signal })
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error(`Failed to fetch shelters: ${response.status}`);
