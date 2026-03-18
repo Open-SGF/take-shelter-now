@@ -168,7 +168,10 @@ export class MapController {
 
 		if (this.radarEnabled) {
 			void this.#loadRadarOverlay(L, nextMap);
-			this.#radarRefreshInterval = setInterval(() => void this.#loadRadarOverlay(L, nextMap), 5 * 60 * 1000);
+			this.#radarRefreshInterval = setInterval(
+				() => void this.#loadRadarOverlay(L, nextMap),
+				5 * 60 * 1000,
+			);
 		}
 
 		this.isReady = true;
@@ -200,7 +203,10 @@ export class MapController {
 	async #loadRadarOverlay(L: typeof Leaflet, mapInstance: Leaflet.Map): Promise<void> {
 		try {
 			const response = await fetch('https://api.rainviewer.com/public/weather-maps.json');
-			const data = await response.json() as { host: string; radar: { past: Array<{ path: string }> } };
+			const data = (await response.json()) as {
+				host: string;
+				radar: { past: Array<{ path: string }> };
+			};
 			const frames = data.radar.past;
 			if (frames.length === 0) return;
 
