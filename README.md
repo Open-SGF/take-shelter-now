@@ -31,7 +31,7 @@ A website for helping people in weather emergencies find shelter fast.
 
 ### Environment variables
 
-- `EXTERNAL_SHELTERS_JSON_URL`: URL to fetch shelter data from, for local development (overrides Google Sheet if set)
+- `PUBLIC_SHELTERS_JSON_URL`: URL to fetch shelter data from, for local development (overrides Google Sheet if set)
 - `GOOGLE_SHEET_ID`: Published Google Sheet ID from `/spreadsheets/d/e/<ID>/pub`
 - `GOOGLE_SHEET_GID`: Specific worksheet/tab gid to export as CSV
 
