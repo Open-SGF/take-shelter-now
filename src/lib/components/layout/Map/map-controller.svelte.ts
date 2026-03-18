@@ -13,7 +13,7 @@ import type {
 
 export class MapController {
 	isReady = $state(false);
-	radarEnabled = $state(true);
+	radarEnabled = $state(false);
 	prefersReducedMotion = $state(false);
 	flyToDuration = $derived(this.prefersReducedMotion ? 0 : BASE_FLY_TO_DURATION);
 
@@ -165,14 +165,6 @@ export class MapController {
 
 		this.#basemapLayer = this.#createBasemapLayer(L, basemapStyle).addTo(nextMap);
 		this.#markerLayer = L.layerGroup().addTo(nextMap);
-
-		if (this.radarEnabled) {
-			void this.#loadRadarOverlay(L, nextMap);
-			this.#radarRefreshInterval = setInterval(
-				() => void this.#loadRadarOverlay(L, nextMap),
-				5 * 60 * 1000,
-			);
-		}
 
 		this.isReady = true;
 	}
