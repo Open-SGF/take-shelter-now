@@ -27,7 +27,7 @@ A website for helping people in weather emergencies find shelter fast.
 
 - Make sure you have [Node 24.x](https://nodejs.org) (Ideally using [nvm](https://github.com/nvm-sh/nvm))
 - Install dependencies `npm i`
-- Copy `.env.local` to `.env`
+- Copy `.env.example` to `.env`
 
 ### Environment variables
 
