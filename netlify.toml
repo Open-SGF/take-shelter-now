@@ -1,0 +1,4 @@
+[[headers]]
+  for = "/shelters.json"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
