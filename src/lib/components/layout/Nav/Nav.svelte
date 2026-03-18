@@ -9,6 +9,7 @@
 	import PopoverTrigger from '$lib/components/ui/popover/popover-trigger.svelte';
 	import Dialog from '$lib/components/ui/dialog/dialog.svelte';
 	import DialogContent from '$lib/components/ui/dialog/dialog-content.svelte';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import { getUserStateContext } from '$lib/state/user-state.svelte';
 	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
@@ -81,16 +82,15 @@
 			>
 				Emergency Contacts
 			</button>
-			<button
-				type="button"
-				class="hover:bg-interactive-bg flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors"
-				onclick={() => userState.setRadarEnabled(!userState.radarEnabled)}
+			<label
+				class="hover:bg-interactive-bg flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors"
 			>
 				<span>Radar</span>
-				<span class="text-xs {userState.radarEnabled ? 'text-sky-500' : 'text-text-tertiary'}">
-					{userState.radarEnabled ? 'On' : 'Off'}
-				</span>
-			</button>
+				<Checkbox
+					checked={userState.radarEnabled}
+					onCheckedChange={(v) => userState.setRadarEnabled(!!v)}
+				/>
+			</label>
 			{#if showClearFilters}
 				<button
 					type="button"
