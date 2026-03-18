@@ -1,12 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { vi } from 'vitest';
 
-vi.mock('$lib/config', () => ({
-	config: {
-		sheltersJsonUrl: '/shelters.json',
-	},
-}));
-
 Object.defineProperty(window, 'matchMedia', {
 	writable: true,
 	enumerable: true,
