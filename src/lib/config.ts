@@ -1,5 +1,5 @@
-import { PUBLIC_SHELTERS_JSON_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 export const config = {
-	sheltersJsonUrl: PUBLIC_SHELTERS_JSON_URL || '/shelters.json',
+	sheltersJsonUrl: env?.PUBLIC_SHELTERS_JSON_URL || '/shelters.json',
 };
