@@ -33,7 +33,7 @@ const writeDirectionsAppToStorage = (app?: DirectionsApp): void => {
 
 export const createUserState = (): UserState => {
 	let directionsApp = $state<DirectionsApp | undefined>(readDirectionsAppFromStorage());
-	let radarEnabled = $state<boolean>(storage.get<boolean>(RADAR_ENABLED_KEY) ?? true);
+	let radarEnabled = $state<boolean>(storage.get<boolean>(RADAR_ENABLED_KEY) ?? false);
 
 	const setDirectionsApp = (app?: DirectionsApp) => {
 		directionsApp = app;
