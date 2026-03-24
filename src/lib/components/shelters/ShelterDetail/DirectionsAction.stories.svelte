@@ -4,6 +4,7 @@
 	import type { ComponentProps } from 'svelte';
 	import type { Shelter } from '$lib/shelters/types';
 	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
+	import { storage } from '$lib/storage';
 	import DirectionsAction from './DirectionsAction.svelte';
 
 	type StoryArgs = ComponentProps<typeof DirectionsAction>;
@@ -79,6 +80,7 @@
 		},
 		decorators: [
 			(Story) => {
+				storage.clear();
 				setUserStateContext(createUserState());
 				return Story();
 			},
