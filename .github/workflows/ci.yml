@@ -43,7 +43,7 @@ jobs:
       - run: npm run check
       - run: npm run test:unit:coverage
       - name: Upload unit coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: unit
@@ -65,7 +65,7 @@ jobs:
       - run: npm run test:e2e
       - run: npm run test:storybook:coverage
       - name: Upload storybook coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: storybook
