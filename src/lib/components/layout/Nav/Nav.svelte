@@ -9,7 +9,7 @@
 	import PopoverTrigger from '$lib/components/ui/popover/popover-trigger.svelte';
 	import Dialog from '$lib/components/ui/dialog/dialog.svelte';
 	import DialogContent from '$lib/components/ui/dialog/dialog-content.svelte';
-	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Switch } from '$lib/components/ui/switch';
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import { getUserStateContext } from '$lib/state/user-state.svelte';
 	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
@@ -86,7 +86,7 @@
 				class="hover:bg-interactive-bg flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors"
 			>
 				<span>Radar</span>
-				<Checkbox
+				<Switch
 					checked={userState.radarEnabled}
 					onCheckedChange={(v) => userState.setRadarEnabled(!!v)}
 				/>
