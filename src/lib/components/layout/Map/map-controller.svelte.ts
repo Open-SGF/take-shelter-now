@@ -6,6 +6,7 @@ import { loadBasemapStyle, loadLeaflet } from './leaflet-loader';
 import { BASE_FLY_TO_DURATION, DEFAULT_MAP_CENTER, SELECTED_MARKER_ZOOM } from './constants';
 import type {
 	MapMarker,
+	MapTheme,
 	MapViewportChangedDetail,
 	ViewportConfig,
 	ViewportCallbacks,
@@ -35,6 +36,8 @@ export class MapController {
 	#currentMarkers: MapMarker[] = [];
 	#disposed = false;
 	#mediaQuery: MediaQueryList | null = null;
+	#theme: MapTheme = 'light';
+	#basemapStyleRequestId = 0;
 
 	#createMarkerIcon(L: typeof Leaflet, isSelected = false): Leaflet.DivIcon {
 		const size = isSelected ? 48 : 36;
@@ -132,15 +135,19 @@ export class MapController {
 		applyViewport(mapInstance);
 	}
 
-	async initialize(element: HTMLDivElement, config: ViewportConfig): Promise<void> {
+	async initialize(
+		element: HTMLDivElement,
+		config: ViewportConfig & { theme?: MapTheme },
+	): Promise<void> {
 		this.#mapElement = element;
 		this.#disposed = false;
+		this.#theme = config.theme ?? 'light';
 
 		this.#mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 		this.prefersReducedMotion = this.#mediaQuery.matches;
 		this.#mediaQuery.addEventListener('change', this.#handleMediaQueryChange);
 
-		const [L, basemapStyle] = await Promise.all([loadLeaflet(), loadBasemapStyle()]);
+		const [L, basemapStyle] = await Promise.all([loadLeaflet(), loadBasemapStyle(this.#theme)]);
 		if (this.#disposed || !this.#mapElement) {
 			return;
 		}
@@ -167,6 +174,54 @@ export class MapController {
 		this.#markerLayer = L.layerGroup().addTo(nextMap);
 
 		this.isReady = true;
+	}
+
+	setTheme(theme: MapTheme) {
+		if (theme === this.#theme) {
+			return;
+		}
+
+		this.#theme = theme;
+
+		if (this.#disposed || !this.leaflet || !this.map || !this.isReady) {
+			return;
+		}
+
+		void this.#refreshBasemapLayer();
+	}
+
+	async #refreshBasemapLayer(): Promise<void> {
+		if (this.#disposed || !this.leaflet || !this.map) {
+			return;
+		}
+
+		const requestId = ++this.#basemapStyleRequestId;
+		const style = await loadBasemapStyle(this.#theme);
+
+		if (this.#disposed || !this.leaflet || !this.map || requestId !== this.#basemapStyleRequestId) {
+			return;
+		}
+
+		if (this.#basemapLayer) {
+			this.#basemapLayer.remove();
+		}
+
+		this.#basemapLayer = this.#createBasemapLayer(this.leaflet, style).addTo(this.map);
+
+		if (this.#markerLayer) {
+			this.#markerLayer.remove();
+			this.#markerLayer.addTo(this.map);
+		}
+
+		if (this.#currentLocationMarker) {
+			this.#currentLocationMarker.remove();
+			this.#currentLocationMarker.addTo(this.map);
+		}
+
+		if (this.#radarLayer) {
+			this.#radarLayer.remove();
+			this.#radarLayer.addTo(this.map);
+		}
 	}
 
 	setRadarEnabled(enabled: boolean) {
