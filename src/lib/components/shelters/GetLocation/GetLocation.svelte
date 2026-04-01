@@ -3,6 +3,7 @@
 	import { AddressInput } from '$lib/components/shelters/AddressInput';
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import type { GeoPoint } from '$lib/geo';
+	import NavigationIcon from '@lucide/svelte/icons/navigation';
 
 	type GetLocationProps = {
 		onLocationConfirmed?: () => void;
@@ -82,12 +83,13 @@
 	{:else}
 		<div class="space-y-4">
 			{#if locationState.isGeolocationSupported}
-				<Button onclick={handleGeolocationClick} size="lg" class="w-full">
-					<img
-						src="https://res.cloudinary.com/du9tnv8ss/image/upload/v1756782708/navigation_bgtfde.png"
-						alt=""
-						class="mr-2 h-6 w-6"
-					/>
+				<Button
+					onclick={handleGeolocationClick}
+					variant="default"
+					size="lg"
+					class="w-full !bg-sky-600 !text-white shadow-xs hover:!bg-sky-700 dark:!bg-sky-500 dark:hover:!bg-sky-400"
+				>
+					<NavigationIcon class="size-5" aria-hidden="true" />
 					Use Current Location
 				</Button>
 			{/if}
