@@ -142,7 +142,7 @@
 	<Button
 		variant="default"
 		size="sm"
-		class="gap-2 bg-rose-600 hover:bg-rose-700"
+		class="gap-2 bg-rose-600 text-white hover:bg-rose-700 dark:bg-rose-500 dark:text-white dark:hover:bg-rose-600"
 		disabled={!hasValidDestination}
 		onclick={handleDirectionsClick}
 		onpointerdown={handlePointerDown}

@@ -1,5 +1,6 @@
 import type * as Leaflet from 'leaflet';
 import type { StyleSpecification } from 'maplibre-gl';
+import type { MapTheme } from './types';
 
 const resolveLeafletModule = (
 	module: typeof Leaflet & { default?: typeof Leaflet },
@@ -22,7 +23,10 @@ export const loadLeaflet = async (): Promise<typeof Leaflet> => {
 	return resolveLeafletModule(leafletModule);
 };
 
-export const loadBasemapStyle = async (): Promise<StyleSpecification> => {
-	const module = await import('./map-styles-light.json');
+export const loadBasemapStyle = async (theme: MapTheme): Promise<StyleSpecification> => {
+	const module =
+		theme === 'dark'
+			? await import('./map-styles-dark.json')
+			: await import('./map-styles-light.json');
 	return module.default as unknown as StyleSpecification;
 };

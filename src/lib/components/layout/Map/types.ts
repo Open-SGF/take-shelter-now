@@ -1,5 +1,7 @@
 import type { GeoPoint } from '$lib/geo';
 
+export type MapTheme = 'light' | 'dark';
+
 export type MapMarker = GeoPoint & {
 	id: string;
 	label?: string;
@@ -42,5 +44,6 @@ export interface MapProps {
 	centerPin?: CenterPinMode;
 	currentLocation?: GeoPoint | null;
 	onViewportChange?: ViewportCallbacks;
+	theme?: MapTheme;
 	class?: string;
 }
