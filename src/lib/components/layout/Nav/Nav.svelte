@@ -63,10 +63,7 @@
 
 <header
 	data-testid="nav"
-	class={cn(
-		'bg-surface flex h-[72px] w-full items-center justify-between rounded-b-2xl p-8',
-		className,
-	)}
+	class={cn('bg-surface flex h-[72px] w-full items-center justify-between p-8', className)}
 >
 	<nav aria-label="Primary" class="flex items-center">
 		<img class="w-[218px] dark:hidden" src="/images/logo-light.svg" alt="Take Shelter Now Logo" />
