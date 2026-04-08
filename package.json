@@ -64,7 +64,7 @@
 		"globals": "^17.4.0",
 		"jsdom": "^29.0.2",
 		"mode-watcher": "^1.1.0",
-		"msw": "^2.13.1",
+		"msw": "2.12.14",
 		"msw-storybook-addon": "^2.0.6",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.5.1",
