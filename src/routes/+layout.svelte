@@ -11,6 +11,8 @@
 	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
 	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
 	import { navigateToShelterDetail } from '$lib/shelters/navigation';
+	import { ModeWatcher, mode } from 'mode-watcher';
+	import type { MapTheme } from '$lib/components/layout/Map/types';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -44,6 +46,7 @@
 	};
 
 	let selectedShelterSlug = $derived(page.params.slug);
+	let mapTheme = $derived<MapTheme>(mode.current === 'dark' ? 'dark' : 'light');
 
 	let markers: MapMarker[] = $derived.by(() => {
 		if (!locationState.hasLocation) {
@@ -93,6 +96,8 @@
 <!-- eslint-disable-next-line svelte/no-at-html-tags -- Version is a build-time constant, not user input -->
 {@html `<!-- Version: ${__APP_VERSION__} -->`}
 
+<ModeWatcher />
+
 <AppShell>
 	{#snippet map()}
 		<Map
@@ -100,6 +105,7 @@
 			viewport={{ defaultCenter, defaultZoom: 13 }}
 			markers={{ items: markers, onTap: handleMarkerTap }}
 			currentLocation={locationState.location}
+			theme={mapTheme}
 			centerPin={{
 				enabled: !!locationState.pendingLocation,
 				location: centerPinLocation ?? undefined,

@@ -2,7 +2,7 @@
 	import { cn } from '$lib/components/utils';
 	import { MapController } from './map-controller.svelte.js';
 	import { DEFAULT_MAP_CENTER } from './constants.js';
-	import type { MapMarker, MapProps } from './types';
+	import type { MapMarker, MapProps, MapTheme } from './types';
 
 	let {
 		viewport = {},
@@ -11,8 +11,9 @@
 		currentLocation = null,
 		onViewportChange = {},
 		radarEnabled = true,
+		theme = 'light',
 		class: className,
-	}: MapProps & { radarEnabled?: boolean } = $props();
+	}: MapProps & { radarEnabled?: boolean; theme?: MapTheme } = $props();
 
 	let mapElement: HTMLDivElement | null = $state(null);
 	let controller = new MapController();
@@ -21,6 +22,7 @@
 		if (mapElement) {
 			void controller.initialize(mapElement, {
 				defaultCenter: DEFAULT_MAP_CENTER,
+				theme,
 				...viewport,
 			});
 		}
@@ -61,6 +63,12 @@
 	$effect(() => {
 		if (controller.isReady) {
 			controller.setRadarEnabled(radarEnabled);
+		}
+	});
+
+	$effect(() => {
+		if (controller.isReady) {
+			controller.setTheme(theme);
 		}
 	});
 </script>

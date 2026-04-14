@@ -1,9 +1,14 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/svelte';
+import { fireEvent, render, screen } from '@testing-library/svelte';
 import '@testing-library/jest-dom/vitest';
 import { setLocationStateContext, createLocationState } from '$lib/state/location-state.svelte';
 import { setUserStateContext, createUserState } from '$lib/state/user-state.svelte';
 import { setShelterStateContext, createShelterState } from '$lib/state/shelter-state.svelte';
+
+const { modeStore, setModeMock } = vi.hoisted(() => ({
+	modeStore: { current: 'light' as 'light' | 'dark' },
+	setModeMock: vi.fn(),
+}));
 
 vi.mock('$app/state', () => ({
 	page: {
@@ -15,14 +20,21 @@ vi.mock('$app/navigation', () => ({
 	goto: vi.fn(),
 }));
 
+vi.mock('mode-watcher', () => ({
+	mode: modeStore,
+	setMode: setModeMock,
+}));
+
 describe('Nav', () => {
 	let Nav: typeof import('./Nav.svelte').default;
 
 	beforeEach(async () => {
 		Nav = (await import('./Nav.svelte')).default;
+		modeStore.current = 'light';
+		setModeMock.mockReset();
 	});
 
-	test('uses header and navigation landmarks', () => {
+	const renderNav = () => {
 		const locationState = createLocationState();
 		const userState = createUserState();
 		const shelterState = createShelterState(() => locationState.location);
@@ -35,24 +47,17 @@ describe('Nav', () => {
 		};
 
 		render(Wrapper);
+	};
+
+	test('uses header and navigation landmarks', () => {
+		renderNav();
 
 		expect(screen.getByRole('banner')).toBeInTheDocument();
 		expect(screen.getByRole('navigation', { name: 'Primary' })).toBeInTheDocument();
 	});
 
 	test('renders site logo', () => {
-		const locationState = createLocationState();
-		const userState = createUserState();
-		const shelterState = createShelterState(() => locationState.location);
-
-		const Wrapper = (...args: Parameters<typeof Nav>) => {
-			setLocationStateContext(locationState);
-			setUserStateContext(userState);
-			setShelterStateContext(shelterState);
-			return Nav(...args);
-		};
-
-		render(Wrapper);
+		renderNav();
 
 		expect(screen.getByAltText('Take Shelter Now Logo')).toBeInTheDocument();
 	});
@@ -118,5 +123,14 @@ describe('Nav', () => {
 		render(Wrapper);
 
 		expect(screen.getByTestId('nav-menu-trigger')).toBeInTheDocument();
+	});
+
+	test('toggles dark mode from nav menu', async () => {
+		renderNav();
+
+		await fireEvent.click(screen.getByTestId('nav-menu-trigger'));
+		await fireEvent.click(screen.getByRole('switch', { name: 'Dark mode' }));
+
+		expect(setModeMock).toHaveBeenCalledWith('dark');
 	});
 });

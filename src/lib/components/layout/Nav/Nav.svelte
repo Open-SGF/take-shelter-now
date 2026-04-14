@@ -10,9 +10,11 @@
 	import Dialog from '$lib/components/ui/dialog/dialog.svelte';
 	import DialogContent from '$lib/components/ui/dialog/dialog-content.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Switch } from '$lib/components/ui/switch';
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import { getUserStateContext } from '$lib/state/user-state.svelte';
 	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import { mode, setMode } from 'mode-watcher';
 
 	type NavProps = {
 		class?: string;
@@ -41,6 +43,7 @@
 	const showClearFilters = $derived(isListPage && shelterState.hasActiveFilters);
 
 	let contactsDialogOpen = $state(false);
+	let isDarkMode = $derived(mode.current === 'dark');
 
 	function handleEditLocationClick() {
 		goto(resolve('/location/'));
@@ -53,17 +56,19 @@
 	function handleResetDirectionsAppClick() {
 		userState.setDirectionsApp(undefined);
 	}
+
+	function handleDarkModeToggle(enabled: boolean) {
+		setMode(enabled ? 'dark' : 'light');
+	}
 </script>
 
 <header
 	data-testid="nav"
-	class={cn(
-		'bg-surface flex h-[72px] w-full items-center justify-between rounded-b-2xl p-8',
-		className,
-	)}
+	class={cn('bg-surface flex h-[72px] w-full items-center justify-between p-8', className)}
 >
 	<nav aria-label="Primary" class="flex items-center">
-		<img class="w-[218px]" src="/images/logo-dark.png" alt="Take Shelter Now Logo" />
+		<img class="w-[218px] dark:hidden" src="/images/logo-light.svg" alt="Take Shelter Now Logo" />
+		<img class="hidden w-[218px] dark:block" src="/images/logo.svg" alt="" aria-hidden="true" />
 	</nav>
 
 	<Popover>
@@ -75,6 +80,12 @@
 			<span class="sr-only">Menu</span>
 		</PopoverTrigger>
 		<PopoverContent align="end" class="z-popover w-56 p-1">
+			<label
+				class="hover:bg-interactive-bg flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors"
+			>
+				<span>Dark mode</span>
+				<Switch checked={isDarkMode} onCheckedChange={(v) => handleDarkModeToggle(!!v)} />
+			</label>
 			<button
 				type="button"
 				class="hover:bg-interactive-bg flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors"
