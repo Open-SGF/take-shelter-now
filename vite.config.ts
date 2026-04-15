@@ -27,9 +27,16 @@ function getVersion(): string {
 	return 'dev';
 }
 
+function getSiteUrl(): string {
+	return (
+		process.env.PUBLIC_SITE_URL || process.env.DEPLOY_PRIME_URL || 'https://www.takeshelternow.org'
+	);
+}
+
 export default defineConfig({
 	define: {
 		__APP_VERSION__: JSON.stringify(getVersion()),
+		__SITE_URL__: JSON.stringify(getSiteUrl()),
 	},
 	optimizeDeps: {
 		include: ['storybook/preview-api', '@storybook/svelte/entry-preview'],

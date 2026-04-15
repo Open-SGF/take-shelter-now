@@ -32,6 +32,8 @@ A website for helping people in weather emergencies find shelter fast.
 ### Environment variables
 
 - `PUBLIC_SHELTERS_JSON_URL`: URL to fetch shelter data from, for local development (overrides Google Sheet if set)
+- `PUBLIC_SITE_ENV`: Set to `production` to allow indexing; any other value disables indexing
+- `PUBLIC_SITE_URL`: Canonical site URL used for sitemap and other absolute URLs
 - `GOOGLE_SHEET_ID`: Published Google Sheet ID from `/spreadsheets/d/e/<ID>/pub`
 - `GOOGLE_SHEET_GID`: Specific worksheet/tab gid to export as CSV
 

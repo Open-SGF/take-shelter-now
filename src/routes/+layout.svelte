@@ -2,6 +2,7 @@
 	import '../app.css';
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
+	import { config } from '$lib/config';
 	import { AppShell } from '$lib/components/layout';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import type { GeoPoint } from '$lib/geo';
@@ -91,7 +92,15 @@
 			});
 		}
 	}
+
+	const robotsContent = config.allowIndexing ? undefined : 'noindex, nofollow';
 </script>
+
+<svelte:head>
+	{#if robotsContent}
+		<meta name="robots" content={robotsContent} />
+	{/if}
+</svelte:head>
 
 <!-- eslint-disable-next-line svelte/no-at-html-tags -- Version is a build-time constant, not user input -->
 {@html `<!-- Version: ${__APP_VERSION__} -->`}
