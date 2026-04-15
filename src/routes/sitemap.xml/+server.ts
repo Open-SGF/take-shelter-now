@@ -1,3 +1,4 @@
+import { SitemapStream, streamToPromise } from 'sitemap';
 import { loadSheltersAtBuildTime } from '$lib/shelters/source.server';
 import { config } from '$lib/config';
 
@@ -7,27 +8,6 @@ type SitemapEntry = {
 	path: string;
 	lastModified?: string;
 };
-
-function xml(strings: TemplateStringsArray, ...values: string[]): string {
-	return String.raw({ raw: strings }, ...values)
-		.split('\n')
-		.map((line) => line.trimEnd())
-		.join('\n')
-		.trim();
-}
-
-function escapeXml(value: string): string {
-	return value
-		.replaceAll('&', '&amp;')
-		.replaceAll('<', '&lt;')
-		.replaceAll('>', '&gt;')
-		.replaceAll('"', '&quot;')
-		.replaceAll("'", '&apos;');
-}
-
-function toAbsoluteUrl(path: string): string {
-	return new URL(path, config.siteUrl).toString();
-}
 
 function formatLastModified(value: string): string | undefined {
 	const parsed = new Date(value);
@@ -39,32 +19,19 @@ function formatLastModified(value: string): string | undefined {
 	return parsed.toISOString();
 }
 
-function renderLastMod(lastModified?: string): string {
-	if (!lastModified) {
-		return '';
+async function renderSitemap(entries: SitemapEntry[]): Promise<string> {
+	const stream = new SitemapStream({ hostname: config.siteUrl });
+
+	for (const entry of entries) {
+		stream.write({
+			url: entry.path,
+			...(entry.lastModified ? { lastmodISO: entry.lastModified } : {}),
+		});
 	}
 
-	return xml`
-		<lastmod>${escapeXml(lastModified)}</lastmod>
-	`;
-}
+	stream.end();
 
-function renderUrlEntry(entry: SitemapEntry): string {
-	return xml`
-		<url>
-			<loc>${escapeXml(toAbsoluteUrl(entry.path))}</loc>
-			${renderLastMod(entry.lastModified)}
-		</url>
-	`;
-}
-
-function renderSitemap(entries: SitemapEntry[]): string {
-	return xml`
-		<?xml version="1.0" encoding="UTF-8"?>
-		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-			${entries.map(renderUrlEntry).join('\n')}
-		</urlset>
-	`;
+	return (await streamToPromise(stream)).toString();
 }
 
 export const GET = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
@@ -78,7 +45,7 @@ export const GET = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
 		})),
 	];
 
-	const body = renderSitemap(entries);
+	const body = await renderSitemap(entries);
 
 	return new Response(body, {
 		headers: {
