@@ -25,6 +25,7 @@ jobs:
       CHROMATIC_BRANCH: ${{ github.event.pull_request.head.ref }}
       CHROMATIC_SHA: ${{ github.event.pull_request.head.sha }}
       CHROMATIC_SLUG: ${{ github.event.pull_request.head.repo.full_name }}
+      PUBLIC_SITE_ENV: ci
     steps:
       - name: Checkout PR head commit
         uses: actions/checkout@v6
@@ -57,6 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+      PUBLIC_SITE_ENV: ci
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
