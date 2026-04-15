@@ -10,7 +10,7 @@
 		centerPin = {},
 		currentLocation = null,
 		onViewportChange = {},
-		radarEnabled = true,
+		radarEnabled = false,
 		theme = 'light',
 		class: className,
 	}: MapProps & { radarEnabled?: boolean; theme?: MapTheme } = $props();
