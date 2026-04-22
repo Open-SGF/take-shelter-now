@@ -8,6 +8,9 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	const __APP_VERSION__: string;
+	const __SITE_URL__: string;
 }
 
 export {};

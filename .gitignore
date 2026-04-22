@@ -1,5 +1,6 @@
 test-results
 node_modules
+version.json
 
 # Output
 .output
@@ -23,9 +24,7 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 coverage
-
-# Python
-*.pyc
+storybook-static
 
 # Editor
 .idea

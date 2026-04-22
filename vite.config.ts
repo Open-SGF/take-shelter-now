@@ -1,10 +1,46 @@
 import 'vitest/config';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import fs from 'node:fs';
 import tailwindcss from '@tailwindcss/vite';
+import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { svelteTesting } from '@testing-library/svelte/vite';
+import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+
+function getVersion(): string {
+	try {
+		const versionFile = fs.readFileSync('version.json', 'utf-8');
+		const { version } = JSON.parse(versionFile);
+		return version;
+	} catch {
+		// version.json doesn't exist, fall through to other methods
+	}
+
+	if (process.env.COMMIT_REF) {
+		return process.env.COMMIT_REF.slice(0, 7);
+	}
+
+	return 'dev';
+}
+
+function getSiteUrl(): string {
+	return (
+		process.env.PUBLIC_SITE_URL || process.env.DEPLOY_PRIME_URL || 'https://www.takeshelternow.org'
+	);
+}
+
 export default defineConfig({
+	define: {
+		__APP_VERSION__: JSON.stringify(getVersion()),
+		__SITE_URL__: JSON.stringify(getSiteUrl()),
+	},
+	optimizeDeps: {
+		include: ['storybook/preview-api', '@storybook/svelte/entry-preview'],
+	},
 	plugins: [tailwindcss(), sveltekit()],
 	test: {
 		coverage: {
@@ -22,21 +58,35 @@ export default defineConfig({
 				extends: './vite.config.ts',
 				plugins: [svelteTesting()],
 				test: {
-					name: 'client',
+					name: 'unit',
 					environment: 'jsdom',
 					clearMocks: true,
-					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+					include: ['src/**/*.{test,spec}.{js,ts}'],
 					exclude: ['src/lib/server/**'],
-					setupFiles: ['./vitest-setup-client.ts'],
+					setupFiles: ['./vitest/setup.ts'],
 				},
 			},
 			{
 				extends: './vite.config.ts',
+				plugins: [
+					storybookTest({
+						configDir: path.join(rootDir, '.storybook'),
+						storybookScript: 'npm run storybook -- --no-open',
+					}),
+				],
 				test: {
-					name: 'server',
-					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+					name: 'storybook',
+					browser: {
+						enabled: true,
+						provider: playwright({
+							launchOptions: {
+								args: ['--use-gl=angle', '--use-angle=swiftshader'],
+							},
+						}),
+						instances: [{ browser: 'chromium' }],
+						headless: true,
+					},
+					setupFiles: ['./vitest/setup-storybook.ts'],
 				},
 			},
 		],

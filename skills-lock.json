@@ -1,0 +1,15 @@
+{
+	"version": 1,
+	"skills": {
+		"svelte5-best-practices": {
+			"source": "ejirocodes/agent-skills",
+			"sourceType": "github",
+			"computedHash": "bfcbba3d355aede6f6be9720f195206d4dcaa7c152787ea00c06cb4a1ac44ba4"
+		},
+		"tailwind-v4": {
+			"source": "existential-birds/beagle",
+			"sourceType": "github",
+			"computedHash": "1765f9873060271fe9a0ba7c06465b8fbd6137a0a285a56cb5c38295c6057a5e"
+		}
+	}
+}
