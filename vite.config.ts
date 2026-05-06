@@ -41,6 +41,11 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ['storybook/preview-api', '@storybook/svelte/entry-preview'],
 	},
+	ssr: {
+		optimizeDeps: {
+			include: ['bits-ui', 'mode-watcher', 'svelte-sonner', '@lucide/svelte'],
+		},
+	},
 	plugins: [tailwindcss(), sveltekit()],
 	test: {
 		coverage: {
