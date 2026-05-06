@@ -11,7 +11,6 @@
 	let pageDescription = $derived(
 		`${data.shelter.name} shelter at ${data.shelter.addressLine1}, ${data.shelter.city}, ${data.shelter.state}.`
 	);
-	let pageUrl = $derived(`${config.siteUrl}/shelters/${data.shelter.slug}/`);
 	let imageUrl = $derived(`${config.siteUrl}/shelters/${data.shelter.slug}/og.png`);
 </script>
 
@@ -21,7 +20,6 @@
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={pageDescription} />
-	<meta property="og:url" content={pageUrl} />
 	<meta property="og:image" content={imageUrl} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />

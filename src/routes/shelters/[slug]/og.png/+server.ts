@@ -1,7 +1,9 @@
 import { error } from '@sveltejs/kit';
 import { ImageResponse } from '@ethercorps/sveltekit-og';
 import type { RequestHandler } from './$types';
-import OgImage from '$lib/components/social/OgImage.svelte';
+import ShelterOgImage from '$lib/components/social/ShelterOgImage.svelte';
+import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
+import { formatShelterCategory, getAvailableAmenities } from '$lib/shelters/presentation';
 import { loadSheltersAtBuildTime } from '$lib/shelters/source.server';
 import type { Shelter } from '$lib/shelters/types';
 
@@ -27,10 +29,22 @@ export const GET: RequestHandler = async ({ params, fetch }) => {
 		throw error(404, 'Shelter not found');
 	}
 
-	const subtitle = `${shelter.addressLine1}, ${shelter.city}, ${shelter.state}`;
+	const subtitle = shelter.addressLine1;
+	const location = [shelter.city, shelter.state].filter((part) => part !== '').join(', ');
+	const hoursSummary = summarizeShelterHours(shelter.hours);
+	const amenityLabelMap = {
+		petsAllowed: 'Pets allowed',
+		backupPower: 'Backup power',
+		accessibility: 'Accessible',
+	} as const;
+	const tags = [
+		hoursSummary.statusLabel,
+		formatShelterCategory(shelter.category),
+		...getAvailableAmenities(shelter).map((amenity) => amenityLabelMap[amenity]),
+	].slice(0, 4);
 
 	return new ImageResponse(
-		OgImage,
+		ShelterOgImage,
 		{
 			width: 1200,
 			height: 630,
@@ -38,7 +52,9 @@ export const GET: RequestHandler = async ({ params, fetch }) => {
 		{
 			title: shelter.name,
 			subtitle,
-			label: 'Emergency Shelter',
+			label: 'Emergency shelter',
+			location,
+			tags,
 		}
 	);
 };
