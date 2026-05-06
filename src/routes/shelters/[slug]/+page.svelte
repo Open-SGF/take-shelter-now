@@ -9,7 +9,7 @@
 
 	let pageTitle = $derived(`${data.shelter.name} | Take Shelter Now`);
 	let pageDescription = $derived(
-		`${data.shelter.name} shelter at ${data.shelter.addressLine1}, ${data.shelter.city}, ${data.shelter.state}.`
+		`${data.shelter.name} shelter at ${data.shelter.addressLine1}, ${data.shelter.city}, ${data.shelter.state}.`,
 	);
 	let imageUrl = $derived(`${config.siteUrl}/shelters/${data.shelter.slug}/og.png`);
 </script>
