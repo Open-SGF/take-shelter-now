@@ -94,9 +94,28 @@
 	}
 
 	const robotsContent = config.allowIndexing ? undefined : 'noindex, nofollow';
+	const siteTitle = 'Take Shelter Now';
+	const siteDescription = 'Find a safe place fast during weather emergencies.';
+	const defaultImageUrl = `${config.siteUrl}/og.png`;
+	let canonicalUrl = $derived(`${config.siteUrl}${page.url.pathname}`);
 </script>
 
 <svelte:head>
+	<title>{siteTitle}</title>
+	<meta name="description" content={siteDescription} />
+	<meta property="og:site_name" content={siteTitle} />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content={siteTitle} />
+	<meta property="og:description" content={siteDescription} />
+	<meta property="og:url" content={canonicalUrl} />
+	<meta property="og:image" content={defaultImageUrl} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Take Shelter Now social share image" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={siteTitle} />
+	<meta name="twitter:description" content={siteDescription} />
+	<meta name="twitter:image" content={defaultImageUrl} />
 	{#if robotsContent}
 		<meta name="robots" content={robotsContent} />
 	{/if}
