@@ -7,6 +7,7 @@ import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { svelteTesting } from '@testing-library/svelte/vite';
 import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { sveltekitOG } from '@ethercorps/sveltekit-og/plugin';
 import { defineConfig } from 'vite';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
@@ -46,7 +47,7 @@ export default defineConfig({
 			include: ['bits-ui', 'mode-watcher', 'svelte-sonner', '@lucide/svelte'],
 		},
 	},
-	plugins: [tailwindcss(), sveltekit()],
+	plugins: [tailwindcss(), sveltekit(), sveltekitOG()],
 	test: {
 		coverage: {
 			exclude: [
