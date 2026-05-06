@@ -30,4 +30,5 @@
 			</div>
 		</div>
 	</div>
+	<div class="flex h-2.5 w-full bg-[#e62647]"></div>
 </div>
