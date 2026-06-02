@@ -46,7 +46,7 @@ jobs:
 
       - name: Run Chromatic
         if: env.CHROMATIC_PROJECT_TOKEN != ''
-        uses: chromaui/action@v16
+        uses: chromaui/action@v17
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
@@ -76,7 +76,7 @@ jobs:
 
       - name: Run Chromatic
         if: env.CHROMATIC_PROJECT_TOKEN != ''
-        uses: chromaui/action@v16
+        uses: chromaui/action@v17
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
