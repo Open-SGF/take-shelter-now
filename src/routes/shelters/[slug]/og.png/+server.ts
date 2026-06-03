@@ -5,7 +5,6 @@ import ShelterOgImage from '$lib/components/social/ShelterOgImage.svelte';
 import { formatShelterAddress } from '$lib/shelters/presentation';
 import { loadSheltersAtBuildTime } from '$lib/shelters/source.server';
 import type { Shelter } from '$lib/shelters/types';
-import { config } from '$lib/config';
 
 let shelterCache: Shelter[] | null = null;
 
@@ -40,7 +39,6 @@ export const GET: RequestHandler = async ({ params, fetch }) => {
 		{
 			title: shelter.name,
 			address,
-			logoSrc: `${config.siteUrl}/images/logo-light.svg`,
 		},
 	);
 };

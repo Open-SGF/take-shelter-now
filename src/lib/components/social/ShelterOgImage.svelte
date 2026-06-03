@@ -1,14 +1,16 @@
 <script lang="ts">
+	import logoLightSvg from '../../../../static/images/logo-light.svg?raw';
+
 	type Props = {
 		title?: string;
 		address?: string;
-		logoSrc: string;
 	};
+
+	const logoSrc = `data:image/svg+xml;utf8,${encodeURIComponent(logoLightSvg)}`;
 
 	let {
 		title = 'Find shelter fast during weather emergencies.',
 		address = 'Nearby shelters, hours, and access details.',
-		logoSrc,
 	}: Props = $props();
 </script>
 
@@ -16,7 +18,13 @@
 	<div class="flex flex-1 p-10">
 		<div class="flex flex-1 flex-col bg-white px-14 py-12">
 			<div class="flex flex-row items-center justify-between">
-				<img src={logoSrc} alt="Take Shelter Now" style="width: 260px; height: 43px" />
+				<img
+					src={logoSrc}
+					alt="Take Shelter Now"
+					width="260"
+					height="43"
+					style="width: 260px; height: 43px"
+				/>
 				<div class="flex text-lg font-semibold text-slate-400">takeshelternow.org</div>
 			</div>
 
