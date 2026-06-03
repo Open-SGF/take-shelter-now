@@ -7,9 +7,11 @@ const config = {
 		adapter: adapter(),
 		prerender: {
 			handleUnseenRoutes: ({ routes }) => {
-				const onlyMissingShelterSlug = routes.length === 1 && routes[0] === '/shelters/[slug]';
+				const allowedMissingRoutes = new Set(['/shelters/[slug]', '/shelters/[slug]/og.png']);
+				const onlyMissingShelterRoutes =
+					routes.length > 0 && routes.every((route) => allowedMissingRoutes.has(route));
 
-				if (onlyMissingShelterSlug) {
+				if (onlyMissingShelterRoutes) {
 					return;
 				}
 
