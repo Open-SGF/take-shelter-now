@@ -24,6 +24,7 @@
 		"shadcn": "shadcn-svelte"
 	},
 	"dependencies": {
+		"@ethercorps/sveltekit-og": "^4.2.1",
 		"@internationalized/date": "^3.12.2",
 		"@maplibre/maplibre-gl-leaflet": "^0.1.3",
 		"@stadiamaps/api": "^9.1.0",
