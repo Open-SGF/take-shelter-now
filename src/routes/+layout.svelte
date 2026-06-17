@@ -2,8 +2,7 @@
 	import '../app.css';
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { config } from '$lib/config';
-	import { SITE_TITLE, siteUrl } from '$lib/seo';
+	import { GlobalSeo } from '$lib/components/seo';
 	import { AppShell } from '$lib/components/layout';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import type { GeoPoint } from '$lib/geo';
@@ -93,19 +92,9 @@
 			});
 		}
 	}
-
-	const robotsContent = config.allowIndexing ? undefined : 'noindex, nofollow';
-	let canonicalUrl = $derived(siteUrl(page.url.pathname));
 </script>
 
-<svelte:head>
-	<meta property="og:site_name" content={SITE_TITLE} />
-	<meta property="og:url" content={canonicalUrl} />
-	<link rel="canonical" href={canonicalUrl} />
-	{#if robotsContent}
-		<meta name="robots" content={robotsContent} />
-	{/if}
-</svelte:head>
+<GlobalSeo />
 
 <!-- eslint-disable-next-line svelte/no-at-html-tags -- Version is a build-time constant, not user input -->
 {@html `<!-- Version: ${__APP_VERSION__} -->`}

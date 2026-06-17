@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { JsonLd, Seo } from '$lib/components/seo';
+	import { JsonLd, PageSeo } from '$lib/components/seo';
 	import { DEFAULT_DESCRIPTION, SITE_TITLE, siteJsonLd, siteUrl } from '$lib/seo';
 	import { getLocationStateContext } from '$lib/state/location-state.svelte';
 	import type { Snippet } from 'svelte';
@@ -20,7 +20,7 @@
 	});
 </script>
 
-<Seo title={pageTitle} description={DEFAULT_DESCRIPTION} {imageUrl} />
+<PageSeo title={pageTitle} description={DEFAULT_DESCRIPTION} {imageUrl} />
 <JsonLd value={jsonLd} />
 
 {#if locationState.hasLocation}
