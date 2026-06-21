@@ -9,7 +9,7 @@ Minimal guidance for automation and AI agents working in this repo.
 
 ## Setup
 
-- Node: 24.11.0 (see `.nvmrc`)
+- Node: 26.x (see `.nvmrc`)
 - Install: `npm i`
 
 ## Common Commands
