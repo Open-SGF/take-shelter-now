@@ -11,6 +11,7 @@
 	import { isValidPoint } from '$lib/geo';
 	import type { Shelter } from '$lib/shelters/types';
 	import { toast } from 'svelte-sonner';
+	import { plausible } from '$lib/components/analytics/plausible';
 
 	type DirectionsActionProps = {
 		shelter: Shelter;
@@ -60,6 +61,7 @@
 	}
 
 	function launchApp(app: DirectionsApp): void {
+		plausible('maps_launched', { props: { app } });
 		const url = app === 'apple' ? getAppleMapsUrl() : getGoogleMapsUrl();
 		if (url) {
 			window.open(url, '_blank', 'noopener,noreferrer');
@@ -121,6 +123,7 @@
 			await navigator.clipboard.writeText(fullAddress);
 			copiedAddress = true;
 			toast.success('Address copied to clipboard');
+			plausible('address_copied', { props: { slug: shelter.slug } });
 			setTimeout(() => {
 				copiedAddress = false;
 			}, 2000);

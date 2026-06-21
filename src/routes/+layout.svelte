@@ -3,6 +3,7 @@
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { PlausibleAnalytics } from '$lib/components/analytics';
+	import { plausible } from '$lib/components/analytics/plausible';
 	import { config } from '$lib/config';
 	import { GlobalSeo } from '$lib/components/seo';
 	import { AppShell } from '$lib/components/layout';
@@ -38,6 +39,19 @@
 	setUserStateContext(userState);
 	setLocationStateContext(locationState);
 	setShelterStateContext(shelterState);
+
+	$effect(() => {
+		const props: Record<string, string> = {
+			theme: mode.current ?? 'light',
+			radar: String(userState.radarEnabled),
+			directions_app: userState.directionsApp ?? 'none',
+		};
+		const location = locationState.location;
+		if (location) {
+			props.location_method = location.address ? 'address' : 'geolocation';
+		}
+		plausible.init({ customProperties: props });
+	});
 
 	$effect(() => {
 		shelterState.loadShelters();

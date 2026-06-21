@@ -14,6 +14,7 @@
 	import { getUserStateContext } from '$lib/state/user-state.svelte';
 	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
 	import { mode, setMode } from 'mode-watcher';
+	import { plausible } from '$lib/components/analytics/plausible';
 
 	type NavProps = {
 		class?: string;
@@ -56,8 +57,15 @@
 		userState.setDirectionsApp(undefined);
 	}
 
+	function handleRadarToggle(enabled: boolean) {
+		userState.setRadarEnabled(enabled);
+		plausible('radar_toggle', { props: { enabled } });
+	}
+
 	function handleDarkModeToggle(enabled: boolean) {
-		setMode(enabled ? 'dark' : 'light');
+		const theme = enabled ? 'dark' : 'light';
+		setMode(theme);
+		plausible('theme_toggle', { props: { theme } });
 	}
 </script>
 
@@ -96,10 +104,7 @@
 				class="hover:bg-interactive-bg flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors"
 			>
 				<span>Radar</span>
-				<Switch
-					checked={userState.radarEnabled}
-					onCheckedChange={(v) => userState.setRadarEnabled(!!v)}
-				/>
+				<Switch checked={userState.radarEnabled} onCheckedChange={(v) => handleRadarToggle(!!v)} />
 			</label>
 			{#if showClearFilters}
 				<button

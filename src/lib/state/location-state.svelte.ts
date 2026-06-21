@@ -1,6 +1,7 @@
 import { createContext } from 'svelte';
 import type { GeoPoint } from '$lib/geo';
 import { storage } from '$lib/storage';
+import { plausible } from '$lib/components/analytics/plausible';
 
 export type LocationMethod = 'geolocation' | 'address';
 
@@ -120,6 +121,7 @@ export const createLocationState = (): LocationState => {
 		writeLocationToStorage(stored);
 		status = { kind: 'ready', method };
 		pendingLocation = null;
+		plausible('location_set', { props: { method } });
 	};
 
 	const setError = (
@@ -127,6 +129,9 @@ export const createLocationState = (): LocationState => {
 		code?: 'permission_denied' | 'position_unavailable' | 'timeout',
 	) => {
 		status = { kind: 'error', message, code };
+		if (code) {
+			plausible('geolocation_error', { props: { code } });
+		}
 	};
 
 	const setIdle = () => {
@@ -147,6 +152,7 @@ export const createLocationState = (): LocationState => {
 			writeLocationToStorage(stored);
 			status = { kind: 'ready', method: pendingLocation.method };
 			pendingLocation = null;
+			plausible('location_set', { props: { method: stored.address ? 'address' : 'geolocation' } });
 		}
 	};
 
