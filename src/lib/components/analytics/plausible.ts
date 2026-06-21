@@ -16,14 +16,30 @@ export function plausibleInitScript(init?: InitOptions): string {
 	return `<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}},plausible.init(${config})</script>`;
 }
 
-export function plausible(eventName: string, options?: Record<string, unknown>) {
+interface PlausibleEventOptions {
+	props?: Record<string, unknown>;
+	callback?: (result: { status?: number } | { error?: unknown }) => void;
+}
+
+interface PlausibleFn {
+	(eventName: string, options?: PlausibleEventOptions): void;
+	init: (config: Record<string, unknown>) => void;
+}
+
+function getPlausible(): PlausibleFn | undefined {
 	if (typeof window === 'undefined') {
 		return;
 	}
-	const p = (
-		window as unknown as {
-			plausible?: (eventName: string, options?: Record<string, unknown>) => void;
-		}
-	).plausible;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return (window as any).plausible as PlausibleFn;
+}
+
+export function plausible(eventName: string, options?: PlausibleEventOptions): void {
+	const p = getPlausible();
 	p?.(eventName, options);
 }
+
+plausible.init = (config: Record<string, unknown>) => {
+	const p = getPlausible();
+	p?.init(config);
+};
