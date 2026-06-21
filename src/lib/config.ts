@@ -8,4 +8,5 @@ export const config = {
 	siteUrl: __SITE_URL__,
 	sheltersJsonUrl: env.PUBLIC_SHELTERS_JSON_URL || '/shelters.json',
 	allowIndexing: siteEnv === 'production',
+	enableAnalytics: siteEnv === 'production',
 };
