@@ -1,0 +1,7 @@
+http://takeshelternow.com/*      https://www.takeshelternow.org/:splat  301!
+https://takeshelternow.com/*     https://www.takeshelternow.org/:splat  301!
+http://www.takeshelternow.com/*  https://www.takeshelternow.org/:splat  301!
+https://www.takeshelternow.com/* https://www.takeshelternow.org/:splat  301!
+http://takeshelternow.org/*      https://www.takeshelternow.org/:splat  301!
+https://takeshelternow.org/*     https://www.takeshelternow.org/:splat  301!
+http://www.takeshelternow.org/*  https://www.takeshelternow.org/:splat  301!
