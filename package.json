@@ -92,5 +92,11 @@
 		"workerDirectory": [
 			".storybook/public"
 		]
+	},
+	"allowScripts": {
+		"fsevents@2.3.2": true,
+		"fsevents@2.3.3": true,
+		"esbuild@0.28.1": true,
+		"msw@2.14.7": true
 	}
 }
