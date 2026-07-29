@@ -1,22 +1,12 @@
 import type { Preview } from '@storybook/sveltekit';
-import { initialize, mswLoader } from 'msw-storybook-addon';
+import { setupWorker } from 'msw/browser';
+import { mswLoader } from 'msw-storybook-addon/csf3';
 import isChromatic from 'chromatic/isChromatic';
 import '../src/app.css';
 import { geocodingHandlers } from './mocks/geocoding';
 import { tileHandlers } from './mocks/tile';
 
 const initialHandlers = isChromatic() ? [...geocodingHandlers, ...tileHandlers] : geocodingHandlers;
-
-initialize(
-	{
-		quiet: true,
-		onUnhandledRequest: 'bypass',
-		serviceWorker: {
-			url: '/mockServiceWorker.js',
-		},
-	},
-	initialHandlers,
-);
 
 const preview: Preview = {
 	parameters: {
@@ -28,7 +18,19 @@ const preview: Preview = {
 			},
 		},
 	},
-	loaders: [mswLoader],
+	loaders: [
+		mswLoader(async () => {
+			const worker = setupWorker(...initialHandlers);
+			await worker.start({
+				quiet: true,
+				onUnhandledRequest: 'bypass',
+				serviceWorker: {
+					url: '/mockServiceWorker.js',
+				},
+			});
+			return worker;
+		}),
+	],
 };
 
 export default preview;
