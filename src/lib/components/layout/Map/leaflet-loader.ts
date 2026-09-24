@@ -13,13 +13,15 @@ const resolveLeafletModule = (
 };
 
 export const loadLeaflet = async (): Promise<typeof Leaflet> => {
-	const [leafletModule] = await Promise.all([
+	const [leafletModule, maplibre, { default: workerUrl }] = await Promise.all([
 		import('leaflet'),
 		import('maplibre-gl'),
+		import('maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'),
 		import('maplibre-gl/dist/maplibre-gl.css'),
 		import('@maplibre/maplibre-gl-leaflet'),
 	]);
 
+	maplibre.setWorkerUrl(workerUrl);
 	return resolveLeafletModule(leafletModule);
 };
 
