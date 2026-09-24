@@ -53,6 +53,7 @@ export default defineConfig({
 			exclude: [
 				'.svelte-kit/**',
 				'build/**',
+				'src/lib/components/layout/Map/map-styles-*.json',
 				'eslint.config.js',
 				'playwright.config.ts',
 				'svelte.config.js',
