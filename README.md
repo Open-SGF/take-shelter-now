@@ -10,7 +10,6 @@ A website for helping people in weather emergencies find shelter fast.
   - Non technical documentation, including project overview, designs, and project management information
 - [./docs](./docs)
   - Technical documentation, including architecture decisions
-  - [SvelteKit 3 conventions](./docs/sveltekit-3.md)
 
 ## Live Deployments
 
