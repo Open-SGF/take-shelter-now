@@ -1,10 +1,10 @@
 import { error } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { GOOGLE_SHEET_ID, GOOGLE_SHEET_GID } from '$app/env/private';
 import { buildGoogleSheetCsvUrl, getPublicSheltersFromCsv } from './sheet';
 import type { Shelter } from './types';
 
 export const loadSheltersAtBuildTime = async (fetchFn: typeof fetch): Promise<Shelter[]> => {
-	const sheetUrl = buildGoogleSheetCsvUrl(env.GOOGLE_SHEET_ID, env.GOOGLE_SHEET_GID);
+	const sheetUrl = buildGoogleSheetCsvUrl(GOOGLE_SHEET_ID, GOOGLE_SHEET_GID);
 
 	if (!sheetUrl) {
 		return [];

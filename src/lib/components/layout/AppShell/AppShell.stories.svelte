@@ -1,10 +1,13 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, waitFor, within } from 'storybook/test';
-	import { Map } from '$lib/components/layout';
-	import { setLocationStateContext, createLocationState } from '$lib/state/location-state.svelte';
-	import { setUserStateContext, createUserState } from '$lib/state/user-state.svelte';
-	import { setShelterStateContext, createShelterState } from '$lib/state/shelter-state.svelte';
+	import { Map } from '#lib/components/layout/index.js';
+	import {
+		setLocationStateContext,
+		createLocationState,
+	} from '#lib/state/location-state.svelte.js';
+	import { setUserStateContext, createUserState } from '#lib/state/user-state.svelte.js';
+	import { setShelterStateContext, createShelterState } from '#lib/state/shelter-state.svelte.js';
 	import AppShell from './AppShell.svelte';
 
 	const shelterMarkers = [

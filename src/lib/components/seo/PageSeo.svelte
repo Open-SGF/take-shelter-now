@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DEFAULT_IMAGE_ALT } from '$lib/seo';
+	import { DEFAULT_IMAGE_ALT } from '#lib/seo/index.js';
 
 	type Props = {
 		title: string;

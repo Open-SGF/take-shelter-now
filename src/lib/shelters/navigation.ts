@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
-import { session } from '$lib/storage';
+import { session } from '#lib/storage/index.js';
 import type { ShelterFilters } from './filter';
 import { filtersToSearchParams } from './filter';
 
@@ -15,11 +15,7 @@ export const navigateToShelterList = () => {
 	const returnFilters = session.get<ShelterFilters>(RETURN_FILTERS_KEY);
 	session.remove(RETURN_FILTERS_KEY);
 
-	if (returnFilters) {
-		const params = filtersToSearchParams(returnFilters);
-		const search = params.toString();
-		goto(resolve(`/?${search}`));
-	} else {
-		goto(resolve('/'));
-	}
+	const destination = resolve('/(requires-location)');
+	const search = returnFilters ? filtersToSearchParams(returnFilters).toString() : '';
+	goto(search ? `${destination}?${search}` : destination);
 };

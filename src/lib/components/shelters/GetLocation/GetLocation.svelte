@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { AddressInput } from '$lib/components/shelters/AddressInput';
-	import { getLocationStateContext } from '$lib/state/location-state.svelte';
-	import type { GeoPoint } from '$lib/geo';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { AddressInput } from '#lib/components/shelters/AddressInput/index.js';
+	import { getLocationStateContext } from '#lib/state/location-state.svelte.js';
+	import type { GeoPoint } from '#lib/geo/index.js';
 	import NavigationIcon from '@lucide/svelte/icons/navigation';
 
 	type GetLocationProps = {

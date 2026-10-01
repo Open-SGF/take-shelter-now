@@ -6,7 +6,7 @@
 		createLocationState,
 		setLocationStateContext,
 		type LocationStatus,
-	} from '$lib/state/location-state.svelte';
+	} from '#lib/state/location-state.svelte.js';
 
 	const createStoryState = (status: LocationStatus) => {
 		const state = createLocationState();

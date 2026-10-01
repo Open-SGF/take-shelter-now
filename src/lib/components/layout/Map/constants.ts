@@ -1,4 +1,4 @@
-import type { GeoPoint } from '$lib/geo';
+import type { GeoPoint } from '#lib/geo/index.js';
 
 export const DEFAULT_MAP_CENTER: GeoPoint = {
 	latitude: 37.208957,

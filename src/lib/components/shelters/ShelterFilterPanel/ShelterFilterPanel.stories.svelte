@@ -3,9 +3,9 @@
 	import { expect, waitFor, within } from 'storybook/test';
 	import { userEvent } from 'storybook/test';
 	import ShelterFilterPanel from './ShelterFilterPanel.svelte';
-	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import { createShelterState, setShelterStateContext } from '#lib/state/shelter-state.svelte.js';
 	import { sheltersHandlers } from '../../../../../.storybook/mocks/shelters';
-	import { storage } from '$lib/storage';
+	import { storage } from '#lib/storage/index.js';
 
 	const { Story } = defineMeta({
 		title: 'Shelters/ShelterFilterPanel',

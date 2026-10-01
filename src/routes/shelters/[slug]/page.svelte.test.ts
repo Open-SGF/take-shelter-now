@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import '@testing-library/jest-dom/vitest';
-import { createUserState, setUserStateContext, type UserState } from '$lib/state/user-state.svelte';
+import {
+	createUserState,
+	setUserStateContext,
+	type UserState,
+} from '#lib/state/user-state.svelte.js';
 import Page from './+page.svelte';
 
 const baseShelter = {
@@ -31,9 +35,9 @@ describe('/shelters/[slug]/+page.svelte', () => {
 		};
 
 		render(Wrapper, {
-			data: {
-				shelter: baseShelter,
-			},
+			data: { shelter: baseShelter },
+			params: { slug: baseShelter.slug },
+			form: null,
 		});
 
 		const backButton = screen.getByRole('button', { name: 'Back to list' });
@@ -47,9 +51,9 @@ describe('/shelters/[slug]/+page.svelte', () => {
 		};
 
 		render(Wrapper, {
-			data: {
-				shelter: baseShelter,
-			},
+			data: { shelter: baseShelter },
+			params: { slug: baseShelter.slug },
+			form: null,
 		});
 
 		expect(screen.getByTestId('shelter-detail-card')).toBeInTheDocument();

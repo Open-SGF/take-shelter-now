@@ -132,8 +132,8 @@ The Leaflet map in `+page.svelte`:
 ### Styling Patterns
 
 - Uses Tailwind CSS 4 utility classes
-- shadcn-svelte provides base components (imported from `$lib/components/ui/`)
-- `cn()` utility function (from `$lib/utils.ts`) merges Tailwind classes with `clsx` + `tailwind-merge`
+- shadcn-svelte provides base components imported from `#lib/components/ui/`
+- `cn()` from `#lib/components/utils.js` merges Tailwind classes with `clsx` + `tailwind-merge`
 - Responsive design: sidebar on desktop (`w-[400px]`), bottom sheet on mobile (`max-md:` utilities)
 
 ## Important Notes

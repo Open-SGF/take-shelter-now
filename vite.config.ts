@@ -1,3 +1,5 @@
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import 'vitest/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,7 +22,6 @@ function getVersion(): string {
 	} catch {
 		// version.json doesn't exist, fall through to other methods
 	}
-
 	if (process.env.COMMIT_REF) {
 		return process.env.COMMIT_REF.slice(0, 7);
 	}
@@ -47,7 +48,27 @@ export default defineConfig({
 			include: ['bits-ui', 'mode-watcher', 'svelte-sonner', '@lucide/svelte'],
 		},
 	},
-	plugins: [tailwindcss(), sveltekit(), sveltekitOG()],
+	plugins: [
+		tailwindcss(),
+		sveltekit({
+			preprocess: vitePreprocess(),
+			adapter: adapter(),
+			prerender: {
+				handleUnseenRoutes: ({ routes }) => {
+					const allowedMissingRoutes = new Set(['/shelters/[slug]', '/shelters/[slug]/og.png']);
+					const onlyMissingShelterRoutes =
+						routes.length > 0 && routes.every((route) => allowedMissingRoutes.has(route));
+
+					if (onlyMissingShelterRoutes) {
+						return;
+					}
+
+					throw new Error(`Unseen prerender routes: ${routes.join(', ')}`);
+				},
+			},
+		}),
+		sveltekitOG(),
+	],
 	test: {
 		coverage: {
 			exclude: [
@@ -56,7 +77,6 @@ export default defineConfig({
 				'src/lib/components/layout/Map/map-styles-*.json',
 				'eslint.config.js',
 				'playwright.config.ts',
-				'svelte.config.js',
 				'vite.config.ts',
 			],
 		},

@@ -1,4 +1,4 @@
-import type { GeoPoint } from '$lib/geo';
+import type { GeoPoint } from '#lib/geo/index.js';
 
 export type MapTheme = 'light' | 'dark';
 

@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom/vitest';
 import { vi } from 'vitest';
 
+vi.mock('$app/env/public', () => import('../.storybook/mocks/env-public.js'));
+
 // Node 26 defines experimental localStorage/sessionStorage on globalThis which
 // shadows jsdom's versions. Patch them to point at jsdom's implementations.
 const jsdomGlobal = globalThis as { jsdom?: { window: Window & typeof globalThis } };

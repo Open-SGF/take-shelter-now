@@ -1,13 +1,15 @@
 <script lang="ts">
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-	import { JsonLd, PageSeo } from '$lib/components/seo';
-	import { ShelterDetail } from '$lib/components/shelters';
-	import { Button } from '$lib/components/ui/button';
-	import { SITE_TITLE, shelterPlaceJsonLd, siteUrl } from '$lib/seo';
-	import { formatShelterAddress } from '$lib/shelters/presentation';
-	import { navigateToShelterList } from '$lib/shelters/navigation';
+	import { JsonLd, PageSeo } from '#lib/components/seo/index.js';
+	import { ShelterDetail } from '#lib/components/shelters/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { SITE_TITLE, shelterPlaceJsonLd, siteUrl } from '#lib/seo/index.js';
+	import { formatShelterAddress } from '#lib/shelters/presentation.js';
+	import { navigateToShelterList } from '#lib/shelters/navigation.js';
 
-	let { data } = $props();
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
 
 	let shelterAddress = $derived(formatShelterAddress(data.shelter));
 	let pageTitle = $derived(`${data.shelter.name} | ${SITE_TITLE}`);

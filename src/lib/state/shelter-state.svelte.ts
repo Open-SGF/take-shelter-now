@@ -1,9 +1,9 @@
 import { createContext } from 'svelte';
-import type { Shelter, ShelterCategory } from '$lib/shelters/types';
-import { distanceBetween } from '$lib/geo';
-import { type ShelterFilters, defaultFilters } from '$lib/shelters/filter';
-import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
-import { config } from '$lib/config';
+import type { Shelter, ShelterCategory } from '#lib/shelters/types.js';
+import { distanceBetween } from '#lib/geo/index.js';
+import { type ShelterFilters, defaultFilters } from '#lib/shelters/filter.js';
+import { summarizeShelterHours } from '#lib/shelters/hours-presentation.js';
+import { config } from '#lib/config.js';
 
 type ShelterWithDistance = Shelter & { distance: number; isOpen: boolean };
 

@@ -3,10 +3,13 @@
 	import { expect, within, waitFor } from 'storybook/test';
 	import { userEvent } from 'storybook/test';
 	import Nav from './Nav.svelte';
-	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
-	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
-	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
-	import { storage } from '$lib/storage';
+	import {
+		createLocationState,
+		setLocationStateContext,
+	} from '#lib/state/location-state.svelte.js';
+	import { createUserState, setUserStateContext } from '#lib/state/user-state.svelte.js';
+	import { createShelterState, setShelterStateContext } from '#lib/state/shelter-state.svelte.js';
+	import { storage } from '#lib/storage/index.js';
 
 	const { Story } = defineMeta({
 		title: 'Layout/Nav',

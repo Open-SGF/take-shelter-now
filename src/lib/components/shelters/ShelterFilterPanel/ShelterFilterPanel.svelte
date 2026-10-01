@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { Label } from '$lib/components/ui/label';
-	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
-	import { Separator } from '$lib/components/ui/separator';
-	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
-	import { formatShelterCategory, type ShelterCategory } from '$lib/shelters/presentation';
+	import { Badge } from '#lib/components/ui/badge/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.js';
+	import { Label } from '#lib/components/ui/label/index.js';
+	import { Popover, PopoverContent, PopoverTrigger } from '#lib/components/ui/popover/index.js';
+	import { Separator } from '#lib/components/ui/separator/index.js';
+	import { getShelterStateContext } from '#lib/state/shelter-state.svelte.js';
+	import { formatShelterCategory, type ShelterCategory } from '#lib/shelters/presentation.js';
 	import FilterIcon from '@lucide/svelte/icons/filter';
 
 	const uid = $props.id();

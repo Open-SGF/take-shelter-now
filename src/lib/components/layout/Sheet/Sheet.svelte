@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$lib/components/utils';
+	import { cn } from '#lib/components/utils.js';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
 

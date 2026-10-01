@@ -1,23 +1,18 @@
 import { error } from '@sveltejs/kit';
-import { loadSheltersAtBuildTime } from '$lib/shelters/source.server';
-import type { Shelter } from '$lib/shelters/types';
+import { loadSheltersAtBuildTime } from '#lib/shelters/source.server.js';
+import type { Shelter } from '#lib/shelters/types.js';
+import type { EntryGenerator, PageServerLoad } from './$types';
 
 let shelterCache: Shelter[] | null = null;
 
-export const entries = async () => {
+export const entries: EntryGenerator = async () => {
 	const shelters = await loadSheltersAtBuildTime(fetch);
 	return shelters.map((shelter) => ({
 		slug: shelter.slug,
 	}));
 };
 
-export const load = async ({
-	params,
-	fetch,
-}: {
-	params: { slug: string };
-	fetch: typeof globalThis.fetch;
-}) => {
+export const load: PageServerLoad = async ({ params, fetch }) => {
 	if (!shelterCache) {
 		shelterCache = await loadSheltersAtBuildTime(fetch);
 	}
@@ -25,7 +20,7 @@ export const load = async ({
 	const shelter = shelterCache.find((s) => s.slug === params.slug);
 
 	if (!shelter) {
-		throw error(404, 'Shelter not found');
+		error(404, 'Shelter not found');
 	}
 
 	return { shelter };

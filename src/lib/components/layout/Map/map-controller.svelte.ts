@@ -1,5 +1,5 @@
 import type * as Leaflet from 'leaflet';
-import { isValidPoint, toLeafletPoint, type GeoPoint } from '$lib/geo';
+import { isValidPoint, toLeafletPoint, type GeoPoint } from '#lib/geo/index.js';
 import { buildMarkerSignature, buildPointSignature, filterValidMarkers } from './markers';
 import { createRecenterPlan } from './viewport';
 import { loadBasemapStyle, loadLeaflet } from './leaflet-loader';

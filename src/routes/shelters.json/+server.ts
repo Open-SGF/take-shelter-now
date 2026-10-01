@@ -1,9 +1,9 @@
-import { json } from '@sveltejs/kit';
-import { loadSheltersAtBuildTime } from '$lib/shelters/source.server';
+import type { RequestHandler } from './$types';
+import { loadSheltersAtBuildTime } from '#lib/shelters/source.server.js';
 
 export const prerender = true;
 
-export const GET = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
+export const GET: RequestHandler = async ({ fetch }) => {
 	const shelters = await loadSheltersAtBuildTime(fetch);
-	return json(shelters);
+	return Response.json(shelters);
 };

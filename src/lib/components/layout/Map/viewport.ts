@@ -1,4 +1,4 @@
-import type { GeoPoint } from '$lib/geo';
+import type { GeoPoint } from '#lib/geo/index.js';
 import type { MapMarker } from './types';
 
 type BoundsOptions = {

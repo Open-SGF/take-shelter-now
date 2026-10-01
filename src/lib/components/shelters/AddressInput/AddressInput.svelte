@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Label } from '#lib/components/ui/label/index.js';
 	import {
 		searchAddresses,
 		getPlaceDetails,
 		type AutocompleteSuggestion,
 		type GeoPoint,
-	} from '$lib/geo';
-	import { cn } from '$lib/components/utils';
+	} from '#lib/geo/index.js';
+	import { cn } from '#lib/components/utils.js';
 
 	type AddressInputProps = {
 		onLocationSelect: (location: GeoPoint, label: string) => void;

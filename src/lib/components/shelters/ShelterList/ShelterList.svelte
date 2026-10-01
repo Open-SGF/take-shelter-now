@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { ShelterListItem } from '$lib/components/shelters';
-	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import { ShelterListItem } from '#lib/components/shelters/index.js';
+	import { getShelterStateContext } from '#lib/state/shelter-state.svelte.js';
 
 	const shelterState = getShelterStateContext();
 </script>

@@ -38,7 +38,7 @@ export const filtersToSearchParams = (filters: ShelterFilters): URLSearchParams 
 	return params;
 };
 
-export const searchParamsToFilters = (params: URLSearchParams): ShelterFilters => {
+export const searchParamsToFilters = (params: Pick<URLSearchParams, 'get'>): ShelterFilters => {
 	return {
 		openNow: params.get('open') === 'true',
 		petFriendly: params.get('pets') === 'true',

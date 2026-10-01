@@ -19,7 +19,7 @@
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/components/utils';
+	import { cn, type WithElementRef } from '#lib/components/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { jsonLdScript, type JsonLdValue } from '$lib/seo';
+	import { jsonLdScript, type JsonLdValue } from '#lib/seo/index.js';
 
 	let { value }: { value: JsonLdValue } = $props();
 	let script = $derived(jsonLdScript(value));

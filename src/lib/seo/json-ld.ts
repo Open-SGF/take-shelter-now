@@ -1,5 +1,5 @@
-import { formatShelterAddress } from '$lib/shelters/presentation';
-import type { Shelter } from '$lib/shelters/types';
+import { formatShelterAddress } from '#lib/shelters/presentation.js';
+import type { Shelter } from '#lib/shelters/types.js';
 import type { Graph, Organization, Place, Thing, WebSite, WithContext } from 'schema-dts';
 import { DEFAULT_DESCRIPTION, OPENSGF_URL, SITE_TITLE } from './constants';
 import { siteUrl } from './url';

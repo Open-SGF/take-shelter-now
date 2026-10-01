@@ -6,17 +6,17 @@
 	import MapPinIcon from '@lucide/svelte/icons/map-pin';
 	import PawPrintIcon from '@lucide/svelte/icons/paw-print';
 	import UsersIcon from '@lucide/svelte/icons/users';
-	import { Badge } from '$lib/components/ui/badge';
-	import { ShelterCategoryBadge } from '$lib/components/shelters';
-	import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
+	import { Badge } from '#lib/components/ui/badge/index.js';
+	import { ShelterCategoryBadge } from '#lib/components/shelters/index.js';
+	import { summarizeShelterHours } from '#lib/shelters/hours-presentation.js';
 	import {
 		formatLastVerifiedDate,
 		formatShelterAddress,
 		formatShelterBoolean,
 		formatShelterCapacity,
 		formatSpecialInstructions,
-	} from '$lib/shelters/presentation';
-	import type { Shelter } from '$lib/shelters/types';
+	} from '#lib/shelters/presentation.js';
+	import type { Shelter } from '#lib/shelters/types.js';
 	import DirectionsAction from './DirectionsAction.svelte';
 
 	type ShelterDetailProps = {

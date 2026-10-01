@@ -1,4 +1,4 @@
-import { isValidPoint, type GeoPoint } from '$lib/geo';
+import { isValidPoint, type GeoPoint } from '#lib/geo/index.js';
 import type { MapMarker } from './types';
 
 const formatPoint = (point: GeoPoint) =>

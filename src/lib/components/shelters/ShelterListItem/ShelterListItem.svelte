@@ -4,19 +4,19 @@
 	import BatteryChargingIcon from '@lucide/svelte/icons/battery-charging';
 	import Clock3Icon from '@lucide/svelte/icons/clock-3';
 	import PawPrintIcon from '@lucide/svelte/icons/paw-print';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Item from '$lib/components/ui/item';
-	import { ShelterCategoryBadge } from '$lib/components/shelters';
-	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
-	import { navigateToShelterDetail } from '$lib/shelters/navigation';
-	import { summarizeShelterHours } from '$lib/shelters/hours-presentation';
+	import { Badge } from '#lib/components/ui/badge/index.js';
+	import * as Item from '#lib/components/ui/item/index.js';
+	import { ShelterCategoryBadge } from '#lib/components/shelters/index.js';
+	import { getShelterStateContext } from '#lib/state/shelter-state.svelte.js';
+	import { navigateToShelterDetail } from '#lib/shelters/navigation.js';
+	import { summarizeShelterHours } from '#lib/shelters/hours-presentation.js';
 	import {
 		formatShelterAddress,
 		formatShelterDistance,
 		getAvailableAmenities,
 		type ShelterAmenity,
-	} from '$lib/shelters/presentation';
-	import type { Shelter } from '$lib/shelters/types';
+	} from '#lib/shelters/presentation.js';
+	import type { Shelter } from '#lib/shelters/types.js';
 
 	type ShelterListItemProps = {
 		shelter: Shelter;

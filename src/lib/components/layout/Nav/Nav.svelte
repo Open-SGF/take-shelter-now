@@ -2,19 +2,19 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { cn } from '$lib/components/utils';
+	import { cn } from '#lib/components/utils.js';
 	import MoreVerticalIcon from '@lucide/svelte/icons/more-vertical';
-	import { Popover } from '$lib/components/ui/popover';
-	import PopoverContent from '$lib/components/ui/popover/popover-content.svelte';
-	import PopoverTrigger from '$lib/components/ui/popover/popover-trigger.svelte';
-	import Dialog from '$lib/components/ui/dialog/dialog.svelte';
-	import DialogContent from '$lib/components/ui/dialog/dialog-content.svelte';
-	import { Switch } from '$lib/components/ui/switch';
-	import { getLocationStateContext } from '$lib/state/location-state.svelte';
-	import { getUserStateContext } from '$lib/state/user-state.svelte';
-	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import { Popover } from '#lib/components/ui/popover/index.js';
+	import PopoverContent from '#lib/components/ui/popover/popover-content.svelte';
+	import PopoverTrigger from '#lib/components/ui/popover/popover-trigger.svelte';
+	import Dialog from '#lib/components/ui/dialog/dialog.svelte';
+	import DialogContent from '#lib/components/ui/dialog/dialog-content.svelte';
+	import { Switch } from '#lib/components/ui/switch/index.js';
+	import { getLocationStateContext } from '#lib/state/location-state.svelte.js';
+	import { getUserStateContext } from '#lib/state/user-state.svelte.js';
+	import { getShelterStateContext } from '#lib/state/shelter-state.svelte.js';
 	import { mode, setMode } from 'mode-watcher';
-	import { plausible } from '$lib/components/analytics/plausible';
+	import { plausible } from '#lib/components/analytics/plausible.js';
 
 	type NavProps = {
 		class?: string;
@@ -36,17 +36,15 @@
 	const userState = getUserStateContext();
 	const shelterState = getShelterStateContext();
 
-	const isListPage = $derived(page.url.pathname === '/');
-	const showEditLocation = $derived(
-		locationState.hasLocation && page.url.pathname !== '/location/',
-	);
+	const isListPage = $derived(page.route.id === '/(requires-location)');
+	const showEditLocation = $derived(locationState.hasLocation && page.route.id !== '/location');
 	const showClearFilters = $derived(isListPage && shelterState.hasActiveFilters);
 
 	let contactsDialogOpen = $state(false);
 	let isDarkMode = $derived(mode.current === 'dark');
 
 	function handleEditLocationClick() {
-		goto(resolve('/location/'));
+		goto(resolve('/location'));
 	}
 
 	function handleClearFiltersClick() {
@@ -96,10 +94,9 @@
 			<button
 				type="button"
 				class="hover:bg-interactive-bg flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors"
-				onclick={() => (contactsDialogOpen = true)}
+				onclick={() => (contactsDialogOpen = true)}>Emergency Contacts</button
 			>
-				Emergency Contacts
-			</button>
+
 			<label
 				class="hover:bg-interactive-bg flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors"
 			>
@@ -159,7 +156,7 @@
 						<svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
 							<path
 								d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-							/>
+							></path>
 						</svg>
 						<span class="text-xs font-semibold">{contact.phone}</span>
 					</a>

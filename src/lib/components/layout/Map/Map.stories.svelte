@@ -41,7 +41,7 @@
 </script>
 
 <script lang="ts">
-	import type { GeoPoint } from '$lib/geo';
+	import type { GeoPoint } from '#lib/geo/index.js';
 	import type { MapViewportChangedDetail } from './types';
 
 	const mapShellClass =

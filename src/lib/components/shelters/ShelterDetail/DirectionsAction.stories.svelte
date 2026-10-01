@@ -2,9 +2,9 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, fireEvent, waitFor, within } from 'storybook/test';
 	import type { ComponentProps } from 'svelte';
-	import type { Shelter } from '$lib/shelters/types';
-	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
-	import { storage } from '$lib/storage';
+	import type { Shelter } from '#lib/shelters/types.js';
+	import { createUserState, setUserStateContext } from '#lib/state/user-state.svelte.js';
+	import { storage } from '#lib/storage/index.js';
 	import DirectionsAction from './DirectionsAction.svelte';
 
 	type StoryArgs = ComponentProps<typeof DirectionsAction>;
