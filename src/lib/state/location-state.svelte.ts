@@ -1,7 +1,7 @@
 import { createContext } from 'svelte';
-import type { GeoPoint } from '$lib/geo';
-import { storage } from '$lib/storage';
-import { plausible } from '$lib/components/analytics/plausible';
+import type { GeoPoint } from '#lib/geo/index.js';
+import { storage } from '#lib/storage/index.js';
+import { plausible } from '#lib/components/analytics/plausible.js';
 
 export type LocationMethod = 'geolocation' | 'address';
 

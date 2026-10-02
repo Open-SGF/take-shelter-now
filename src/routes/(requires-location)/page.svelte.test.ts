@@ -5,13 +5,17 @@ import {
 	createLocationState,
 	setLocationStateContext,
 	type LocationState,
-} from '$lib/state/location-state.svelte';
+} from '#lib/state/location-state.svelte.js';
 import {
 	createShelterState,
 	setShelterStateContext,
 	type ShelterState,
-} from '$lib/state/shelter-state.svelte';
-import { createUserState, setUserStateContext, type UserState } from '$lib/state/user-state.svelte';
+} from '#lib/state/shelter-state.svelte.js';
+import {
+	createUserState,
+	setUserStateContext,
+	type UserState,
+} from '#lib/state/user-state.svelte.js';
 import Page from './+page.svelte';
 
 describe('/+page.svelte (requires-location)', () => {

@@ -1,4 +1,4 @@
-import { config } from '$lib/config';
+import { config } from '#lib/config.js';
 
 export function siteUrl(pathname = '/'): string {
 	const url = new URL(pathname, config.siteUrl);

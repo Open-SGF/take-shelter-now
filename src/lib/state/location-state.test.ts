@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach } from 'vitest';
 import { createLocationState } from './location-state.svelte';
-import { storage } from '$lib/storage';
+import { storage } from '#lib/storage/index.js';
 
 describe('createLocationState', () => {
 	beforeEach(() => {

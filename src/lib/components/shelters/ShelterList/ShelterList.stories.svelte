@@ -2,7 +2,7 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, waitFor, within } from 'storybook/test';
 	import ShelterList from './ShelterList.svelte';
-	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import { createShelterState, setShelterStateContext } from '#lib/state/shelter-state.svelte.js';
 	import { sheltersHandlers } from '../../../../../.storybook/mocks/shelters';
 
 	const { Story } = defineMeta({

@@ -1,5 +1,5 @@
 import { createContext } from 'svelte';
-import { storage } from '$lib/storage';
+import { storage } from '#lib/storage/index.js';
 
 export type DirectionsApp = 'apple' | 'google';
 

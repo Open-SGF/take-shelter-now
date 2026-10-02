@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { config } from '$lib/config';
-	import { SITE_TITLE, siteUrl } from '$lib/seo';
+	import { config } from '#lib/config.js';
+	import { SITE_TITLE, siteUrl } from '#lib/seo/index.js';
 
 	const robotsContent = config.allowIndexing ? undefined : 'noindex, nofollow';
 	let canonicalUrl = $derived(siteUrl(page.url.pathname));

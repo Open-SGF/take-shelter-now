@@ -1,6 +1,7 @@
 import { SitemapStream, streamToPromise } from 'sitemap';
-import { loadSheltersAtBuildTime } from '$lib/shelters/source.server';
-import { config } from '$lib/config';
+import type { RequestHandler } from './$types';
+import { loadSheltersAtBuildTime } from '#lib/shelters/source.server.js';
+import { config } from '#lib/config.js';
 
 export const prerender = true;
 
@@ -34,7 +35,7 @@ async function renderSitemap(entries: SitemapEntry[]): Promise<string> {
 	return (await streamToPromise(stream)).toString();
 }
 
-export const GET = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
+export const GET: RequestHandler = async ({ fetch }) => {
 	const shelters = await loadSheltersAtBuildTime(fetch);
 	const entries: SitemapEntry[] = [
 		{ path: '/' },

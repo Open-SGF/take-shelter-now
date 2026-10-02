@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$lib/components/utils';
+	import { cn } from '#lib/components/utils.js';
 	import { MapController } from './map-controller.svelte.js';
 	import { DEFAULT_MAP_CENTER } from './constants.js';
 	import type { MapMarker, MapProps, MapTheme } from './types';

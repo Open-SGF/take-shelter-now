@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach } from 'vitest';
 import { createUserState } from './user-state.svelte';
-import { storage } from '$lib/storage';
+import { storage } from '#lib/storage/index.js';
 
 describe('createUserState', () => {
 	beforeEach(() => {

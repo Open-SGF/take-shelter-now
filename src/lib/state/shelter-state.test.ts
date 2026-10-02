@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import type { Shelter, ShelterHours } from '$lib/shelters/types';
+import type { Shelter, ShelterHours } from '#lib/shelters/types.js';
 import { createShelterState } from './shelter-state.svelte';
 
 const HOURS_24_7: ShelterHours = {

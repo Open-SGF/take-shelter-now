@@ -2,17 +2,18 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { ShelterFilterPanel, ShelterList } from '$lib/components/shelters';
-	import { getShelterStateContext } from '$lib/state/shelter-state.svelte';
-	import { searchParamsToFilters, filtersToSearchParams } from '$lib/shelters/filter';
+	import { ShelterFilterPanel, ShelterList } from '#lib/components/shelters/index.js';
+	import { getShelterStateContext } from '#lib/state/shelter-state.svelte.js';
+	import { searchParamsToFilters, filtersToSearchParams } from '#lib/shelters/filter.js';
 
 	const shelterState = getShelterStateContext();
+	const url = $derived(page.shallow?.url ?? page.url);
 
 	let initializedFromUrl = $state(false);
 
 	$effect(() => {
 		if (!initializedFromUrl) {
-			const urlFilters = searchParamsToFilters(page.url.searchParams);
+			const urlFilters = searchParamsToFilters(url.searchParams);
 			shelterState.setFilters(urlFilters);
 			initializedFromUrl = true;
 		}
@@ -26,14 +27,15 @@
 		const currentFilters = shelterState.filters;
 		const currentParams = filtersToSearchParams(currentFilters);
 		const newSearch = currentParams.toString();
-		const existingSearch = page.url.searchParams.toString();
+		const existingSearch = url.searchParams.toString();
 
 		if (newSearch !== existingSearch) {
-			if (newSearch) {
-				goto(resolve(`/?${newSearch}`), { replaceState: true });
-			} else {
-				goto(resolve('/'), { replaceState: true });
-			}
+			const destination = resolve('/(requires-location)');
+			goto(newSearch ? `${destination}?${newSearch}` : destination, {
+				replace: true,
+				reset: false,
+				shallow: true,
+			});
 		}
 	});
 </script>

@@ -5,14 +5,18 @@ import {
 	createLocationState,
 	setLocationStateContext,
 	type LocationState,
-} from '$lib/state/location-state.svelte';
+} from '#lib/state/location-state.svelte.js';
 import {
 	createShelterState,
 	setShelterStateContext,
 	type ShelterState,
-} from '$lib/state/shelter-state.svelte';
-import { createUserState, setUserStateContext, type UserState } from '$lib/state/user-state.svelte';
-import { storage } from '$lib/storage';
+} from '#lib/state/shelter-state.svelte.js';
+import {
+	createUserState,
+	setUserStateContext,
+	type UserState,
+} from '#lib/state/user-state.svelte.js';
+import { storage } from '#lib/storage/index.js';
 import Page from './+page.svelte';
 
 const mockGeolocation = () => {

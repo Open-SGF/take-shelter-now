@@ -2,25 +2,32 @@
 	import '../app.css';
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { PlausibleAnalytics } from '$lib/components/analytics';
-	import { plausible } from '$lib/components/analytics/plausible';
-	import { config } from '$lib/config';
-	import { GlobalSeo } from '$lib/components/seo';
-	import { AppShell } from '$lib/components/layout';
-	import { Toaster } from '$lib/components/ui/sonner';
-	import type { GeoPoint } from '$lib/geo';
-	import type { Snippet } from 'svelte';
-	import { Map, type MapMarker } from '$lib/components/layout';
-	import { createUserState, setUserStateContext } from '$lib/state/user-state.svelte';
-	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
-	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
-	import { navigateToShelterDetail } from '$lib/shelters/navigation';
+	import { PlausibleAnalytics } from '#lib/components/analytics/index.js';
+	import { plausible } from '#lib/components/analytics/plausible.js';
+	import { config } from '#lib/config.js';
+	import { GlobalSeo } from '#lib/components/seo/index.js';
+	import { AppShell } from '#lib/components/layout/index.js';
+	import { Toaster } from '#lib/components/ui/sonner/index.js';
+	import type { GeoPoint } from '#lib/geo/index.js';
+	import type { LayoutProps } from './$types';
+	import { Map, type MapMarker } from '#lib/components/layout/index.js';
+	import { createUserState, setUserStateContext } from '#lib/state/user-state.svelte.js';
+	import {
+		createLocationState,
+		setLocationStateContext,
+	} from '#lib/state/location-state.svelte.js';
+	import { createShelterState, setShelterStateContext } from '#lib/state/shelter-state.svelte.js';
+	import { navigateToShelterDetail } from '#lib/shelters/navigation.js';
 	import { ModeWatcher, mode } from 'mode-watcher';
-	import type { MapTheme } from '$lib/components/layout/Map/types';
+	import type { MapTheme } from '#lib/components/layout/Map/types.js';
 
-	let { children }: { children: Snippet } = $props();
+	let { children }: LayoutProps = $props();
 
-	onNavigate(() => {
+	onNavigate(({ shallow }) => {
+		if (shallow) {
+			return;
+		}
+
 		if (!document.startViewTransition) {
 			return;
 		}

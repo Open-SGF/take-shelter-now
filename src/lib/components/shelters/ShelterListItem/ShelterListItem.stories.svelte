@@ -2,9 +2,12 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { expect, within } from 'storybook/test';
 	import type { ComponentProps } from 'svelte';
-	import type { Shelter } from '$lib/shelters/types';
-	import { createLocationState, setLocationStateContext } from '$lib/state/location-state.svelte';
-	import { createShelterState, setShelterStateContext } from '$lib/state/shelter-state.svelte';
+	import type { Shelter } from '#lib/shelters/types.js';
+	import {
+		createLocationState,
+		setLocationStateContext,
+	} from '#lib/state/location-state.svelte.js';
+	import { createShelterState, setShelterStateContext } from '#lib/state/shelter-state.svelte.js';
 	import ShelterListItem from './ShelterListItem.svelte';
 
 	type StoryArgs = ComponentProps<typeof ShelterListItem>;

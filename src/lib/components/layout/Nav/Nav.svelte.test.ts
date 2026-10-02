@@ -1,9 +1,9 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import '@testing-library/jest-dom/vitest';
-import { setLocationStateContext, createLocationState } from '$lib/state/location-state.svelte';
-import { setUserStateContext, createUserState } from '$lib/state/user-state.svelte';
-import { setShelterStateContext, createShelterState } from '$lib/state/shelter-state.svelte';
+import { setLocationStateContext, createLocationState } from '#lib/state/location-state.svelte.js';
+import { setUserStateContext, createUserState } from '#lib/state/user-state.svelte.js';
+import { setShelterStateContext, createShelterState } from '#lib/state/shelter-state.svelte.js';
 
 const { modeStore, setModeMock } = vi.hoisted(() => ({
 	modeStore: { current: 'light' as 'light' | 'dark' },
@@ -13,6 +13,7 @@ const { modeStore, setModeMock } = vi.hoisted(() => ({
 vi.mock('$app/state', () => ({
 	page: {
 		url: new URL('http://localhost/'),
+		route: { id: '/(requires-location)' },
 	},
 }));
 

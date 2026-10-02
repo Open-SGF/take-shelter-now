@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { type WithElementRef } from '$lib/components/utils';
+	import { type WithElementRef } from '#lib/components/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import Building2Icon from '@lucide/svelte/icons/building-2';
 	import ChurchIcon from '@lucide/svelte/icons/church';
 	import SchoolIcon from '@lucide/svelte/icons/school';
-	import { Badge } from '$lib/components/ui/badge';
-	import { formatShelterCategory, type ShelterCategory } from '$lib/shelters/presentation';
+	import { Badge } from '#lib/components/ui/badge/index.js';
+	import { formatShelterCategory, type ShelterCategory } from '#lib/shelters/presentation.js';
 
 	type ShelterCategoryBadgeProps = WithElementRef<HTMLAttributes<HTMLSpanElement>> & {
 		category?: ShelterCategory;

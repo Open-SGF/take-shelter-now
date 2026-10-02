@@ -1,4 +1,5 @@
-import { config } from '$lib/config';
+import { config } from '#lib/config.js';
+import type { RequestHandler } from './$types';
 
 export const prerender = true;
 
@@ -14,7 +15,7 @@ function buildRobotsTxt(): string {
 	].join('\n');
 }
 
-export const GET = () => {
+export const GET: RequestHandler = () => {
 	return new Response(buildRobotsTxt(), {
 		headers: {
 			'content-type': 'text/plain; charset=utf-8',

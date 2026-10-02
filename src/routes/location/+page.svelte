@@ -2,11 +2,11 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-	import { PageSeo } from '$lib/components/seo';
-	import { Button } from '$lib/components/ui/button';
-	import { GetLocation } from '$lib/components/shelters';
-	import { SITE_TITLE, siteUrl } from '$lib/seo';
-	import { getLocationStateContext } from '$lib/state/location-state.svelte';
+	import { PageSeo } from '#lib/components/seo/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { GetLocation } from '#lib/components/shelters/index.js';
+	import { SITE_TITLE, siteUrl } from '#lib/seo/index.js';
+	import { getLocationStateContext } from '#lib/state/location-state.svelte.js';
 
 	const locationState = getLocationStateContext();
 	const pageTitle = `Set Your Location | ${SITE_TITLE}`;
@@ -17,7 +17,7 @@
 	const isEditMode = $derived(locationState.hasLocation);
 
 	function handleLocationConfirmed() {
-		goto(resolve('/'), { replaceState: true });
+		goto(resolve('/(requires-location)'), { replace: true });
 	}
 </script>
 
@@ -26,7 +26,7 @@
 <article class="p-4 pt-6 pb-32">
 	{#if isEditMode}
 		<Button
-			href={resolve('/')}
+			href={resolve('/(requires-location)')}
 			variant="outline"
 			size="sm"
 			class="border-border-strong bg-surface text-text-secondary mb-4"

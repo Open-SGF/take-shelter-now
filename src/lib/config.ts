@@ -1,12 +1,11 @@
-import * as publicEnv from '$env/static/public';
+import { PUBLIC_SITE_ENV, PUBLIC_SHELTERS_JSON_URL } from '$app/env/public';
 
-const env = publicEnv as Record<string, string | undefined>;
-const siteEnv = env.PUBLIC_SITE_ENV || 'development';
+const siteEnv = PUBLIC_SITE_ENV;
 
 export const config = {
 	siteEnv,
 	siteUrl: __SITE_URL__,
-	sheltersJsonUrl: env.PUBLIC_SHELTERS_JSON_URL || '/shelters.json',
+	sheltersJsonUrl: PUBLIC_SHELTERS_JSON_URL,
 	allowIndexing: siteEnv === 'production',
 	enableAnalytics: siteEnv === 'production',
 };

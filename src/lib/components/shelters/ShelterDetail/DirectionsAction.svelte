@@ -2,16 +2,16 @@
 	import NavigationIcon from '@lucide/svelte/icons/navigation';
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import CheckIcon from '@lucide/svelte/icons/check';
-	import { Button } from '$lib/components/ui/button';
-	import { Dialog, DialogContent } from '$lib/components/ui/dialog';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { getUserStateContext } from '$lib/state/user-state.svelte';
-	import type { DirectionsApp } from '$lib/state/user-state.svelte';
-	import { formatShelterAddress } from '$lib/shelters/presentation';
-	import { isValidPoint } from '$lib/geo';
-	import type { Shelter } from '$lib/shelters/types';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Dialog, DialogContent } from '#lib/components/ui/dialog/index.js';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.js';
+	import { getUserStateContext } from '#lib/state/user-state.svelte.js';
+	import type { DirectionsApp } from '#lib/state/user-state.svelte.js';
+	import { formatShelterAddress } from '#lib/shelters/presentation.js';
+	import { isValidPoint } from '#lib/geo/index.js';
+	import type { Shelter } from '#lib/shelters/types.js';
 	import { toast } from 'svelte-sonner';
-	import { plausible } from '$lib/components/analytics/plausible';
+	import { plausible } from '#lib/components/analytics/plausible.js';
 
 	type DirectionsActionProps = {
 		shelter: Shelter;
