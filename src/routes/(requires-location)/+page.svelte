@@ -7,12 +7,13 @@
 	import { searchParamsToFilters, filtersToSearchParams } from '#lib/shelters/filter.js';
 
 	const shelterState = getShelterStateContext();
+	const url = $derived(page.shallow?.url ?? page.url);
 
 	let initializedFromUrl = $state(false);
 
 	$effect(() => {
 		if (!initializedFromUrl) {
-			const urlFilters = searchParamsToFilters(page.url.searchParams);
+			const urlFilters = searchParamsToFilters(url.searchParams);
 			shelterState.setFilters(urlFilters);
 			initializedFromUrl = true;
 		}
@@ -26,13 +27,14 @@
 		const currentFilters = shelterState.filters;
 		const currentParams = filtersToSearchParams(currentFilters);
 		const newSearch = currentParams.toString();
-		const existingSearch = page.url.searchParams.toString();
+		const existingSearch = url.searchParams.toString();
 
 		if (newSearch !== existingSearch) {
 			const destination = resolve('/(requires-location)');
 			goto(newSearch ? `${destination}?${newSearch}` : destination, {
 				replace: true,
 				reset: false,
+				shallow: true,
 			});
 		}
 	});
