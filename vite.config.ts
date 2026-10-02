@@ -82,7 +82,6 @@ export default defineConfig({
 		},
 		projects: [
 			{
-				extends: './vite.config.ts',
 				plugins: [svelteTesting()],
 				test: {
 					name: 'unit',
@@ -94,7 +93,6 @@ export default defineConfig({
 				},
 			},
 			{
-				extends: './vite.config.ts',
 				plugins: [
 					storybookTest({
 						configDir: path.join(rootDir, '.storybook'),
