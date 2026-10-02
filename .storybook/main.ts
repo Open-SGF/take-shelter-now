@@ -8,6 +8,8 @@ const config: StorybookConfig = {
 	addons: ['@storybook/addon-a11y', '@storybook/addon-vitest', '@storybook/addon-svelte-csf'],
 	viteFinal: (config) =>
 		mergeConfig(config, {
+			// Standalone Storybook has no SvelteKit client bootstrap payload.
+			define: { __SVELTEKIT_PAYLOAD__: 'undefined' },
 			resolve: {
 				alias: {
 					'$app/env/public': fileURLToPath(new URL('./mocks/env-public.ts', import.meta.url)),
